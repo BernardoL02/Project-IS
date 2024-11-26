@@ -1,14 +1,36 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\josem\\source\\repos\\Project-IS\\",
+  "WorkspaceRootPath": "C:\\Users\\Tex\\Desktop\\Project-IS\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|c:\\users\\josem\\source\\repos\\project-is\\somiod\\controllers\\aplicationscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|c:\\users\\tex\\desktop\\project-is\\somiod\\app_start\\webapiconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|solutionrelative:somiod\\app_start\\webapiconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2B991E42-BABE-45C9-95C6-987E839561EB}|Switch\\Switch.csproj|c:\\users\\tex\\desktop\\project-is\\switch\\app.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{2B991E42-BABE-45C9-95C6-987E839561EB}|Switch\\Switch.csproj|solutionrelative:switch\\app.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|c:\\users\\tex\\desktop\\project-is\\somiod\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|solutionrelative:somiod\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|c:\\users\\tex\\desktop\\project-is\\somiod\\controllers\\aplicationscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|solutionrelative:somiod\\controllers\\aplicationscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|C:\\Users\\josem\\source\\repos\\Project-IS\\somiod\\models\\container.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|solutionrelative:somiod\\models\\container.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|c:\\users\\tex\\desktop\\project-is\\somiod\\controllers\\containerscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|solutionrelative:somiod\\controllers\\containerscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_LocalDB__MSSQLLocalDB/C__USERS_TEX_DESKTOP_PROJECT_IS_SOMIOD_APP_DATA_DATABASE.MDF/True/SqlTable/dbo.Application.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_LocalDB__MSSQLLocalDB/C__USERS_TEX_DESKTOP_PROJECT_IS_SOMIOD_APP_DATA_DATABASE.MDF/True/SqlTable/dbo.Container.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|c:\\users\\tex\\desktop\\project-is\\somiod\\models\\application.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|solutionrelative:somiod\\models\\application.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -39,27 +61,99 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "AplicationsController.cs",
-              "DocumentMoniker": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\Controllers\\AplicationsController.cs",
-              "RelativeDocumentMoniker": "SOMIOD\\Controllers\\AplicationsController.cs",
-              "ToolTip": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\Controllers\\AplicationsController.cs",
-              "RelativeToolTip": "SOMIOD\\Controllers\\AplicationsController.cs",
-              "ViewState": "AgIAAI0AAAAAAAAAAAAwwJMAAAAAAAAAAAAAAA==",
+              "Title": "WebApiConfig.cs",
+              "DocumentMoniker": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\App_Start\\WebApiConfig.cs",
+              "RelativeDocumentMoniker": "SOMIOD\\App_Start\\WebApiConfig.cs",
+              "ToolTip": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\App_Start\\WebApiConfig.cs",
+              "RelativeToolTip": "SOMIOD\\App_Start\\WebApiConfig.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-26T17:14:30.924Z",
+              "WhenOpened": "2024-11-26T18:19:33.024Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "Container.cs",
-              "DocumentMoniker": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\Models\\Container.cs",
-              "RelativeDocumentMoniker": "SOMIOD\\Models\\Container.cs",
-              "ToolTip": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\Models\\Container.cs",
-              "RelativeToolTip": "SOMIOD\\Models\\Container.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAABAAAAAAAAAA==",
+              "Title": "App.config",
+              "DocumentMoniker": "C:\\Users\\Tex\\Desktop\\Project-IS\\Switch\\App.config",
+              "RelativeDocumentMoniker": "Switch\\App.config",
+              "ToolTip": "C:\\Users\\Tex\\Desktop\\Project-IS\\Switch\\App.config",
+              "RelativeToolTip": "Switch\\App.config",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2024-11-26T18:19:30.005Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Web.config",
+              "DocumentMoniker": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\Web.config",
+              "RelativeDocumentMoniker": "SOMIOD\\Web.config",
+              "ToolTip": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\Web.config",
+              "RelativeToolTip": "SOMIOD\\Web.config",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2024-11-26T18:19:25.558Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "dbo.Container [Data]",
+              "DocumentMoniker": "ViewDataWindow_MSSQL__/_LocalDB__MSSQLLocalDB/C__USERS_TEX_DESKTOP_PROJECT_IS_SOMIOD_APP_DATA_DATABASE.MDF/True/SqlTable/dbo.Container.sql",
+              "ToolTip": "dbo.Container [Data]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2024-11-26T18:11:13.06Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Application.cs",
+              "DocumentMoniker": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\Models\\Application.cs",
+              "RelativeDocumentMoniker": "SOMIOD\\Models\\Application.cs",
+              "ToolTip": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\Models\\Application.cs",
+              "RelativeToolTip": "SOMIOD\\Models\\Application.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-26T10:44:35.22Z",
+              "WhenOpened": "2024-11-26T17:56:10.413Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "dbo.Application [Data]",
+              "DocumentMoniker": "ViewDataWindow_MSSQL__/_LocalDB__MSSQLLocalDB/C__USERS_TEX_DESKTOP_PROJECT_IS_SOMIOD_APP_DATA_DATABASE.MDF/True/SqlTable/dbo.Application.sql",
+              "ToolTip": "dbo.Application [Data]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2024-11-26T17:52:23.846Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ContainersController.cs",
+              "DocumentMoniker": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\Controllers\\ContainersController.cs",
+              "RelativeDocumentMoniker": "SOMIOD\\Controllers\\ContainersController.cs",
+              "ToolTip": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\Controllers\\ContainersController.cs",
+              "RelativeToolTip": "SOMIOD\\Controllers\\ContainersController.cs",
+              "ViewState": "AgIAANUAAAAAAAAAAAAowMcAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-26T17:50:44.285Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AplicationsController.cs",
+              "DocumentMoniker": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\Controllers\\AplicationsController.cs",
+              "RelativeDocumentMoniker": "SOMIOD\\Controllers\\AplicationsController.cs",
+              "ToolTip": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\Controllers\\AplicationsController.cs",
+              "RelativeToolTip": "SOMIOD\\Controllers\\AplicationsController.cs",
+              "ViewState": "AgIAAP4AAAAAAAAAAAAswOcAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-26T17:14:30.924Z",
               "EditorCaption": ""
             }
           ]

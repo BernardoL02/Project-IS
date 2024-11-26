@@ -14,11 +14,11 @@ namespace SOMIOD.Controllers
 {
     public class AplicationsController : ApiController
     {
-        string strConnection = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\josem\source\repos\Project-IS\SOMIOD\App_Data\Database.mdf;Integrated Security=True";
+        string strConnection = System.Configuration.ConfigurationManager.ConnectionStrings["SOMIOD.Properties.Settings.ConnectionToDB"].ConnectionString;
 
 
         [HttpGet]
-        [Route("api/applications")]
+        [Route("api/somiod/applications")]
         public IEnumerable<Application> GetAllApplications()
         {
             List<Application> applications = new List<Application>();
@@ -57,7 +57,7 @@ namespace SOMIOD.Controllers
 
 
         [HttpGet]
-        [Route("api/applications/{id:int}")]
+        [Route("api/somiod/applications/{id:int}")]
         public IHttpActionResult GetApplication(int id)
         {
             Application application = null;
@@ -101,7 +101,7 @@ namespace SOMIOD.Controllers
 
 
         [HttpGet]
-        [Route("api/applications/{id:int}/containers")]
+        [Route("api/somiod/applications/{id:int}/containers")]
         public IEnumerable<Container> GetApplicationContainers(int id)
         {
             List<Container> containers = new List<Container>();
@@ -141,7 +141,7 @@ namespace SOMIOD.Controllers
         }
 
         [HttpPost]
-        [Route("api/applications")]
+        [Route("api/somiod/applications")]
         public IHttpActionResult PostApplication([FromBody] Application newApp)
         {
             SqlConnection conn = null;
@@ -157,7 +157,7 @@ namespace SOMIOD.Controllers
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand command = new SqlCommand("INSERT INTO Application(Name) VALUES(@name)", conn);
+                SqlCommand command = new SqlCommand("INSERT INTO Application (Name) VALUES(@name)", conn);
                 command.Parameters.AddWithValue("@name", newApp.Name);
 
                 afectedRows = command.ExecuteNonQuery();
@@ -184,7 +184,7 @@ namespace SOMIOD.Controllers
 
 
         [HttpPut]
-        [Route("api/applications/{id:int}")]
+        [Route("api/somiod/applications/{id:int}")]
         public IHttpActionResult PutApplication(int id, [FromBody] Application app)
         {
             SqlConnection conn = null;
@@ -229,7 +229,7 @@ namespace SOMIOD.Controllers
 
 
         [HttpDelete]
-        [Route("api/applications/{id:int}")]
+        [Route("api/somiod/applications/{id:int}")]
         public IHttpActionResult DeleteApplication(int id)
         {
             Application app = null;
@@ -258,7 +258,7 @@ namespace SOMIOD.Controllers
 
                 if (app == null)
                 {
-                    return BadRequest("Error deleting a product!!!");
+                    return BadRequest("Error deleting a application!!!");
                 }
 
                 SqlCommand deleteCmd = new SqlCommand("DELETE FROM Application WHERE id = @id", conn);

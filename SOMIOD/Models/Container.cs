@@ -12,6 +12,5 @@ namespace SOMIOD.Models
         public DateTime CreationDateTime { get; set; }
         public int Parent { get; set; } 
 
-        public Application Application { get; set; }
     }
 }
