@@ -113,7 +113,7 @@ namespace SOMIOD.Controllers
             int nrows = 0;
             SqlConnection conn = null;
 
-            if (container == null || string.IsNullOrEmpty(container.Name))
+            if (container == null || string.IsNullOrEmpty(container.Name) || container.Parent <= 0)
             {
                 return BadRequest("You need to provide the container info");
             }
