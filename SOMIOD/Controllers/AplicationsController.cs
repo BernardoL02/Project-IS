@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.Results;
 using SOMIOD.Models;
 using static System.Net.Mime.MediaTypeNames;
 using Application = SOMIOD.Models.Application;
@@ -77,7 +79,7 @@ namespace SOMIOD.Controllers
                         {
                             Id = reader.GetInt32(0),
                             Name = reader.GetString(1),
-                            CreationDateTime = DateTime.Parse(reader.GetString(2)),
+                            CreationDateTime = reader.GetDateTime(2),
                         };
                     }
                 }
@@ -140,7 +142,7 @@ namespace SOMIOD.Controllers
 
         [HttpPost]
         [Route("api/applications")]
-        public IHttpActionResult PostProduct([FromBody] Application newApp)
+        public IHttpActionResult PostApplication([FromBody] Application newApp)
         {
             SqlConnection conn = null;
             int afectedRows;
@@ -155,9 +157,8 @@ namespace SOMIOD.Controllers
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand command = new SqlCommand("INSERT INTO Application(Name,CreationDateTime) VALUES(@name,@creationDateTime)", conn);
+                SqlCommand command = new SqlCommand("INSERT INTO Application(Name) VALUES(@name)", conn);
                 command.Parameters.AddWithValue("@name", newApp.Name);
-                command.Parameters.AddWithValue("@creationDateTime", newApp.CreationDateTime);
 
                 afectedRows = command.ExecuteNonQuery();
             }
@@ -173,7 +174,7 @@ namespace SOMIOD.Controllers
 
             if (afectedRows > 0)
             {
-                return Ok(newApp);
+                return StatusCode(HttpStatusCode.Created);
             }
             else
             {
@@ -182,7 +183,101 @@ namespace SOMIOD.Controllers
         }
 
 
+        [HttpPut]
+        [Route("api/applications/{id:int}")]
+        public IHttpActionResult PutApplication(int id, [FromBody] Application app)
+        {
+            SqlConnection conn = null;
+            int afectedRows;
 
+            if (app == null)
+            {
+                return BadRequest("Invalid application data.");
+            }
+
+            try
+            {
+                conn = new SqlConnection(strConnection);
+                conn.Open();
+
+                SqlCommand command = new SqlCommand("UPDATE Application SET Name = @name, CreationDateTime = @creationDateTime WHERE Id = @id", conn);
+                command.Parameters.AddWithValue("@id", id);
+                command.Parameters.AddWithValue("@name", app.Name);
+                command.Parameters.AddWithValue("@creationDateTime", app.CreationDateTime);
+
+                afectedRows = command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest("Error updating a new application!!!");
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            if (afectedRows > 0)
+            {
+                return GetApplication(id);
+            }
+            else
+            {
+                return BadRequest("Error updating a new application!!!");
+            }
+        }
+
+
+        [HttpDelete]
+        [Route("api/applications/{id:int}")]
+        public IHttpActionResult DeleteApplication(int id)
+        {
+            Application app = null;
+            SqlConnection conn = null;
+
+            try
+            {
+                conn = new SqlConnection(strConnection);
+                conn.Open();
+
+                SqlCommand selectCmd = new SqlCommand("SELECT * FROM Application WHERE id = @id", conn);
+                selectCmd.Parameters.AddWithValue("@id", id);
+
+                SqlDataReader reader = selectCmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    app = new Application
+                    {
+                        Id = reader.GetInt32(0),
+                        Name = reader.GetString(1),
+                        CreationDateTime = reader.GetDateTime(2),
+                    };
+                }
+
+                reader.Close();
+
+                if (app == null)
+                {
+                    return BadRequest("Error deleting a product!!!");
+                }
+
+                SqlCommand deleteCmd = new SqlCommand("DELETE FROM Application WHERE id = @id", conn);
+                deleteCmd.Parameters.AddWithValue("@id", id);
+                deleteCmd.ExecuteNonQuery();
+
+                conn.Close();
+            }
+            catch (Exception)
+            {
+                if (conn.State == System.Data.ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                throw;
+            }
+
+            return Ok(app);
+        }
 
     }
 }
