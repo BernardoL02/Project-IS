@@ -15,7 +15,5 @@ namespace SOMIOD.Models
         public string Endpoint { get; set; }
         public bool Enabled { get; set; }
 
-        public Container Container { get; set; }
-
     }
 }

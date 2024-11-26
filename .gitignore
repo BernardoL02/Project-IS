@@ -1,0 +1,16 @@
+# Ignore Visual Studio-related files
+.vs/
+
+# Ignore build outputs
+bin/
+obj/
+
+# Ignore user-specific files
+*.suo
+
+# Ignore debug symbols and cache
+*.pdb
+*.cache
+
+# Ignore backup files
+*.backup.json

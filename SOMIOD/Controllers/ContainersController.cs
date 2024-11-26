@@ -24,7 +24,7 @@ namespace SOMIOD.Controllers
                 conn = new SqlConnection(connectionString);
                 conn.Open();
 
-                SqlCommand cmd = new SqlCommand("SELECT * FROM Containers ORDER BY Id", conn);
+                SqlCommand cmd = new SqlCommand("SELECT * FROM Container ORDER BY Id", conn);
                 SqlDataReader reader = cmd.ExecuteReader();
 
                 while (reader.Read())

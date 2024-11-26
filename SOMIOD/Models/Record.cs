@@ -12,7 +12,5 @@ namespace SOMIOD.Models
         public string Content { get; set; }
         public DateTime CreationDateTime { get; set; }
         public int Parent { get; set; }
-
-        public Container Container { get; set; }
     }
 }

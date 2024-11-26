@@ -12,8 +12,7 @@ namespace SOMIOD.Controllers
 {
     public class AplicationsController : ApiController
     {
-        string strConnection = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\josem\source\repos\Project-IS\SOMIOD\App_Data\Database.mdf;Integrated Security=True";
-
+        string strConnection = System.Configuration.ConfigurationManager.ConnectionStrings["SOMIOD.Properties.Settings.ConnectionToDB"].ConnectionString;
 
         [HttpGet]
         [Route("api/applications")]
@@ -140,10 +139,10 @@ namespace SOMIOD.Controllers
 
         [HttpPost]
         [Route("api/applications")]
-        public IHttpActionResult PostProduct([FromBody] Application newApp)
+        public IHttpActionResult PostApplication([FromBody] Application newApp)
         {
             SqlConnection conn = null;
-            int afectedRows;
+            int newApplicationId = 0;
 
             if (newApp == null || string.IsNullOrEmpty(newApp.Name))
             {
@@ -155,11 +154,14 @@ namespace SOMIOD.Controllers
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand command = new SqlCommand("INSERT INTO Application(Name,CreationDateTime) VALUES(@name,@creationDateTime)", conn);
-                command.Parameters.AddWithValue("@name", newApp.Name);
-                command.Parameters.AddWithValue("@creationDateTime", newApp.CreationDateTime);
+                // Use SELECT SCOPE_IDENTITY() to get the last inserted ID
+                SqlCommand command = new SqlCommand("INSERT INTO Application(Name) VALUES(@name)",conn);
 
-                afectedRows = command.ExecuteNonQuery();
+                // Add parameters to prevent SQL injection
+                command.Parameters.AddWithValue("@name", newApp.Name);
+
+                // Execute the query and get the inserted ID
+                newApplicationId = Convert.ToInt32(command.ExecuteScalar());
             }
             catch (Exception ex)
             {
@@ -171,8 +173,9 @@ namespace SOMIOD.Controllers
                 conn.Close();
             }
 
-            if (afectedRows > 0)
+            if (newApplicationId > 0)
             {
+                newApp.Id = newApplicationId;  // Assuming the Application model has an Id property
                 return Ok(newApp);
             }
             else
@@ -180,7 +183,6 @@ namespace SOMIOD.Controllers
                 return BadRequest("Error inserting a new application!!!");
             }
         }
-
 
 
 
