@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Tex\\Desktop\\Project-IS\\",
+  "WorkspaceRootPath": "C:\\Users\\josem\\source\\repos\\Project-IS\\",
   "Documents": [
     {
       "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|c:\\users\\tex\\desktop\\project-is\\somiod\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
@@ -70,13 +70,39 @@
               "$type": "Document",
               "DocumentIndex": 2,
               "Title": "Container.cs",
-              "DocumentMoniker": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\Models\\Container.cs",
+              "DocumentMoniker": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\Models\\Container.cs",
               "RelativeDocumentMoniker": "SOMIOD\\Models\\Container.cs",
-              "ToolTip": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\Models\\Container.cs",
+              "ToolTip": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\Models\\Container.cs",
               "RelativeToolTip": "SOMIOD\\Models\\Container.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-26T10:44:35.22Z",
+              "WhenOpened": "2024-11-26T12:44:52.478Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Application.cs",
+              "DocumentMoniker": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\Models\\Application.cs",
+              "RelativeDocumentMoniker": "SOMIOD\\Models\\Application.cs",
+              "ToolTip": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\Models\\Application.cs",
+              "RelativeToolTip": "SOMIOD\\Models\\Application.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAsAAAA3AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-26T11:26:22.21Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "AplicationsController.cs",
+              "DocumentMoniker": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\Controllers\\AplicationsController.cs",
+              "RelativeDocumentMoniker": "SOMIOD\\Controllers\\AplicationsController.cs",
+              "ToolTip": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\Controllers\\AplicationsController.cs",
+              "RelativeToolTip": "SOMIOD\\Controllers\\AplicationsController.cs",
+              "ViewState": "AgIAAIYAAAAAAAAAAAAgwIsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-26T11:19:20.876Z",
               "EditorCaption": ""
             }
           ]
