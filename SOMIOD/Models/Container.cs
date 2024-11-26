@@ -10,7 +10,7 @@ namespace SOMIOD.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public DateTime CreationDateTime { get; set; }
-        public int Parent { get; set; }
+        public int Parent { get; set; } 
 
         public Application Application { get; set; }
     }
