@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
+using System.Runtime.Remoting.Messaging;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Results;
@@ -23,7 +24,8 @@ namespace SOMIOD.Controllers
         {
             List<Application> applications = new List<Application>();
             SqlConnection conn = null;
-          
+            SqlDataReader reader = null;
+
             try
             {
                 conn = new SqlConnection(strConnection);
@@ -31,7 +33,7 @@ namespace SOMIOD.Controllers
 
                 SqlCommand command = new SqlCommand("SELECT * FROM Application ORDER BY Id", conn);
 
-                SqlDataReader reader = command.ExecuteReader();
+                reader = command.ExecuteReader();
                 while (reader.Read())
                 {
                     Application application = new Application
@@ -43,13 +45,15 @@ namespace SOMIOD.Controllers
 
                     applications.Add(application);
                 }
-
-                reader.Close();
-                conn.Close();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                reader.Close();
+                conn.Close();
             }
 
             return applications;
@@ -106,16 +110,17 @@ namespace SOMIOD.Controllers
         {
             List<Container> containers = new List<Container>();
             SqlConnection conn = null;
+            SqlDataReader reader = null;
 
             try
             {
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand command = new SqlCommand("SELECT * FROM Containers WHERE Parent = @application_id", conn);
-                command.Parameters.AddWithValue("@id", id);
+                SqlCommand command = new SqlCommand("SELECT * FROM Container WHERE Parent = @application_id", conn);
+                command.Parameters.AddWithValue("@application_id", id);
 
-                SqlDataReader reader = command.ExecuteReader();
+                reader = command.ExecuteReader();
                 while (reader.Read())
                 {
                     Container container = new Container
@@ -135,6 +140,11 @@ namespace SOMIOD.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                reader.Close();
+                conn.Close();
             }
 
             return containers;
@@ -190,7 +200,7 @@ namespace SOMIOD.Controllers
             SqlConnection conn = null;
             int afectedRows;
 
-            if (app == null)
+            if (app == null || string.IsNullOrEmpty(app.Name) || app.CreationDateTime == null)
             {
                 return BadRequest("Invalid application data.");
             }
@@ -208,8 +218,7 @@ namespace SOMIOD.Controllers
                 afectedRows = command.ExecuteNonQuery();
             }
             catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
+            {               
                 return BadRequest("Error updating a new application!!!");
             }
             finally
@@ -219,7 +228,7 @@ namespace SOMIOD.Controllers
 
             if (afectedRows > 0)
             {
-                return GetApplication(id);
+                return GetApplication(app.Id);
             }
             else
             {
@@ -264,16 +273,14 @@ namespace SOMIOD.Controllers
                 SqlCommand deleteCmd = new SqlCommand("DELETE FROM Application WHERE id = @id", conn);
                 deleteCmd.Parameters.AddWithValue("@id", id);
                 deleteCmd.ExecuteNonQuery();
-
-                conn.Close();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                if (conn.State == System.Data.ConnectionState.Open)
-                {
-                    conn.Close();
-                }
-                throw;
+                return BadRequest("Error deleting a new application!!!");
+            }
+            finally
+            {
+                conn.Close();
             }
 
             return Ok(app);
