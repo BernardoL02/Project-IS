@@ -1,14 +1,18 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\josem\\source\\repos\\Project-IS\\",
+  "WorkspaceRootPath": "C:\\Users\\Tex\\Desktop\\Project-IS\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|c:\\users\\josem\\source\\repos\\project-is\\somiod\\controllers\\aplicationscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|c:\\users\\tex\\desktop\\project-is\\somiod\\controllers\\aplicationscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|solutionrelative:somiod\\controllers\\aplicationscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|C:\\Users\\josem\\source\\repos\\Project-IS\\somiod\\controllers\\containerscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|solutionrelative:somiod\\controllers\\containerscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|c:\\users\\tex\\desktop\\project-is\\somiod\\models\\record.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|solutionrelative:somiod\\models\\record.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|C:\\Users\\Tex\\Desktop\\Project-IS\\somiod\\app_start\\webapiconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|solutionrelative:somiod\\app_start\\webapiconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,7 +22,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Bookmark",
@@ -38,28 +42,42 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "AplicationsController.cs",
-              "DocumentMoniker": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\Controllers\\AplicationsController.cs",
-              "RelativeDocumentMoniker": "SOMIOD\\Controllers\\AplicationsController.cs",
-              "ToolTip": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\Controllers\\AplicationsController.cs",
-              "RelativeToolTip": "SOMIOD\\Controllers\\AplicationsController.cs",
-              "ViewState": "AgIAAEgAAAAAAAAAAAAowFwAAAAgAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "Record.cs",
+              "DocumentMoniker": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\Models\\Record.cs",
+              "RelativeDocumentMoniker": "SOMIOD\\Models\\Record.cs",
+              "ToolTip": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\Models\\Record.cs",
+              "RelativeToolTip": "SOMIOD\\Models\\Record.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-26T20:18:06.982Z",
+              "WhenOpened": "2024-11-28T22:43:58.217Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "ContainersController.cs",
-              "DocumentMoniker": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\Controllers\\ContainersController.cs",
-              "RelativeDocumentMoniker": "SOMIOD\\Controllers\\ContainersController.cs",
-              "ToolTip": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\Controllers\\ContainersController.cs",
-              "RelativeToolTip": "SOMIOD\\Controllers\\ContainersController.cs",
-              "ViewState": "AgIAAHUAAAAAAAAAAAAawIoAAAANAAAAAAAAAA==",
+              "DocumentIndex": 2,
+              "Title": "WebApiConfig.cs",
+              "DocumentMoniker": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\App_Start\\WebApiConfig.cs",
+              "RelativeDocumentMoniker": "SOMIOD\\App_Start\\WebApiConfig.cs",
+              "ToolTip": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\App_Start\\WebApiConfig.cs",
+              "RelativeToolTip": "SOMIOD\\App_Start\\WebApiConfig.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAABwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-26T17:50:44.285Z"
+              "WhenOpened": "2024-11-28T19:29:53.71Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AplicationsController.cs",
+              "DocumentMoniker": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\Controllers\\AplicationsController.cs",
+              "RelativeDocumentMoniker": "SOMIOD\\Controllers\\AplicationsController.cs",
+              "ToolTip": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\Controllers\\AplicationsController.cs",
+              "RelativeToolTip": "SOMIOD\\Controllers\\AplicationsController.cs",
+              "ViewState": "AgIAAKkAAAAAAAAAAAAIwLoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-26T20:18:06.982Z",
+              "EditorCaption": ""
             }
           ]
         }

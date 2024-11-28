@@ -5,75 +5,91 @@ using System.Linq;
 using System.Net;
 using System.Runtime.Remoting.Messaging;
 using System.Web;
+using System.Web.Hosting;
 using System.Web.Http;
 using System.Web.Http.Results;
+using System.Xml.Linq;
 using SOMIOD.Models;
 using static System.Net.Mime.MediaTypeNames;
 using Application = SOMIOD.Models.Application;
-
+using System.Xml;
 namespace SOMIOD.Controllers
 {
     public class AplicationsController : ApiController
     {
         string strConnection = System.Configuration.ConfigurationManager.ConnectionStrings["SOMIOD.Properties.Settings.ConnectionToDB"].ConnectionString;
 
-
         [HttpGet]
-        [Route("api/somiod/applications")]
-        public IEnumerable<Application> GetAllApplications()
+        [Route("api/somiod")]
+        public IHttpActionResult GetApplications()
         {
-            List<Application> applications = new List<Application>();
+            IEnumerable<string> headerValues;
+            string headerValue = null;
+
+            if (Request.Headers.TryGetValues("H", out headerValues))
+            {
+                headerValue = headerValues.FirstOrDefault()?.ToUpper();
+            }
+
+            List<Application> applicationList = new List<Application>();
             SqlConnection conn = null;
-            SqlDataReader reader = null;
 
             try
             {
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand command = new SqlCommand("SELECT * FROM Application ORDER BY Id", conn);
+                SqlCommand command = new SqlCommand($"SELECT name FROM {headerValue}", conn);
 
-                reader = command.ExecuteReader();
-                while (reader.Read())
+                using (SqlDataReader reader = command.ExecuteReader())
                 {
-                    Application application = new Application
+                    while (reader.Read())
                     {
-                        Id = (int)reader["Id"],
-                        Name = (string)reader["Name"],
-                        CreationDateTime = (DateTime)reader["CreationDateTime"]
-                    };
-
-                    applications.Add(application);
+                        applicationList.Add(new Application
+                        {
+                            Name = (string)reader["Name"]
+                        });
+                    }
                 }
+
+                conn.Close();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-            }
-            finally
-            {
-                reader.Close();
-                conn.Close();
+                return InternalServerError(ex);
             }
 
-            return applications;
+            if (applicationList.Count == 0)
+            {
+                return NotFound();
+            }
+
+            return Content(System.Net.HttpStatusCode.OK, HandlerXML.responseApplications(applicationList), Configuration.Formatters.XmlFormatter);
         }
 
-
         [HttpGet]
-        [Route("api/somiod/applications/{id:int}")]
-        public IHttpActionResult GetApplication(int id)
+        [Route("api/somiod/{name}")]
+        public IHttpActionResult GetContainers(string name)
         {
+            IEnumerable<string> headerValues;
+            string headerValue = null;
+
+            if (Request.Headers.TryGetValues("H", out headerValues))
+            {
+                headerValue = headerValues.FirstOrDefault().ToUpper();
+            }
+
             Application application = null;
             SqlConnection conn = null;
-
+            
             try
             {
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand command = new SqlCommand("SELECT * FROM Application WHERE id = @id", conn);
-                command.Parameters.AddWithValue("@id", id);
+                SqlCommand command = new SqlCommand($"SELECT * FROM {headerValue} WHERE name = @name", conn);
+                command.Parameters.AddWithValue("@name", name);
 
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
@@ -151,47 +167,62 @@ namespace SOMIOD.Controllers
         }
 
         [HttpPost]
-        [Route("api/somiod/applications")]
-        public IHttpActionResult PostApplication([FromBody] Application newApp)
+        [Route("api/somiod")]
+        public IHttpActionResult PostApplication([FromBody] XElement applicationXml)
         {
-            SqlConnection conn = null;
-            int afectedRows;
 
-            if (newApp == null || string.IsNullOrEmpty(newApp.Name))
+            IEnumerable<string> headerValues;
+            SqlConnection conn = null;
+            int nRows;
+            string headerValue = null;
+
+            if (Request.Headers.TryGetValues("H", out headerValues))
             {
-                return BadRequest("Invalid application data.");
+                headerValue = headerValues.FirstOrDefault().ToUpper();
+            }
+
+            if (applicationXml == null)
+            {
+                return BadRequest("Invalid XML body.");
             }
 
             try
             {
+                var application = new
+                {
+                    Name = applicationXml.Element("name")?.Value
+                };
+
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand command = new SqlCommand("INSERT INTO Application (Name) VALUES(@name)", conn);
-                command.Parameters.AddWithValue("@name", newApp.Name);
+                SqlCommand command = new SqlCommand($"INSERT INTO {headerValue}(Name) VALUES (@name)", conn);
+                command.Parameters.AddWithValue("@name", application.Name);
 
-                afectedRows = command.ExecuteNonQuery();
+                nRows = command.ExecuteNonQuery();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return BadRequest("Error inserting a new application!!!");
+                return BadRequest("Error creating application.");
             }
             finally
             {
-                conn.Close();
+                if (conn != null)
+                {
+                    conn.Close();
+                }
             }
 
-            if (afectedRows > 0)
+            if (nRows > 0)
             {
                 return StatusCode(HttpStatusCode.Created);
             }
             else
             {
-                return BadRequest("Error inserting a new application!!!");
+                return BadRequest("Error creating application.");
             }
         }
-
 
         [HttpPut]
         [Route("api/somiod/applications/{id:int}")]
@@ -228,7 +259,7 @@ namespace SOMIOD.Controllers
 
             if (afectedRows > 0)
             {
-                return GetApplication(app.Id);
+                return GetApplications();
             }
             else
             {
