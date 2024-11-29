@@ -17,6 +17,7 @@ namespace SOMIOD.Controllers
 {
     public class AplicationsController : ApiController
     {
+        //Declarar a string com o nome do file da bd
         string strConnection = System.Configuration.ConfigurationManager.ConnectionStrings["SOMIOD.Properties.Settings.ConnectionToDB"].ConnectionString;
 
         [HttpGet]
@@ -24,15 +25,14 @@ namespace SOMIOD.Controllers
         public IHttpActionResult GetApplications()
         {
             IEnumerable<string> headerValues;
+            List<Application> applicationList = new List<Application>();
             string headerValue = null;
+            SqlConnection conn = null;
 
             if (Request.Headers.TryGetValues("H", out headerValues))
             {
-                headerValue = headerValues.FirstOrDefault()?.ToUpper();
+                headerValue = headerValues.FirstOrDefault()?.ToUpper(); // GET ao nome da tabela que vem no header
             }
-
-            List<Application> applicationList = new List<Application>();
-            SqlConnection conn = null;
 
             try
             {
@@ -69,18 +69,71 @@ namespace SOMIOD.Controllers
         }
 
         [HttpGet]
-        [Route("api/somiod/{name}")]
-        public IHttpActionResult GetContainers(string name)
+        [Route("api/somiod/{Name}")]
+        public IHttpActionResult GetApplication(string Name)
         {
             IEnumerable<string> headerValues;
             string headerValue = null;
 
             if (Request.Headers.TryGetValues("H", out headerValues))
             {
-                headerValue = headerValues.FirstOrDefault().ToUpper();
+                headerValue = headerValues.FirstOrDefault()?.ToUpper();
             }
 
-            Application application = null;
+            List<Application> applicationList = new List<Application>();
+            SqlConnection conn = null;
+
+            try
+            {
+                conn = new SqlConnection(strConnection);
+                conn.Open();
+
+                SqlCommand command = new SqlCommand($"SELECT * FROM {headerValue}", conn);
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        applicationList.Add(new Application
+                        {
+                            Id = (int)reader["Id"],
+                            Name = (string)reader["Name"],
+                            CreationDateTime = (DateTime)reader["CreationDateTime"]
+                        });
+                    }
+                }
+
+                conn.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return InternalServerError(ex);
+            }
+
+            if (applicationList.Count == 0)
+            {
+                return NotFound();
+            }
+
+            return Content(System.Net.HttpStatusCode.OK, HandlerXML.responseApplications(applicationList), Configuration.Formatters.XmlFormatter);
+        }
+
+        /*[HttpGet]
+        [Route("api/somiod/{appName}")]
+        public IHttpActionResult GetApplicationContainers(string appName)
+        {
+            IEnumerable<string> headerValues;
+            string tableCont = null;
+            int appId;
+
+            if (Request.Headers.TryGetValues("H", out headerValues))
+            {
+                    tableCont =  headerValues.FirstOrDefault()?.ToUpper();
+                
+            }
+
+            List<Container> containerList = new List<Container>();
             SqlConnection conn = null;
             
             try
@@ -88,19 +141,27 @@ namespace SOMIOD.Controllers
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand command = new SqlCommand($"SELECT * FROM {headerValue} WHERE name = @name", conn);
-                command.Parameters.AddWithValue("@name", name);
+                SqlCommand command = new SqlCommand("SELECT id FROM Application WHERE name = @name", conn);
+                command.Parameters.AddWithValue("@name", appName);
 
-                using (SqlDataReader reader = command.ExecuteReader())
+                object res = command.ExecuteScalar();
+
+                if (res == null || !int.TryParse(res.ToString(), out appId))
                 {
-                    if (reader.Read())
+                    return NotFound();
+                }
+
+                SqlCommand cmd = new SqlCommand($"SELECT name FROM {tableCont} WHERE parent = @id", conn);
+                cmd.Parameters.AddWithValue("@id", appId);
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
                     {
-                        application = new Application
+                        containerList.Add(new Container
                         {
-                            Id = reader.GetInt32(0),
-                            Name = reader.GetString(1),
-                            CreationDateTime = reader.GetDateTime(2),
-                        };
+                            Name = (string)reader["name"]
+                        });
                     }
                 }
 
@@ -110,61 +171,19 @@ namespace SOMIOD.Controllers
             {
                 Console.WriteLine(ex.Message);
             }
+            finally
+            {
+               
+                conn.Close();
+            }
 
-            if (application == null)
+            if (containerList.Count == 0)
             {
                 return NotFound();
             }
 
-            return Ok(application);
-        }
-
-
-        [HttpGet]
-        [Route("api/somiod/applications/{id:int}/containers")]
-        public IEnumerable<Container> GetApplicationContainers(int id)
-        {
-            List<Container> containers = new List<Container>();
-            SqlConnection conn = null;
-            SqlDataReader reader = null;
-
-            try
-            {
-                conn = new SqlConnection(strConnection);
-                conn.Open();
-
-                SqlCommand command = new SqlCommand("SELECT * FROM Container WHERE Parent = @application_id", conn);
-                command.Parameters.AddWithValue("@application_id", id);
-
-                reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    Container container = new Container
-                    {
-                        Id = (int)reader["Id"],
-                        Name = (string)reader["Name"],
-                        CreationDateTime = (DateTime)reader["CreationDateTime"],
-                        Parent = (int)reader["Parent"]
-                    };
-
-                    containers.Add(container);
-                }
-
-                reader.Close();
-                conn.Close();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            finally
-            {
-                reader.Close();
-                conn.Close();
-            }
-
-            return containers;
-        }
+            return Content(System.Net.HttpStatusCode.OK, HandlerXML.responseContainers(containerList), Configuration.Formatters.XmlFormatter);
+        }*/
 
         [HttpPost]
         [Route("api/somiod")]
@@ -225,63 +244,104 @@ namespace SOMIOD.Controllers
         }
 
         [HttpPut]
-        [Route("api/somiod/applications/{id:int}")]
-        public IHttpActionResult PutApplication(int id, [FromBody] Application app)
+        [Route("api/somiod/{appName}")]
+        public IHttpActionResult PutApplication(string appName, [FromBody] XElement applicationXml)
         {
-            SqlConnection conn = null;
-            int afectedRows;
-
-            if (app == null || string.IsNullOrEmpty(app.Name) || app.CreationDateTime == null)
+            if (applicationXml == null)
             {
                 return BadRequest("Invalid application data.");
             }
 
-            try
+            IEnumerable<string> headerValues;
+            string headerValue = null;
+            if (Request.Headers.TryGetValues("H", out headerValues))
             {
-                conn = new SqlConnection(strConnection);
-                conn.Open();
-
-                SqlCommand command = new SqlCommand("UPDATE Application SET Name = @name, CreationDateTime = @creationDateTime WHERE Id = @id", conn);
-                command.Parameters.AddWithValue("@id", id);
-                command.Parameters.AddWithValue("@name", app.Name);
-                command.Parameters.AddWithValue("@creationDateTime", app.CreationDateTime);
-
-                afectedRows = command.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {               
-                return BadRequest("Error updating a new application!!!");
-            }
-            finally
-            {
-                conn.Close();
+                headerValue = headerValues.FirstOrDefault()?.ToUpper();
             }
 
-            if (afectedRows > 0)
+            if (string.IsNullOrEmpty(headerValue))
             {
-                return GetApplications();
+                return BadRequest("Missing or invalid header value.");
             }
-            else
+
+            string applicationName = applicationXml.Element("name")?.Value;
+            if (string.IsNullOrEmpty(applicationName))
             {
-                return BadRequest("Error updating a new application!!!");
+                return BadRequest("Application XML must contain a valid 'name' element.");
+            }
+
+            using (SqlConnection conn = new SqlConnection(strConnection))
+            {
+                try
+                {
+                    conn.Open();
+
+                    string updateQuery = $"UPDATE {headerValue} SET Name = @name WHERE Name = @appName";
+                    using (SqlCommand updateCommand = new SqlCommand(updateQuery, conn))
+                    {
+                        updateCommand.Parameters.AddWithValue("@name", applicationName);
+                        updateCommand.Parameters.AddWithValue("@appName", appName);
+
+                        int affectedRows = updateCommand.ExecuteNonQuery();
+                        if (affectedRows == 0)
+                        {
+                            return NotFound();
+                        }
+                    }
+
+                    string selectQuery = $"SELECT * FROM {headerValue} WHERE Name = @name";
+                    using (SqlCommand selectCommand = new SqlCommand(selectQuery, conn))
+                    {
+                        selectCommand.Parameters.AddWithValue("@name", applicationName);
+
+                        using (SqlDataReader reader = selectCommand.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                XElement updatedXml = new XElement("Application", new XElement("Name", reader["Name"]));
+
+                                return Content(System.Net.HttpStatusCode.OK, updatedXml, Configuration.Formatters.XmlFormatter);
+                            }
+                        }
+                    }
+
+                    return NotFound();
+                }
+                catch (Exception ex)
+                {
+                    return InternalServerError(ex);
+                }
+                finally
+                {
+                    if (conn != null)
+                    {
+                        conn.Close();
+                    }
+                }
             }
         }
 
-
         [HttpDelete]
-        [Route("api/somiod/applications/{id:int}")]
-        public IHttpActionResult DeleteApplication(int id)
+        [Route("api/somiod/{appName}")]
+        public IHttpActionResult DeleteApplication(string appName)
         {
+            IEnumerable<string> headerValues;
+            string headerValue = null;
             Application app = null;
             SqlConnection conn = null;
+            
+            if (Request.Headers.TryGetValues("H", out headerValues))
+            {
+                headerValue = headerValues.FirstOrDefault().ToUpper();
+            }
 
             try
             {
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand selectCmd = new SqlCommand("SELECT * FROM Application WHERE id = @id", conn);
-                selectCmd.Parameters.AddWithValue("@id", id);
+                SqlCommand selectCmd = new SqlCommand($"SELECT * FROM {headerValue} WHERE Name = @name", conn);
+                selectCmd.Parameters.AddWithValue("@name", appName);
 
                 SqlDataReader reader = selectCmd.ExecuteReader();
                 if (reader.Read())
@@ -301,8 +361,8 @@ namespace SOMIOD.Controllers
                     return BadRequest("Error deleting a application!!!");
                 }
 
-                SqlCommand deleteCmd = new SqlCommand("DELETE FROM Application WHERE id = @id", conn);
-                deleteCmd.Parameters.AddWithValue("@id", id);
+                SqlCommand deleteCmd = new SqlCommand($"DELETE FROM {headerValue} WHERE Name = @name", conn);
+                deleteCmd.Parameters.AddWithValue("@name", appName);
                 deleteCmd.ExecuteNonQuery();
             }
             catch (Exception ex)
@@ -314,7 +374,7 @@ namespace SOMIOD.Controllers
                 conn.Close();
             }
 
-            return Ok(app);
+            return Content(System.Net.HttpStatusCode.OK, app, Configuration.Formatters.XmlFormatter);
         }
 
     }
