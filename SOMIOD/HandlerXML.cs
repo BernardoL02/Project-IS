@@ -31,6 +31,48 @@ namespace SOMIOD
             return xmlDoc;
         }
 
+        public static XmlDocument responseContainers(List<string> names)
+        {
+            var xmlDoc = new XmlDocument();
+            var applicationNode = xmlDoc.CreateElement("Application");
+
+            foreach (var name in names)
+            {
+                var rootElement = xmlDoc.CreateElement("Container");
+                applicationNode.AppendChild(rootElement);
+                var nameElement = xmlDoc.CreateElement("Name");
+                nameElement.InnerText = name;
+                rootElement.AppendChild(nameElement);
+                
+            }
+
+            xmlDoc.AppendChild(applicationNode);
+            return xmlDoc;
+        }
+
+        public static XmlDocument responseApplication(Application application)
+        {
+            var xmlDoc = new XmlDocument();
+
+            var applicationNode = xmlDoc.CreateElement("Application");
+
+            var idNode = xmlDoc.CreateElement("Id");
+            idNode.InnerText = application.Id.ToString();
+            applicationNode.AppendChild(idNode);
+
+            var nameNode = xmlDoc.CreateElement("Name");
+            nameNode.InnerText = application.Name;
+            applicationNode.AppendChild(nameNode);
+
+            var creationDateNode = xmlDoc.CreateElement("CreationDateTime");
+            creationDateNode.InnerText = application.CreationDateTime.ToString("o");
+            applicationNode.AppendChild(creationDateNode);
+
+            xmlDoc.AppendChild(applicationNode);
+
+            return xmlDoc;
+        }
+
 
         public static XmlDocument responseContainers(List<Container> containersList)
         {

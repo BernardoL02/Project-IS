@@ -13,12 +13,122 @@ using SOMIOD.Models;
 using static System.Net.Mime.MediaTypeNames;
 using Application = SOMIOD.Models.Application;
 using System.Xml;
+using System.IO;
+using System.Xml.Serialization;
 namespace SOMIOD.Controllers
 {
     public class AplicationsController : ApiController
     {
         //Declarar a string com o nome do file da bd
         string strConnection = System.Configuration.ConfigurationManager.ConnectionStrings["SOMIOD.Properties.Settings.ConnectionToDB"].ConnectionString;
+
+        #region CRUD GET GERAL
+        [HttpGet] // é preciso o somiod locate
+        [Route("api/somiod/{application}")]
+
+        public IHttpActionResult GetContainerSubscriptionDataByApplicationName(string application)
+        {
+            IEnumerable<string> headerValues;
+            string somiodLocateHeaderValue = null;
+
+
+            if (Request.Headers.TryGetValues("somiod-locate", out headerValues))
+            {
+                somiodLocateHeaderValue = headerValues.FirstOrDefault()?.ToUpper();
+            }
+
+            if (string.IsNullOrEmpty(somiodLocateHeaderValue))
+            {
+                try
+                {
+                    List<string> NamesList = new List<string>();
+                    Application applicationInfo = null;
+                    using (SqlConnection conn = new SqlConnection(strConnection))
+                    {
+                        string query = "SELECT id,name,CreationDateTime from Application where name= @application";
+
+                        conn.Open();
+
+                        using (SqlCommand command = new SqlCommand(query, conn))
+                        {
+                            command.Parameters.AddWithValue("@application", application);
+
+                            using (SqlDataReader sqlReader = command.ExecuteReader())
+                            {
+                                while (sqlReader.Read())
+                                {
+                                    applicationInfo = new Application
+                                    {
+                                        Id = sqlReader.GetInt32(0),
+                                        Name = sqlReader.GetString(1),
+                                        CreationDateTime = sqlReader.GetDateTime(2),
+                                    };
+                                }
+                            }
+                        }
+                    }
+
+                    return Content(System.Net.HttpStatusCode.OK, HandlerXML.responseApplication(applicationInfo), Configuration.Formatters.XmlFormatter);
+                }
+                catch (Exception ex)
+                {
+
+                    System.Diagnostics.Debug.WriteLine(ex.ToString());
+                    return BadRequest("Error retrieving application names");
+                }
+            }else{
+
+                try
+                {
+                    List<string> NamesList = new List<string>();
+
+                    using (SqlConnection conn = new SqlConnection(strConnection))
+                    {
+                        string query = null;
+                        if (somiodLocateHeaderValue == "CONTAINER")
+                        {
+                            query = "SELECT Container.name FROM Container JOIN Application ON Container.parent = Application.id WHERE Application.name = @application";
+                            
+                        }
+                        if (somiodLocateHeaderValue == "RECORD")
+                        {
+                            query = "SELECT Record.name FROM Record JOIN container ON Record.parent = container.id JOIN application ON container.parent = application.id WHERE application.name = @application";
+                        }
+                        if (somiodLocateHeaderValue == "NOTIFICATION")
+                        {
+                            query = "SELECT Notification.name FROM Notification JOIN Notification ON Notification.parent = container.id JOIN application ON container.parent = application.id WHERE application.name = @application";
+                        }
+
+                        conn.Open();
+
+                        using (SqlCommand command = new SqlCommand(query, conn))
+                        {
+                            command.Parameters.AddWithValue("@application", application);
+
+                            using (SqlDataReader sqlReader = command.ExecuteReader())
+                            {
+                                while (sqlReader.Read())
+                                {
+                                    string name = sqlReader.GetString(0);
+                                    NamesList.Add(name);
+                                }
+                            }
+                        }
+                    }
+
+                    XmlDocument xmlResponse = HandlerXML.responseContainers(NamesList);
+                      
+                    return Content(System.Net.HttpStatusCode.OK, xmlResponse, Configuration.Formatters.XmlFormatter);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine(ex.ToString());
+                    return BadRequest("Error retrieving names");
+                }
+            }
+        }
+        #endregion
+
 
         [HttpGet]
         [Route("api/somiod")]
@@ -29,7 +139,7 @@ namespace SOMIOD.Controllers
             string headerValue = null;
             SqlConnection conn = null;
 
-            if (Request.Headers.TryGetValues("H", out headerValues))
+            if (Request.Headers.TryGetValues("somiod-locate", out headerValues))
             {
                 headerValue = headerValues.FirstOrDefault()?.ToUpper(); // GET ao nome da tabela que vem no header
             }
@@ -52,138 +162,25 @@ namespace SOMIOD.Controllers
                     }
                 }
 
-                conn.Close();
+
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return InternalServerError(ex);
-            }
-
-            if (applicationList.Count == 0)
-            {
-                return NotFound();
-            }
-
-            return Content(System.Net.HttpStatusCode.OK, HandlerXML.responseApplications(applicationList), Configuration.Formatters.XmlFormatter);
-        }
-
-        [HttpGet]
-        [Route("api/somiod/{Name}")]
-        public IHttpActionResult GetApplication(string Name)
-        {
-            IEnumerable<string> headerValues;
-            string headerValue = null;
-
-            if (Request.Headers.TryGetValues("H", out headerValues))
-            {
-                headerValue = headerValues.FirstOrDefault()?.ToUpper();
-            }
-
-            List<Application> applicationList = new List<Application>();
-            SqlConnection conn = null;
-
-            try
-            {
-                conn = new SqlConnection(strConnection);
-                conn.Open();
-
-                SqlCommand command = new SqlCommand($"SELECT * FROM {headerValue}", conn);
-
-                using (SqlDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        applicationList.Add(new Application
-                        {
-                            Id = (int)reader["Id"],
-                            Name = (string)reader["Name"],
-                            CreationDateTime = (DateTime)reader["CreationDateTime"]
-                        });
-                    }
-                }
-
-                conn.Close();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return InternalServerError(ex);
-            }
-
-            if (applicationList.Count == 0)
-            {
-                return NotFound();
-            }
-
-            return Content(System.Net.HttpStatusCode.OK, HandlerXML.responseApplications(applicationList), Configuration.Formatters.XmlFormatter);
-        }
-
-        /*[HttpGet]
-        [Route("api/somiod/{appName}")]
-        public IHttpActionResult GetApplicationContainers(string appName)
-        {
-            IEnumerable<string> headerValues;
-            string tableCont = null;
-            int appId;
-
-            if (Request.Headers.TryGetValues("H", out headerValues))
-            {
-                    tableCont =  headerValues.FirstOrDefault()?.ToUpper();
-                
-            }
-
-            List<Container> containerList = new List<Container>();
-            SqlConnection conn = null;
-            
-            try
-            {
-                conn = new SqlConnection(strConnection);
-                conn.Open();
-
-                SqlCommand command = new SqlCommand("SELECT id FROM Application WHERE name = @name", conn);
-                command.Parameters.AddWithValue("@name", appName);
-
-                object res = command.ExecuteScalar();
-
-                if (res == null || !int.TryParse(res.ToString(), out appId))
-                {
-                    return NotFound();
-                }
-
-                SqlCommand cmd = new SqlCommand($"SELECT name FROM {tableCont} WHERE parent = @id", conn);
-                cmd.Parameters.AddWithValue("@id", appId);
-
-                using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        containerList.Add(new Container
-                        {
-                            Name = (string)reader["name"]
-                        });
-                    }
-                }
-
-                conn.Close();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
             }
             finally
             {
-               
                 conn.Close();
             }
 
-            if (containerList.Count == 0)
+            if (applicationList.Count == 0)
             {
                 return NotFound();
             }
 
-            return Content(System.Net.HttpStatusCode.OK, HandlerXML.responseContainers(containerList), Configuration.Formatters.XmlFormatter);
-        }*/
+            return Content(System.Net.HttpStatusCode.OK, HandlerXML.responseApplications(applicationList), Configuration.Formatters.XmlFormatter);
+        }
 
         [HttpPost]
         [Route("api/somiod")]
@@ -195,7 +192,7 @@ namespace SOMIOD.Controllers
             int nRows;
             string headerValue = null;
 
-            if (Request.Headers.TryGetValues("H", out headerValues))
+            if (Request.Headers.TryGetValues("somiod-locate", out headerValues))
             {
                 headerValue = headerValues.FirstOrDefault().ToUpper();
             }
@@ -242,8 +239,8 @@ namespace SOMIOD.Controllers
                 return BadRequest("Error creating application.");
             }
         }
-
-        [HttpPut]
+        
+        /*[HttpPut]
         [Route("api/somiod/{appName}")]
         public IHttpActionResult PutApplication(string appName, [FromBody] XElement applicationXml)
         {
@@ -254,7 +251,7 @@ namespace SOMIOD.Controllers
 
             IEnumerable<string> headerValues;
             string headerValue = null;
-            if (Request.Headers.TryGetValues("H", out headerValues))
+            if (Request.Headers.TryGetValues("somiod-locate", out headerValues))
             {
                 headerValue = headerValues.FirstOrDefault()?.ToUpper();
             }
@@ -330,7 +327,7 @@ namespace SOMIOD.Controllers
             Application app = null;
             SqlConnection conn = null;
             
-            if (Request.Headers.TryGetValues("H", out headerValues))
+            if (Request.Headers.TryGetValues("somiod-locate", out headerValues))
             {
                 headerValue = headerValues.FirstOrDefault().ToUpper();
             }
@@ -375,7 +372,7 @@ namespace SOMIOD.Controllers
             }
 
             return Content(System.Net.HttpStatusCode.OK, app, Configuration.Formatters.XmlFormatter);
-        }
+        }*/
 
     }
 }

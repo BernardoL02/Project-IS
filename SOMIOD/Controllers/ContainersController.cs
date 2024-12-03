@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Http;
+using System.Xml.Linq;
 using Container = SOMIOD.Models.Container;
 
 namespace SOMIOD.Controllers
@@ -16,10 +17,10 @@ namespace SOMIOD.Controllers
     {
         string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["SOMIOD.Properties.Settings.ConnectionToDB"].ConnectionString;
 
-        [HttpGet]
-
-        [Route("api/somiod/containers")]
-        public IEnumerable<Container> GetAllContainers()
+        /*
+       [HttpGet]
+        [Route("api/somiod/{appName}")]
+        public IEnumerable<Container> GetRecords()
         {
             List<Container> containers = new List<Container>();
             SqlConnection conn = null;
@@ -60,62 +61,70 @@ namespace SOMIOD.Controllers
             return containers;
         }
 
+        
+       [HttpGet]
+       [Route("api/somiod/containers/{id:int}")]
+       public IHttpActionResult GetContainer(int id)
+       {
+           Container container = null;
+           SqlConnection conn = null;
 
-        [HttpGet]
-        [Route("api/somiod/containers/{id:int}")]
-        public IHttpActionResult GetContainer(int id)
-        {
-            Container container = null;
-            SqlConnection conn = null;
+           try
+           {
+               conn = new SqlConnection(connectionString);
+               conn.Open();
 
-            try
-            {
-                conn = new SqlConnection(connectionString);
-                conn.Open();
+               SqlCommand cmd = new SqlCommand("SELECT * FROM Container WHERE id = @id ORDER BY id", conn);
+               cmd.Parameters.AddWithValue("@id", id);
+               SqlDataReader reader = cmd.ExecuteReader();
 
-                SqlCommand cmd = new SqlCommand("SELECT * FROM Container WHERE id = @id ORDER BY id", conn);
-                cmd.Parameters.AddWithValue("@id", id);
-                SqlDataReader reader = cmd.ExecuteReader();
+               while (reader.Read())
+               {
 
-                while (reader.Read())
-                {
+                   container = new Container
+                   {
+                       Id = (int)reader["Id"],
+                       Name = (string)reader["Name"],
+                       CreationDateTime = (DateTime)reader["CreationDateTime"],
+                       Parent = (int)reader["Parent"]
+                   };
 
-                    container = new Container
-                    {
-                        Id = (int)reader["Id"],
-                        Name = (string)reader["Name"],
-                        CreationDateTime = (DateTime)reader["CreationDateTime"],
-                        Parent = (int)reader["Parent"]
-                    };
+               }
+               reader.Close();
+               conn.Close();
+           }
+           catch (Exception)
+           {
+               if (conn.State == System.Data.ConnectionState.Open)
+               {
 
-                }
-                reader.Close();
-                conn.Close();
-            }
-            catch (Exception)
-            {
-                if (conn.State == System.Data.ConnectionState.Open)
-                {
+                   conn.Close();
+                   throw;
+               }
 
-                    conn.Close();
-                    throw;
-                }
+           }
+           return Ok(container);
+       }
 
-            }
-            return Ok(container);
-        }
-
-
+        */
         [HttpPost]
-        [Route("api/somiod/containers")]
-        public IHttpActionResult PostContainer([FromBody] Container container)
+        [Route("api/somiod/{appName}")]
+        public IHttpActionResult PostContainer(string appName, [FromBody] XElement applicationXml)
         {
-            int nrows = 0;
+            IEnumerable<string> headerValues;
             SqlConnection conn = null;
+            string headerValue = null;
+            int nrows = 0;
+            string containerName = applicationXml.Element("name")?.Value;
 
-            if (container == null || string.IsNullOrEmpty(container.Name) || container.Parent <= 0)
+            if (Request.Headers.TryGetValues("somiod-locate", out headerValues))
             {
-                return BadRequest("You need to provide the container info");
+                headerValue = headerValues.FirstOrDefault()?.ToUpper();
+            }
+
+            if (string.IsNullOrEmpty(containerName))
+            {
+                return BadRequest("Application XML must contain a valid 'name' element.");
             }
 
             try
@@ -123,35 +132,58 @@ namespace SOMIOD.Controllers
                 conn = new SqlConnection(connectionString);
                 conn.Open();
 
-                SqlCommand cmd = new SqlCommand("INSERT INTO Container(Name, Parent) VALUES (@name, @parent)", conn);
-                cmd.Parameters.AddWithValue("@name", container.Name);
-                cmd.Parameters.AddWithValue("@parent", container.Parent);
+                // First SQL command to select the application Id
+                using (SqlCommand sqlCommand = new SqlCommand("SELECT Id FROM Application WHERE Name = @name", conn))
+                {
+                    sqlCommand.Parameters.AddWithValue("@name", appName);
 
-                nrows = cmd.ExecuteNonQuery();
+                    using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
 
+                            int appId = reader.GetInt32(0);
+                            reader.Close(); 
+                            using (SqlCommand cmd = new SqlCommand($"INSERT INTO {headerValue} (Name, Parent) VALUES (@name, @parent)", conn))
+                            {
+                                cmd.Parameters.AddWithValue("@name", containerName);
+                                cmd.Parameters.AddWithValue("@parent", appId);
+
+                                nrows = cmd.ExecuteNonQuery();
+                            }
+                        }
+                        else
+                        {
+                            reader.Close();
+                            return NotFound(); 
+                        }
+                    }
+                }
             }
             catch (Exception e)
             {
-
                 Console.WriteLine(e.Message);
-                return BadRequest("Error inserting a new container!!!");
-
+                return BadRequest("Error creating a new container!!!");
             }
             finally
             {
-                conn.Close();
+                if (conn != null)
+                {
+                    conn.Close();
+                }
             }
 
             if (nrows > 0)
             {
-                return StatusCode(HttpStatusCode.Created);
+                return StatusCode(HttpStatusCode.Created); 
             }
             else
             {
-                return BadRequest("Error inserting a new application!!!");
+                return BadRequest("Error creating a new container!!!");
             }
         }
 
+        
 
         [HttpPut]
         [Route("api/somiod/containers/{id:int}")]
@@ -191,7 +223,8 @@ namespace SOMIOD.Controllers
 
             if (afectedRows > 0)
             {
-                return GetContainer(id);
+                //GetContainer(id);
+                return null;
             }
             else
             {
