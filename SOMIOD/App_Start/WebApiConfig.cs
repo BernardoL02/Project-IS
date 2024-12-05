@@ -13,6 +13,7 @@ namespace SOMIOD
             // Web API configuration and services
             config.Formatters.XmlFormatter.UseXmlSerializer = true;
             config.Formatters.XmlFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/xml"));
+
             // Web API routes
             config.MapHttpAttributeRoutes();
 

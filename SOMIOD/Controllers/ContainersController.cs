@@ -106,7 +106,7 @@ namespace SOMIOD.Controllers
            return Ok(container);
        }
 
-        */
+        
         [HttpPost]
         [Route("api/somiod/{appName}")]
         public IHttpActionResult PostContainer(string appName, [FromBody] XElement applicationXml)
@@ -283,6 +283,6 @@ namespace SOMIOD.Controllers
 
             return Ok(container);
         }
-
+        */
     }
 }

@@ -96,5 +96,33 @@ namespace SOMIOD
         }
 
 
+
+
+
+
+
+
+
+
+        //Response errors
+        public static XmlDocument responseError(string message, string errorCode)
+        {
+            var xmlDoc = new XmlDocument();
+
+            var errorNode = xmlDoc.CreateElement("Error");
+
+            var errorMessageNode = xmlDoc.CreateElement("Message");
+            errorMessageNode.InnerText = message;
+            errorNode.AppendChild(errorMessageNode);
+
+            var errorCodeNode = xmlDoc.CreateElement("ErrorCode");
+            errorCodeNode.InnerText = errorCode;
+            errorNode.AppendChild(errorCodeNode);
+
+            xmlDoc.AppendChild(errorNode);
+
+            return xmlDoc;
+        }
+
     }
 }
