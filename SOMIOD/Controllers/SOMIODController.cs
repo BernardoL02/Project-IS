@@ -49,6 +49,7 @@ namespace SOMIOD.Controllers
 
             if (headerValue != "APPLICATION")
             {
+                //Retornar aplicação específica 
                 return Content(HttpStatusCode.BadRequest, HandlerXML.responseError("The header value is invalid. Expected value 'Application'", "400"), Configuration.Formatters.XmlFormatter);
             }
 
@@ -373,25 +374,151 @@ namespace SOMIOD.Controllers
 
             return null;
         }
+
+
+        //-------------------------------------------------------------------------------------
+        //------------------------------------- Containers ------------------------------------
+        //------------------------------------------------------------------------------------- 
+
+        [HttpPost]
+        [Route("api/somiod/{application}")]
+        public IHttpActionResult PostContainer(String application, [FromBody] XElement containerXml)
+        {
+            SqlConnection conn = null;
+            int affectedfRows = -1;
+
+            if (containerXml == null)
+            {
+                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError("Invalid XML body.", "400"), Configuration.Formatters.XmlFormatter);
+            }
+
+            Application app = this.verifyApplicationExists(application);
+
+            if (app == null)
+            {
+                return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Application was not found.", "404"), Configuration.Formatters.XmlFormatter);
+            }
+
+            try
+            {
+                var container = new
+                {
+                    Name = containerXml.Element("Name")?.Value
+                };
+
+                conn = new SqlConnection(strConnection);
+                conn.Open();
+
+                SqlCommand command = new SqlCommand("INSERT INTO Container(Name,Parent) VALUES (@name,@parantId)", conn);
+                command.Parameters.AddWithValue("@name", container.Name);
+                command.Parameters.AddWithValue("@parantId", app.Id);
+
+                affectedfRows = command.ExecuteNonQuery();
+            }
+            catch (SqlException ex)
+            {
+                if (ex.Number == 2627 || ex.Number == 2601)
+                {
+                    return Content(HttpStatusCode.Conflict, HandlerXML.responseError("Container name already exists", "409"), Configuration.Formatters.XmlFormatter);
+                }
+
+                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
+            }
+            catch (Exception ex)
+            {
+                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
+            }
+            finally
+            {
+                if (conn != null) { conn.Close(); }
+            }
+
+            if (affectedfRows > 0)
+            {
+                return StatusCode(HttpStatusCode.Created);
+            }
+            else
+            {
+                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("The application could not be created.", "500"), Configuration.Formatters.XmlFormatter);
+            }
+        }
+
+        [HttpGet]
+        [Route("api/somiod/{application}/{container}")]
+        public IHttpActionResult GetContainer(string application, string container)
+        {
+            SqlConnection conn = null;
+            SqlDataReader sqlReader = null;
+
+            Container containerToGet = null;
+
+            Application app = this.verifyApplicationExists(application);
+
+            if (app == null)
+            {
+                return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Application was not found.", "404"), Configuration.Formatters.XmlFormatter);
+            }
+
+            try
+            {
+                conn = new SqlConnection(strConnection);
+                conn.Open();
+
+                SqlCommand cmd = new SqlCommand("SELECT * FROM Container WHERE name = @name AND Parent = @parantId", conn);
+                cmd.Parameters.AddWithValue("@name", container);
+                cmd.Parameters.AddWithValue("@parantId", app.Id);
+
+                sqlReader = cmd.ExecuteReader();
+
+                while (sqlReader.Read())
+                {
+                    containerToGet = new Container
+                    {
+                        Id = (int)sqlReader["Id"],
+                        Name = (string)sqlReader["Name"],
+                        CreationDateTime = (DateTime)sqlReader["CreationDateTime"],
+                        Parent = (int)sqlReader["Parent"]
+                    };
+
+                }
+            }
+            catch (Exception ex)
+            {
+                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
+            }
+            finally
+            {
+                if (conn != null) { conn.Close(); }
+                if (sqlReader != null) { sqlReader.Close(); }
+            }
+
+            return Content(HttpStatusCode.OK, HandlerXML.responseContainer(containerToGet), Configuration.Formatters.XmlFormatter);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
-
-    //-------------------------------------------------------------------------------------
-    //------------------------------------- Containers ------------------------------------
-    //------------------------------------------------------------------------------------- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 

@@ -95,6 +95,32 @@ namespace SOMIOD
             return xmlDoc;
         }
 
+        public static XmlDocument responseContainer(Container container)
+        {
+            var xmlDoc = new XmlDocument();
+
+            var containerNode = xmlDoc.CreateElement("Container");
+
+            var containerIdNode = xmlDoc.CreateElement("Id");
+            containerIdNode.InnerText = container.Id.ToString();
+            containerNode.AppendChild(containerIdNode);
+
+            var containerNameNode = xmlDoc.CreateElement("Name");
+            containerNameNode.InnerText = container.Name;
+            containerNode.AppendChild(containerNameNode);
+
+            var containerCreationDateNode = xmlDoc.CreateElement("CreationDateTime");
+            containerCreationDateNode.InnerText = container.CreationDateTime.ToString("o");
+            containerNode.AppendChild(containerCreationDateNode);
+
+            var containerParentNode = xmlDoc.CreateElement("Parent");
+            containerParentNode.InnerText = container.Parent.ToString();
+            containerNode.AppendChild(containerParentNode);
+
+            xmlDoc.AppendChild(containerNode);
+
+            return xmlDoc;
+        }
 
 
 
