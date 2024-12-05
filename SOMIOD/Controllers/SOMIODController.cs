@@ -331,51 +331,6 @@ namespace SOMIOD.Controllers
         }
 
 
-        private Application verifyApplicationExists(string name)
-        {
-            SqlConnection conn = null;
-            SqlDataReader sqlReader = null;
-            Application application = null;
-
-            try
-            {
-                conn = new SqlConnection(strConnection);
-                conn.Open();
-
-                SqlCommand command = new SqlCommand("SELECT * FROM Application WHERE name = @appName", conn);
-                command.Parameters.AddWithValue("@appName", name);
-
-                sqlReader = command.ExecuteReader();
-
-                while (sqlReader.Read())
-                {
-                    application = new Application
-                    {
-                        Id = sqlReader.GetInt32(0),
-                        Name = sqlReader.GetString(1),
-                        CreationDateTime = sqlReader.GetDateTime(2),
-                    };
-                }
-
-                if (application != null)
-                {
-                    return application;
-                }
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-            finally
-            {
-                if (conn != null) { conn.Close(); }
-                if (sqlReader != null) { sqlReader.Close(); }
-            }
-
-            return null;
-        }
-
-
         //-------------------------------------------------------------------------------------
         //------------------------------------- Containers ------------------------------------
         //------------------------------------------------------------------------------------- 
@@ -459,6 +414,11 @@ namespace SOMIOD.Controllers
                 return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Application was not found.", "404"), Configuration.Formatters.XmlFormatter);
             }
 
+            if (this.verifyContainerExists(container) == null)
+            {
+                return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Container was not found.", "404"), Configuration.Formatters.XmlFormatter);
+            }
+
             try
             {
                 conn = new SqlConnection(strConnection);
@@ -479,7 +439,6 @@ namespace SOMIOD.Controllers
                         CreationDateTime = (DateTime)sqlReader["CreationDateTime"],
                         Parent = (int)sqlReader["Parent"]
                     };
-
                 }
             }
             catch (Exception ex)
@@ -490,6 +449,11 @@ namespace SOMIOD.Controllers
             {
                 if (conn != null) { conn.Close(); }
                 if (sqlReader != null) { sqlReader.Close(); }
+            }
+
+            if (containerToGet == null)
+            {
+                return Content(HttpStatusCode.NotFound,HandlerXML.responseError("Container does not belong to the specified application.", "404"),Configuration.Formatters.XmlFormatter);
             }
 
             return Content(HttpStatusCode.OK, HandlerXML.responseContainer(containerToGet), Configuration.Formatters.XmlFormatter);
@@ -513,6 +477,109 @@ namespace SOMIOD.Controllers
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+        //-------------------------------------------------------------------------------------
+        //---------------------------------- Suport Funcions ----------------------------------
+        //------------------------------------------------------------------------------------- 
+        private Application verifyApplicationExists(string name)
+        {
+            SqlConnection conn = null;
+            SqlDataReader sqlReader = null;
+            Application application = null;
+
+            try
+            {
+                conn = new SqlConnection(strConnection);
+                conn.Open();
+
+                SqlCommand command = new SqlCommand("SELECT * FROM Application WHERE name = @appName", conn);
+                command.Parameters.AddWithValue("@appName", name);
+
+                sqlReader = command.ExecuteReader();
+
+                while (sqlReader.Read())
+                {
+                    application = new Application
+                    {
+                        Id = sqlReader.GetInt32(0),
+                        Name = sqlReader.GetString(1),
+                        CreationDateTime = sqlReader.GetDateTime(2),
+                    };
+                }
+
+                if (application != null)
+                {
+                    return application;
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+            finally
+            {
+                if (conn != null) { conn.Close(); }
+                if (sqlReader != null) { sqlReader.Close(); }
+            }
+
+            return null;
+        }
+
+
+        private Container verifyContainerExists(string name)
+        {
+            SqlConnection conn = null;
+            SqlDataReader sqlReader = null;
+            Container container = null;
+
+            try
+            {
+                conn = new SqlConnection(strConnection);
+                conn.Open();
+
+                SqlCommand command = new SqlCommand("SELECT * FROM Container WHERE name = @containerName", conn);
+                command.Parameters.AddWithValue("@containerName", name);
+
+                sqlReader = command.ExecuteReader();
+
+                while (sqlReader.Read())
+                {
+                    container = new Container
+                    {
+                        Id = (int)sqlReader["Id"],
+                        Name = (string)sqlReader["Name"],
+                        CreationDateTime = (DateTime)sqlReader["CreationDateTime"],
+                        Parent = (int)sqlReader["Parent"]
+                    };
+                }
+
+                if (container != null)
+                {
+                    return container;
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+            finally
+            {
+                if (conn != null) { conn.Close(); }
+                if (sqlReader != null) { sqlReader.Close(); }
+            }
+
+            return null;
+        }
 
 
 
