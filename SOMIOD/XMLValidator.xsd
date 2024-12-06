@@ -1,12 +1,36 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
-	<!-- Definição do elemento raiz -->
+
+	<!-- Definição para o elemento Application -->
 	<xs:element name="Application">
 		<xs:complexType>
 			<xs:sequence>
-				<!-- Definição do elemento Name -->
-				<xs:element name="Name" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element name="Name" type="xs:string" minOccurs="1" maxOccurs="1"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+
+	<!-- Definição para o elemento Container -->
+	<xs:element name="Container">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Name" type="xs:string" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="Parent" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<!-- Definição para a raiz, que permite apenas um dos elementos Application ou Container -->
+	<xs:element name="Root">
+		<xs:complexType>
+			<xs:sequence>
+				<!-- Escolhe um entre Application ou Container -->
+				<xs:choice maxOccurs="1" minOccurs="1">
+					<xs:element ref="Application"/>
+					<xs:element ref="Container"/>
+				</xs:choice>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
 </xs:schema>
