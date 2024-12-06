@@ -1,0 +1,21 @@
+Um e um só recurso em cada pedido
+Tendo cada recurso as seguintes restrições:
+
+- Aplicação:
+    1º Apenas pode vir o <Name>
+
+- Container:
+    No POST:
+    1º Tem de ter um name e um parent obrigatórios <Name> e <Parent>  
+
+    No PATCH:
+    1º Pode conter ambos <Name> e <Parent>
+    2º Pode conter apenas um <Name> ou um <Parent>
+
+- Record:
+   1º Tem de ter um name, um content e o um parent, obrigatórios <Name>, <Content> e <Parent>
+
+- Notification:
+   1º Tem de ter um name, um parent, um event, um endpoint e um enabled
+
+   
