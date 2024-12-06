@@ -283,7 +283,6 @@ namespace SOMIOD.Controllers
             {
                 return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("The application could not be updated.", "500"), Configuration.Formatters.XmlFormatter);
             }
-
         }
 
 
@@ -460,7 +459,93 @@ namespace SOMIOD.Controllers
         }
 
 
+        [HttpPatch]
+        [Route("api/somiod/{application}/{container}")]
+        public IHttpActionResult PatchContainer(string application, string container, [FromBody] XElement containerXml)
+        {
+            SqlConnection conn = null;
+            int affectedRows = -1;
 
+            if (containerXml == null)
+            {
+                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError("Invalid XML body.", "400"), Configuration.Formatters.XmlFormatter);
+            }
+
+            Application app = this.verifyApplicationExists(application);
+            if (app == null)
+            {
+                return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Application was not found.", "404"), Configuration.Formatters.XmlFormatter);
+            }
+
+            Container cont = this.verifyContainerExists(container);
+            if (cont == null)
+            {
+                return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Container was not found.", "404"), Configuration.Formatters.XmlFormatter);
+            }
+
+            //Verificar valores no xml
+            string newName = containerXml.Element("Name")?.Value;
+            string newParentId = containerXml.Element("Parent")?.Value;
+            if (string.IsNullOrEmpty(newName) && string.IsNullOrEmpty(newParentId))
+            {
+                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError("The container XML must contain at least a 'Name' or 'Parent' element.", "400"), Configuration.Formatters.XmlFormatter);
+            }
+
+            if(string.IsNullOrEmpty(newName))
+            {
+                newName = cont.Name;
+            }
+
+            if (string.IsNullOrEmpty(newParentId))
+            {
+                newParentId = (cont.Parent).ToString();
+            }
+
+            try
+            {
+                conn = new SqlConnection(strConnection);
+                conn.Open();
+
+                SqlCommand command = new SqlCommand("UPDATE Container SET Name = @newName, Parent = @newParentId WHERE Parent = @parantId AND name = @containerName", conn);
+                command.Parameters.AddWithValue("@newName", newName);
+                command.Parameters.AddWithValue("@newParentId", int.Parse(newParentId));
+                command.Parameters.AddWithValue("@parantId", app.Id);
+                command.Parameters.AddWithValue("@containerName", container);
+
+                affectedRows = command.ExecuteNonQuery();
+            }
+            catch (SqlException ex)
+            {
+                if (ex.Number == 2627 || ex.Number == 2601)
+                {
+                    return Content(HttpStatusCode.Conflict, HandlerXML.responseError("Container name already exists", "409"), Configuration.Formatters.XmlFormatter);
+                }
+                else if (ex.Number == 547)
+                {
+                    return Content(HttpStatusCode.BadRequest, HandlerXML.responseError("Invalid Parent ID (Application Not Found).", "400"), Configuration.Formatters.XmlFormatter);
+                }
+
+
+                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
+            }
+            catch (Exception ex)
+            {
+                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
+            }
+            finally
+            {
+                if (conn != null) { conn.Close(); }
+            }
+
+            if (affectedRows > 0)
+            {
+                return Content(HttpStatusCode.OK, this.verifyContainerExists(newName), Configuration.Formatters.XmlFormatter);
+            }
+            else
+            {
+                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("The container could not be updated.", "500"), Configuration.Formatters.XmlFormatter);
+            }
+        }
 
 
 
@@ -489,7 +574,7 @@ namespace SOMIOD.Controllers
 
 
         //-------------------------------------------------------------------------------------
-        //---------------------------------- Suport Funcions ----------------------------------
+        //--------------------------------- Suport Functions ----------------------------------
         //------------------------------------------------------------------------------------- 
         private Application verifyApplicationExists(string name)
         {

@@ -102,3 +102,26 @@ DELETE -> Apagar uma notification específica
 
 
 
+
+
+
+
+
+
+
+  // Identificar o tipo de XML com base no nó raiz
+    string rootName = xmlDoc.DocumentElement?.Name;
+
+    // Verifica se é um "Record"
+    if (rootName.Equals("Record", StringComparison.OrdinalIgnoreCase))
+    {
+        // Processar o Record
+        return Content(HttpStatusCode.OK, "Record received.");
+    }
+
+    // Verifica se é uma "Notification"
+    if (rootName.Equals("Notification", StringComparison.OrdinalIgnoreCase))
+    {
+        // Processar a Notification
+        return Content(HttpStatusCode.OK, "Notification received.");
+    }
