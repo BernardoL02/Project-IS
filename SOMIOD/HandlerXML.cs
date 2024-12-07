@@ -6,6 +6,7 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Linq;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 
 
 namespace SOMIOD
@@ -14,7 +15,7 @@ namespace SOMIOD
     {
 
         #region XML Validation
-        string XmlFilePath = "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\XMLValidator.xsd";
+        string xmlFilePath = Path.Combine(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.FullName, "Project-IS", "SOMIOD", "XMLValidator.xsd"); 
         string validationMessage = "Valid";
 
         public string ValidateXML(XElement xmlElement)
@@ -34,7 +35,7 @@ namespace SOMIOD
                     doc.LoadXml(sr.ReadToEnd());
                 }
 
-                doc.Schemas.Add(null, XmlFilePath);
+                doc.Schemas.Add(null, xmlFilePath);
 
                 doc.Validate(ValidationEventHandler);
             }

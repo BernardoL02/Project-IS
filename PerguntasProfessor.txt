@@ -5,6 +5,8 @@
 [] - Otimização dos endpoints que chamam o ParentOf
 [] - Gets chamar a função element exist
 [x] - Tirar o sequence do Application XML e por all para dar o erro que não pode aparecer mais que uma vez
- 
+[] - Colocar caminho XML dinâmico
+
+-------- Perguntas Pof --------
 No XML é preciso mensagens descritivas ou podemos só retornar XML inválido
 Temos que dar delete à restante informação que está relacionada com aquela que estamos a apagar

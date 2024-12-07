@@ -54,7 +54,6 @@ namespace SOMIOD.Controllers
 
             if (headerValue != "APPLICATION")
             {
-                //Retornar aplicação específica 
                 return Content(HttpStatusCode.BadRequest, HandlerXML.responseError("The header value is invalid. Expected value 'Application'", "400"), Configuration.Formatters.XmlFormatter);
             }
 
@@ -1004,11 +1003,7 @@ namespace SOMIOD.Controllers
         #endregion
 
 
-
-
-
-
-
+        #region Suport Functions
         //-------------------------------------------------------------------------------------
         //--------------------------------- Suport Functions ----------------------------------
         //------------------------------------------------------------------------------------- 
@@ -1397,7 +1392,7 @@ namespace SOMIOD.Controllers
             return Content(HttpStatusCode.BadRequest, HandlerXML.responseError(msgIsValid, "400"), Configuration.Formatters.XmlFormatter);
         }
 
-
+        #endregion
     }
 }
 
