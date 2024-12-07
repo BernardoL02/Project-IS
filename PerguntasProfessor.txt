@@ -2,10 +2,11 @@
 [x] - Criar endpoints das notifications
 [x] - Utilizar o XML validator
 [x] - Questão do record e notification se são filhos do containerXX nos Gets
-[] - Otimização dos endpoints que chamam o ParentOf
-[] - Gets chamar a função element exist
+[X] - Otimização dos endpoints que chamam o ParentOf
+[X] - Gets chamar a função element exist
 [x] - Tirar o sequence do Application XML e por all para dar o erro que não pode aparecer mais que uma vez
-[] - Colocar caminho XML dinâmico
+[X] - Colocar caminho XML dinâmico
+[] - Otimizacao dos GETS
 
 -------- Perguntas Pof --------
 No XML é preciso mensagens descritivas ou podemos só retornar XML inválido

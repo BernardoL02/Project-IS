@@ -26,6 +26,25 @@ namespace SOMIOD.Controllers
     {
         string strConnection = System.Configuration.ConfigurationManager.ConnectionStrings["SOMIOD.Properties.Settings.ConnectionToDB"].ConnectionString;
 
+        public class ValidateResource
+        {
+            public Application Application { get; set; }
+            public Container Container { get; set; }
+            public Object RecordOrNotification { get; set; }
+
+            public string ErrorMessage { get; set; }
+            public HttpStatusCode ErrorCode { get; set; }
+
+            public ValidateResource(Application application, Container container, Object recordOrNotification,  string errorMessage, HttpStatusCode errorCode)
+            {
+                Application = application;
+                Container = container;
+                RecordOrNotification = recordOrNotification;
+                ErrorMessage = errorMessage;
+                ErrorCode = errorCode;
+            }
+        }
+
 
         #region Locate
 
@@ -411,7 +430,7 @@ namespace SOMIOD.Controllers
             }
             else
             {
-                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("The application could not be created.", "500"), Configuration.Formatters.XmlFormatter);
+                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("The container could not be created.", "500"), Configuration.Formatters.XmlFormatter);
             }
         }
 
@@ -424,14 +443,12 @@ namespace SOMIOD.Controllers
 
             Container containerToGet = null;
 
-            IHttpActionResult status = verifyParentOfContainer(application, container);
+            ValidateResource resources = verifyParentOfContainer(application, container);
 
-            if (status.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
+            if (resources.ErrorCode != HttpStatusCode.OK)
             {
-                return status;
+                return Content(resources.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, resources.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
             }
-
-            Application app = this.verifyApplicationExists(application);
 
             try
             {
@@ -440,7 +457,7 @@ namespace SOMIOD.Controllers
 
                 SqlCommand cmd = new SqlCommand("SELECT * FROM Container WHERE name = @name AND Parent = @parantId", conn);
                 cmd.Parameters.AddWithValue("@name", container);
-                cmd.Parameters.AddWithValue("@parantId", app.Id);
+                cmd.Parameters.AddWithValue("@parantId", resources.Application.Id);
 
                 sqlReader = cmd.ExecuteReader();
 
@@ -489,32 +506,24 @@ namespace SOMIOD.Controllers
                 return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"Invalid XML: {validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
             }
 
-            IHttpActionResult status = verifyParentOfContainer(application, container);
+            ValidateResource resources = verifyParentOfContainer(application, container);
 
-            if (status.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
+            if (resources.ErrorCode != HttpStatusCode.OK)
             {
-                return status;
+                return Content(resources.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, resources.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
             }
-
-            Application app = this.verifyApplicationExists(application);
-            Container cont = this.verifyContainerExists(container);
        
-            //Verificar valores no xml
             string newName = containerXml.Element("Name")?.Value;
             string newParentId = containerXml.Element("Parent")?.Value;
-            if (string.IsNullOrEmpty(newName) && string.IsNullOrEmpty(newParentId))
-            {
-                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError("The container XML must contain at least a 'Name' or 'Parent' element.", "400"), Configuration.Formatters.XmlFormatter);
-            }
 
             if(string.IsNullOrEmpty(newName))
             {
-                newName = cont.Name;
+                newName = resources.Container.Name;
             }
 
             if (string.IsNullOrEmpty(newParentId))
             {
-                newParentId = (cont.Parent).ToString();
+                newParentId = (resources.Container.Parent).ToString();
             }
 
             try
@@ -525,7 +534,7 @@ namespace SOMIOD.Controllers
                 SqlCommand command = new SqlCommand("UPDATE Container SET Name = @newName, Parent = @newParentId WHERE Parent = @parantId AND name = @containerName", conn);
                 command.Parameters.AddWithValue("@newName", newName);
                 command.Parameters.AddWithValue("@newParentId", int.Parse(newParentId));
-                command.Parameters.AddWithValue("@parantId", app.Id);
+                command.Parameters.AddWithValue("@parantId", resources.Application.Id);
                 command.Parameters.AddWithValue("@containerName", container);
 
                 affectedRows = command.ExecuteNonQuery();
@@ -570,15 +579,12 @@ namespace SOMIOD.Controllers
         {
             SqlConnection conn = null;
 
-            IHttpActionResult status = verifyParentOfContainer(application, container);
+            ValidateResource resources = verifyParentOfContainer(application, container);
 
-            if (status.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
+            if (resources.ErrorCode != HttpStatusCode.OK)
             {
-                return status;
+                return Content(resources.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, resources.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
             }
-
-            Application app = this.verifyApplicationExists(application);
-            Container cont = this.verifyContainerExists(container);
 
             try
             {
@@ -587,7 +593,7 @@ namespace SOMIOD.Controllers
 
                 SqlCommand cmd = new SqlCommand("DELETE FROM Container WHERE Name = @name AND Parent = @parantId", conn);
                 cmd.Parameters.AddWithValue("@name", container);
-                cmd.Parameters.AddWithValue("@parantId", app.Id);
+                cmd.Parameters.AddWithValue("@parantId", resources.Application.Id);
                 cmd.ExecuteNonQuery();
             }
             catch (SqlException ex)
@@ -608,7 +614,7 @@ namespace SOMIOD.Controllers
                 if (conn != null) { conn.Close(); }
             }
 
-            return Content(HttpStatusCode.OK, cont, Configuration.Formatters.XmlFormatter);
+            return Content(HttpStatusCode.OK, resources.Container, Configuration.Formatters.XmlFormatter);
         }
         #endregion
 
@@ -633,14 +639,13 @@ namespace SOMIOD.Controllers
                 return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"Invalid XML: {validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
             }
 
-            IHttpActionResult status = verifyParentOfContainer(application, container);
+            ValidateResource resources = verifyParentOfContainer(application, container);
 
-            if (status.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
+            if (resources.ErrorCode != HttpStatusCode.OK)
             {
-                return status;
+                return Content(resources.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, resources.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
             }
 
-            Container cont = verifyContainerExists(container);
             try
             {
                 var record = new
@@ -655,7 +660,7 @@ namespace SOMIOD.Controllers
                 SqlCommand command = new SqlCommand("INSERT INTO Record(Name,Content,Parent) VALUES (@name,@content,@parentId)", conn);
                 command.Parameters.AddWithValue("@name", record.Name);
                 command.Parameters.AddWithValue("@content", record.Content);
-                command.Parameters.AddWithValue("@parentId", cont.Id);
+                command.Parameters.AddWithValue("@parentId", resources.Container.Id);
 
                 affectedfRows = command.ExecuteNonQuery();
             }
@@ -688,30 +693,24 @@ namespace SOMIOD.Controllers
         [Route("api/somiod/{application}/{container}/record/{name}")]
         public IHttpActionResult GetRecord(string application, string container, string name)
         {
-
             SqlConnection conn = null;
             SqlDataReader sqlReader = null;
-
             Record record = null;
 
+            ValidateResource resources = verifyParentOfContainer(application, container);
 
-            IHttpActionResult status = verifyParentOfContainer(application, container);
-
-            if (status.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
+            if (resources.ErrorCode != HttpStatusCode.OK)
             {
-                return status;
+                return Content(resources.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, resources.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
             }
 
-            IHttpActionResult ischildren = verifyParentOfRecordAndNotification(container, "Record", name); ;
+            resources.RecordOrNotification = verifyParentOfRecordAndNotification(container, "Record", name); ;
 
-            if (ischildren.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
+            if (resources.RecordOrNotification is ValidateResource validateResource)
             {
-                return ischildren;
+                return Content(validateResource.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, validateResource.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
             }
-           
-
-            Container cont = this.verifyContainerExists(container);
-
+            
             try
             {
                 conn = new SqlConnection(strConnection);
@@ -719,7 +718,7 @@ namespace SOMIOD.Controllers
 
                 SqlCommand cmd = new SqlCommand("SELECT * FROM Record WHERE name = @name AND Parent = @parantId", conn);
                 cmd.Parameters.AddWithValue("@name", name);
-                cmd.Parameters.AddWithValue("@parantId", cont.Id);
+                cmd.Parameters.AddWithValue("@parantId", resources.Container.Id);
 
                 sqlReader = cmd.ExecuteReader();
 
@@ -749,8 +748,8 @@ namespace SOMIOD.Controllers
             {
                 return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Record was not found.", "404"), Configuration.Formatters.XmlFormatter);
             }
-            return Content(HttpStatusCode.OK, HandlerXML.responseRecord(record), Configuration.Formatters.XmlFormatter);
 
+            return Content(HttpStatusCode.OK, HandlerXML.responseRecord(record), Configuration.Formatters.XmlFormatter);
         }
 
 
@@ -760,26 +759,22 @@ namespace SOMIOD.Controllers
         {
             SqlConnection conn = null;
 
-            IHttpActionResult status = verifyParentOfContainer(application, container);
+            ValidateResource resources = verifyParentOfContainer(application, container);
 
-            if (status.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
+            if (resources.ErrorCode != HttpStatusCode.OK)
             {
-                return status;
+                return Content(resources.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, resources.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
             }
 
-            IHttpActionResult ischildren = verifyParentOfRecordAndNotification(container, "Record", name); ;
+            resources.RecordOrNotification = verifyParentOfRecordAndNotification(container, "Record", name); ;
 
-            if (ischildren.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
+            if (resources.RecordOrNotification is ValidateResource validateResource)
             {
-                return ischildren;
+                return Content(validateResource.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, validateResource.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
             }
-
-            Container cont = this.verifyContainerExists(container);
-            Record record = this.verifyRecordExists(name);
-
-            if (record == null)
+            else
             {
-                return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Record was not found.", "404"), Configuration.Formatters.XmlFormatter);
+                resources.RecordOrNotification = (Record)resources.RecordOrNotification;
             }
 
             try
@@ -789,7 +784,7 @@ namespace SOMIOD.Controllers
 
                 SqlCommand cmd = new SqlCommand("DELETE FROM Record WHERE Name = @name AND Parent = @parantId", conn);
                 cmd.Parameters.AddWithValue("@name", name);
-                cmd.Parameters.AddWithValue("@parantId", cont.Id);
+                cmd.Parameters.AddWithValue("@parantId", resources.Container.Id);
                 cmd.ExecuteNonQuery();
             }
             catch (SqlException ex)
@@ -805,7 +800,7 @@ namespace SOMIOD.Controllers
                 if (conn != null) { conn.Close(); }
             }
 
-            return Content(HttpStatusCode.OK, record, Configuration.Formatters.XmlFormatter);
+            return Content(HttpStatusCode.OK, HandlerXML.responseRecord((Record)resources.RecordOrNotification), Configuration.Formatters.XmlFormatter);
         }
         #endregion
 
@@ -828,13 +823,13 @@ namespace SOMIOD.Controllers
                 return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"Invalid XML: {validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
             }
 
-            IHttpActionResult status = verifyParentOfContainer(application, container);
-            if (status.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
+            ValidateResource resources = verifyParentOfContainer(application, container);
+
+            if (resources.ErrorCode != HttpStatusCode.OK)
             {
-                return status;
+                return Content(resources.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, resources.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
             }
 
-            Container cont = verifyContainerExists(container);
             try
             {
                 var notification = new
@@ -852,7 +847,7 @@ namespace SOMIOD.Controllers
                                                                  "VALUES (@name,@parentId,@event,@endpoint,@enabled)", conn);
 
                 command.Parameters.AddWithValue("@name", notification.Name);
-                command.Parameters.AddWithValue("@parentId", cont.Id);
+                command.Parameters.AddWithValue("@parentId", resources.Container.Id);
                 command.Parameters.AddWithValue("@event", notification.Event);
                 command.Parameters.AddWithValue("@endpoint", notification.Endpoint);
                 command.Parameters.AddWithValue("@enabled", notification.Enabled);
@@ -892,21 +887,19 @@ namespace SOMIOD.Controllers
 
             Notification notification = null;
 
-            IHttpActionResult status = verifyParentOfContainer(application, container);
+            ValidateResource resources = verifyParentOfContainer(application, container);
 
-            if (status.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
+            if (resources.ErrorCode != HttpStatusCode.OK)
             {
-                return status;
+                return Content(resources.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, resources.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
             }
 
-            IHttpActionResult ischildren = verifyParentOfRecordAndNotification(container, "Notification", name);
+            resources.RecordOrNotification = verifyParentOfRecordAndNotification(container, "Notification", name); ;
 
-            if (ischildren.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
+            if (resources.RecordOrNotification is ValidateResource validateResource)
             {
-                return ischildren;
+                return Content(validateResource.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, validateResource.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
             }
-
-            Container cont = this.verifyContainerExists(container);
 
             try
             {
@@ -915,7 +908,7 @@ namespace SOMIOD.Controllers
 
                 SqlCommand cmd = new SqlCommand("SELECT * FROM Notification WHERE name = @name AND Parent = @parantId", conn);
                 cmd.Parameters.AddWithValue("@name", name);
-                cmd.Parameters.AddWithValue("@parantId", cont.Id);
+                cmd.Parameters.AddWithValue("@parantId", resources.Container.Id);
 
                 sqlReader = cmd.ExecuteReader();
 
@@ -958,21 +951,24 @@ namespace SOMIOD.Controllers
         {
             SqlConnection conn = null;
 
-            IHttpActionResult status = verifyParentOfContainer(application, container);
+            ValidateResource resources = verifyParentOfContainer(application, container);
 
-            if (status.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
+            if (resources.ErrorCode != HttpStatusCode.OK)
             {
-                return status;
+                return Content(resources.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, resources.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
             }
 
-            Container cont = this.verifyContainerExists(container);
-            Notification notification = this.verifyNotifcationExists(name);
+            resources.RecordOrNotification = verifyParentOfRecordAndNotification(container, "Notification", name);
 
-            if (notification == null)
+            if (resources.RecordOrNotification is ValidateResource validateResource)
             {
-                return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Notification was not found.", "404"), Configuration.Formatters.XmlFormatter);
+                return Content(validateResource.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, validateResource.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
             }
-
+            else
+            {
+                resources.RecordOrNotification = (Notification)resources.RecordOrNotification;
+            }
+           
             try
             {
                 conn = new SqlConnection(strConnection);
@@ -980,7 +976,7 @@ namespace SOMIOD.Controllers
 
                 SqlCommand cmd = new SqlCommand("DELETE FROM Notification WHERE Name = @name AND Parent = @parantId", conn);
                 cmd.Parameters.AddWithValue("@name", name);
-                cmd.Parameters.AddWithValue("@parantId", cont.Id);
+                cmd.Parameters.AddWithValue("@parantId", resources.Container.Id);
 
                 cmd.ExecuteNonQuery();
             }
@@ -997,7 +993,7 @@ namespace SOMIOD.Controllers
                 if (conn != null) { conn.Close(); }
             }
 
-            return Content(HttpStatusCode.OK, notification, Configuration.Formatters.XmlFormatter);
+            return Content(HttpStatusCode.OK, HandlerXML.responseNotification((Notification)resources.RecordOrNotification), Configuration.Formatters.XmlFormatter);
         }
 
         #endregion
@@ -1018,13 +1014,6 @@ namespace SOMIOD.Controllers
             if (!validationMessage.Equals("Valid"))
             {
                 return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"Invalid XML: {validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
-            }
-
-            IHttpActionResult status = verifyParentOfContainer(application, container);
-
-            if (status.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
-            {
-                return status;
             }
 
             try
@@ -1235,7 +1224,7 @@ namespace SOMIOD.Controllers
         }
 
 
-        private IHttpActionResult verifyParentOfContainer(string application, string container)
+        private ValidateResource verifyParentOfContainer(string application, string container)
         {
             SqlConnection conn = null;
             SqlDataReader sqlReader = null;
@@ -1246,12 +1235,14 @@ namespace SOMIOD.Controllers
 
             if (app == null)
             {
-                return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Application was not found.", "404"), Configuration.Formatters.XmlFormatter);
+                return new ValidateResource(null, null, null, "Application was not found.", HttpStatusCode.NotFound);
             }
 
-            if (this.verifyContainerExists(container) == null)
+            Container cont = this.verifyContainerExists(container);
+
+            if (cont == null)
             {
-                return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Container was not found.", "404"), Configuration.Formatters.XmlFormatter);
+                return new ValidateResource(null, null, null, "Container was not found.", HttpStatusCode.NotFound);
             }
 
             conn = new SqlConnection(strConnection);
@@ -1265,7 +1256,7 @@ namespace SOMIOD.Controllers
 
             while (sqlReader.Read())
             {
-                ischildren= new Container
+                ischildren = new Container
                 {
                     Id = (int)sqlReader["Id"],
                     Name = (string)sqlReader["Name"],
@@ -1276,42 +1267,42 @@ namespace SOMIOD.Controllers
 
             if (ischildren != null)
             {
-                return Content(HttpStatusCode.OK,"OK");
+                return new ValidateResource(app, cont, null, null, HttpStatusCode.OK);
             }
 
-            return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Container does not belong to the specified application.", "404"), Configuration.Formatters.XmlFormatter);
+            return new ValidateResource(null, null, null, "Container does not belong to the specified application.", HttpStatusCode.NotFound);
         }
 
-        private IHttpActionResult verifyParentOfRecordAndNotification(string container, string resource, string name)
+
+        private Object verifyParentOfRecordAndNotification(string container, string resource, string name)
         {
             SqlConnection conn = null;
             SqlDataReader sqlReader = null;
             object ischildren = null;
 
+            Container cont = this.verifyContainerExists(container);
+            if (cont == null)
+            {
+                return new ValidateResource(null, null, null, "Container was not found.", HttpStatusCode.NotFound);
+            }
+
+            if (resource.Equals("Record", StringComparison.OrdinalIgnoreCase))
+            {
+                if (this.verifyRecordExists(name) == null)
+                {
+                    return new ValidateResource(null, null, null, "Record was not found.", HttpStatusCode.NotFound);
+                }
+            }
+            else if (resource.Equals("Notification", StringComparison.OrdinalIgnoreCase))
+            {
+                if (this.verifyNotifcationExists(name) == null)
+                {
+                    return new ValidateResource(null, null, null, "Notification was not found.", HttpStatusCode.NotFound);
+                }
+            }
+
             try
             {
-                Container cont = this.verifyContainerExists(container);
-                if (cont == null)
-                {
-                    return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Container was not found.", "404"), Configuration.Formatters.XmlFormatter);
-                }
-
-                if (resource.Equals("Record", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (this.verifyRecordExists(name) == null)
-                    {
-                        return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Record was not found.", "404"), Configuration.Formatters.XmlFormatter);
-                    }
-                }
-                else if (resource.Equals("Notification", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (this.verifyNotifcationExists(name) == null)
-                    {
-                        return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Notification was not found.", "404"), Configuration.Formatters.XmlFormatter);
-                    }
-                }
-          
-
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
@@ -1349,23 +1340,14 @@ namespace SOMIOD.Controllers
                         };
                     }
                 }
-
-                if (ischildren != null)
-                {
-                    return Content(HttpStatusCode.OK, "OK");
-                }
-                else
-                {
-                    return Content(HttpStatusCode.NotFound, HandlerXML.responseError($"{resource} does not belong to the specified container.", "404"), Configuration.Formatters.XmlFormatter);
-                }
             }
             catch (SqlException ex)
             {
-                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError($"SQL Error: {ex.Message}", "500"), Configuration.Formatters.XmlFormatter);
+                return new ValidateResource(null, null, null, "An error occurred while processing your request. Please try again later.", HttpStatusCode.InternalServerError);
             }
             catch (Exception ex)
             {
-                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError($"Unexpected Error: {ex.Message}", "500"), Configuration.Formatters.XmlFormatter);
+                return new ValidateResource(null, null, null, "An error occurred while processing your request. Please try again later.", HttpStatusCode.InternalServerError);
             }
             finally
             {
@@ -1373,8 +1355,15 @@ namespace SOMIOD.Controllers
                 conn?.Close();
             }
 
+            if (ischildren != null)
+            {
+                return ischildren;
+            }
+            else
+            {
+                return new ValidateResource(null, null, null, $"{resource} does not belong to the specified container.", HttpStatusCode.NotFound);
+            }
         }
-
 
         [HttpPost]
         [Route("api/testXSD/somiod")]
@@ -1395,4 +1384,3 @@ namespace SOMIOD.Controllers
         #endregion
     }
 }
-
