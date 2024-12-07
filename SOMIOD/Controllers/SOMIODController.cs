@@ -438,11 +438,6 @@ namespace SOMIOD.Controllers
         [Route("api/somiod/{application}/{container}")]
         public IHttpActionResult GetContainer(string application, string container)
         {
-            SqlConnection conn = null;
-            SqlDataReader sqlReader = null;
-
-            Container containerToGet = null;
-
             ValidateResource resources = verifyParentOfContainer(application, container);
 
             if (resources.ErrorCode != HttpStatusCode.OK)
@@ -450,44 +445,7 @@ namespace SOMIOD.Controllers
                 return Content(resources.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, resources.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
             }
 
-            try
-            {
-                conn = new SqlConnection(strConnection);
-                conn.Open();
-
-                SqlCommand cmd = new SqlCommand("SELECT * FROM Container WHERE name = @name AND Parent = @parantId", conn);
-                cmd.Parameters.AddWithValue("@name", container);
-                cmd.Parameters.AddWithValue("@parantId", resources.Application.Id);
-
-                sqlReader = cmd.ExecuteReader();
-
-                while (sqlReader.Read())
-                {
-                    containerToGet = new Container
-                    {
-                        Id = (int)sqlReader["Id"],
-                        Name = (string)sqlReader["Name"],
-                        CreationDateTime = (DateTime)sqlReader["CreationDateTime"],
-                        Parent = (int)sqlReader["Parent"]
-                    };
-                }
-            }
-            catch (Exception ex)
-            {
-                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
-            }
-            finally
-            {
-                if (conn != null) { conn.Close(); }
-                if (sqlReader != null) { sqlReader.Close(); }
-            }
-
-            if (containerToGet == null)
-            {
-                return Content(HttpStatusCode.NotFound,HandlerXML.responseError("Container does not belong to the specified application.", "404"),Configuration.Formatters.XmlFormatter);
-            }
-
-            return Content(HttpStatusCode.OK, HandlerXML.responseContainer(containerToGet), Configuration.Formatters.XmlFormatter);
+            return Content(HttpStatusCode.OK, HandlerXML.responseContainer(resources.Container), Configuration.Formatters.XmlFormatter);
         }
 
 
@@ -693,10 +651,6 @@ namespace SOMIOD.Controllers
         [Route("api/somiod/{application}/{container}/record/{name}")]
         public IHttpActionResult GetRecord(string application, string container, string name)
         {
-            SqlConnection conn = null;
-            SqlDataReader sqlReader = null;
-            Record record = null;
-
             ValidateResource resources = verifyParentOfContainer(application, container);
 
             if (resources.ErrorCode != HttpStatusCode.OK)
@@ -710,46 +664,8 @@ namespace SOMIOD.Controllers
             {
                 return Content(validateResource.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, validateResource.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
             }
-            
-            try
-            {
-                conn = new SqlConnection(strConnection);
-                conn.Open();
-
-                SqlCommand cmd = new SqlCommand("SELECT * FROM Record WHERE name = @name AND Parent = @parantId", conn);
-                cmd.Parameters.AddWithValue("@name", name);
-                cmd.Parameters.AddWithValue("@parantId", resources.Container.Id);
-
-                sqlReader = cmd.ExecuteReader();
-
-                while (sqlReader.Read())
-                {
-                    record = new Record
-                    {
-                        Id = (int)sqlReader["Id"],
-                        Name = (string)sqlReader["Name"],
-                        Content = (string)sqlReader["Content"],
-                        CreationDateTime = (DateTime)sqlReader["CreationDateTime"],
-                        Parent = (int)sqlReader["Parent"]
-                    };
-                }
-            }
-            catch (Exception ex)
-            {
-                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
-            }
-            finally
-            {
-                if (conn != null) { conn.Close(); }
-                if (sqlReader != null) { sqlReader.Close(); }
-            }
-
-            if (record == null)
-            {
-                return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Record was not found.", "404"), Configuration.Formatters.XmlFormatter);
-            }
-
-            return Content(HttpStatusCode.OK, HandlerXML.responseRecord(record), Configuration.Formatters.XmlFormatter);
+           
+            return Content(HttpStatusCode.OK, HandlerXML.responseRecord((Record)resources.RecordOrNotification), Configuration.Formatters.XmlFormatter);
         }
 
 
@@ -882,11 +798,6 @@ namespace SOMIOD.Controllers
         [Route("api/somiod/{application}/{container}/notification/{name}")]
         public IHttpActionResult GetNotification(string application, string container, string name)
         {
-            SqlConnection conn = null;
-            SqlDataReader sqlReader = null;
-
-            Notification notification = null;
-
             ValidateResource resources = verifyParentOfContainer(application, container);
 
             if (resources.ErrorCode != HttpStatusCode.OK)
@@ -901,47 +812,7 @@ namespace SOMIOD.Controllers
                 return Content(validateResource.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, validateResource.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
             }
 
-            try
-            {
-                conn = new SqlConnection(strConnection);
-                conn.Open();
-
-                SqlCommand cmd = new SqlCommand("SELECT * FROM Notification WHERE name = @name AND Parent = @parantId", conn);
-                cmd.Parameters.AddWithValue("@name", name);
-                cmd.Parameters.AddWithValue("@parantId", resources.Container.Id);
-
-                sqlReader = cmd.ExecuteReader();
-
-                while (sqlReader.Read())
-                {
-                    notification = new Notification
-                    {
-                        Id = (int)sqlReader["Id"],
-                        Name = (string)sqlReader["Name"],
-                        Event = (int)sqlReader["Event"],
-                        Endpoint = (string)sqlReader["Endpoint"],
-                        Enabled = (bool)sqlReader["Enabled"],
-                        Parent = (int)sqlReader["Parent"],
-                        CreationDateTime = (DateTime)sqlReader["CreationDateTime"]
-                    };
-                }
-            }
-            catch (Exception ex)
-            {
-                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
-            }
-            finally
-            {
-                if (conn != null) { conn.Close(); }
-                if (sqlReader != null) { sqlReader.Close(); }
-            }
-
-            if (notification == null)
-            {
-                return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Notification was not found.", "404"), Configuration.Formatters.XmlFormatter);
-            }
-
-            return Content(HttpStatusCode.OK, HandlerXML.responseNotification(notification), Configuration.Formatters.XmlFormatter);
+            return Content(HttpStatusCode.OK, HandlerXML.responseNotification((Notification)resources.RecordOrNotification), Configuration.Formatters.XmlFormatter);
         }
 
 
@@ -1273,7 +1144,6 @@ namespace SOMIOD.Controllers
             return new ValidateResource(null, null, null, "Container does not belong to the specified application.", HttpStatusCode.NotFound);
         }
 
-
         private Object verifyParentOfRecordAndNotification(string container, string resource, string name)
         {
             SqlConnection conn = null;
@@ -1310,7 +1180,7 @@ namespace SOMIOD.Controllers
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@name", name);
                 cmd.Parameters.AddWithValue("@parentId", cont.Id);
-
+                
                 sqlReader = cmd.ExecuteReader();
 
                 if (sqlReader.Read())

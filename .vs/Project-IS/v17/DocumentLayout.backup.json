@@ -1,13 +1,20 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\josem\\source\\repos\\Project-IS\\",
+  "WorkspaceRootPath": "C:\\Users\\Tex\\Desktop\\Project-IS\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|c:\\users\\josem\\source\\repos\\project-is\\somiod\\controllers\\somiodcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|c:\\users\\tex\\desktop\\project-is\\somiod\\controllers\\somiodcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|solutionrelative:somiod\\controllers\\somiodcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|c:\\users\\josem\\source\\repos\\project-is\\somiod\\handlerxml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_LocalDB__MSSQLLocalDB/C__USERS_TEX_DESKTOP_PROJECT_IS_SOMIOD_APP_DATA_DATABASE.MDF/True/SqlTable/dbo.Application.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|c:\\users\\tex\\desktop\\project-is\\somiod\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|solutionrelative:somiod\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|C:\\Users\\Tex\\Desktop\\Project-IS\\somiod\\handlerxml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|solutionrelative:somiod\\handlerxml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -18,35 +25,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 6,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "SOMIODController.cs",
-              "DocumentMoniker": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\Controllers\\SOMIODController.cs",
-              "RelativeDocumentMoniker": "SOMIOD\\Controllers\\SOMIODController.cs",
-              "ToolTip": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\Controllers\\SOMIODController.cs",
-              "RelativeToolTip": "SOMIOD\\Controllers\\SOMIODController.cs",
-              "ViewState": "AgIAAHoDAAAAAAAAAAApwIYDAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-03T09:52:47.337Z",
-              "IsPinned": true,
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "HandlerXML.cs",
-              "DocumentMoniker": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\HandlerXML.cs",
-              "RelativeDocumentMoniker": "SOMIOD\\HandlerXML.cs",
-              "ToolTip": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\HandlerXML.cs",
-              "RelativeToolTip": "SOMIOD\\HandlerXML.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAABMBAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-07T16:56:36.479Z",
-              "EditorCaption": ""
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{74946827-37a0-11d2-a273-00c04f8ef4ff}"
@@ -62,6 +42,55 @@
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Web.config",
+              "DocumentMoniker": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\Web.config",
+              "RelativeDocumentMoniker": "SOMIOD\\Web.config",
+              "ToolTip": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\Web.config",
+              "RelativeToolTip": "SOMIOD\\Web.config",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAC8AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2024-12-07T17:08:14.884Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "dbo.Application [Data]",
+              "DocumentMoniker": "ViewDataWindow_MSSQL__/_LocalDB__MSSQLLocalDB/C__USERS_TEX_DESKTOP_PROJECT_IS_SOMIOD_APP_DATA_DATABASE.MDF/True/SqlTable/dbo.Application.sql",
+              "ToolTip": "dbo.Application [Data]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2024-12-07T17:05:40.357Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "SOMIODController.cs",
+              "DocumentMoniker": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\Controllers\\SOMIODController.cs",
+              "RelativeDocumentMoniker": "SOMIOD\\Controllers\\SOMIODController.cs",
+              "ToolTip": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\Controllers\\SOMIODController.cs",
+              "RelativeToolTip": "SOMIOD\\Controllers\\SOMIODController.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAawOcEAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-07T17:01:46.4Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "HandlerXML.cs",
+              "DocumentMoniker": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\HandlerXML.cs",
+              "RelativeDocumentMoniker": "SOMIOD\\HandlerXML.cs",
+              "ToolTip": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\HandlerXML.cs",
+              "RelativeToolTip": "SOMIOD\\HandlerXML.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQBAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-07T16:56:36.479Z",
+              "EditorCaption": ""
             }
           ]
         }
