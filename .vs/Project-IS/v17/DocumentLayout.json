@@ -3,16 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\josem\\source\\repos\\Project-IS\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|c:\\users\\josem\\source\\repos\\project-is\\somiod\\xmlvalidator.xsd||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|solutionrelative:somiod\\xmlvalidator.xsd||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|C:\\Users\\josem\\source\\repos\\Project-IS\\somiod\\controllers\\somiodcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|solutionrelative:somiod\\controllers\\somiodcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|C:\\Users\\josem\\source\\repos\\Project-IS\\somiod\\handlerxml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|solutionrelative:somiod\\handlerxml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|C:\\Users\\josem\\source\\repos\\Project-IS\\somiod\\controllers\\somiodcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|solutionrelative:somiod\\controllers\\somiodcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|c:\\users\\josem\\source\\repos\\project-is\\somiod\\xmlvalidator.xsd||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|solutionrelative:somiod\\xmlvalidator.xsd||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     }
   ],
   "DocumentGroupContainers": [
@@ -22,20 +22,21 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "SOMIODController.cs",
               "DocumentMoniker": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\Controllers\\SOMIODController.cs",
               "RelativeDocumentMoniker": "SOMIOD\\Controllers\\SOMIODController.cs",
               "ToolTip": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\Controllers\\SOMIODController.cs",
               "RelativeToolTip": "SOMIOD\\Controllers\\SOMIODController.cs",
-              "ViewState": "AgIAAOUDAAAAAAAAAAAAAAoEAAA6AAAAAAAAAA==",
+              "ViewState": "AgIAAP4CAAAAAAAAAAArwBQDAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-12-03T09:52:47.337Z",
-              "IsPinned": true
+              "IsPinned": true,
+              "EditorCaption": ""
             },
             {
               "$type": "Bookmark",
@@ -55,13 +56,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "XMLValidator.xsd",
               "DocumentMoniker": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\XMLValidator.xsd",
               "RelativeDocumentMoniker": "SOMIOD\\XMLValidator.xsd",
               "ToolTip": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\XMLValidator.xsd",
               "RelativeToolTip": "SOMIOD\\XMLValidator.xsd",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACQAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003579|",
               "WhenOpened": "2024-12-06T20:14:15.45Z",
               "EditorCaption": ""
@@ -74,9 +75,10 @@
               "RelativeDocumentMoniker": "SOMIOD\\HandlerXML.cs",
               "ToolTip": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\HandlerXML.cs",
               "RelativeToolTip": "SOMIOD\\HandlerXML.cs",
-              "ViewState": "AgIAABwAAAAAAAAAAAAQwDYAAAAgAAAAAAAAAA==",
+              "ViewState": "AgIAAAIAAAAAAAAAAAAcwAsAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-05T13:38:46.257Z"
+              "WhenOpened": "2024-12-05T13:38:46.257Z",
+              "EditorCaption": ""
             }
           ]
         }

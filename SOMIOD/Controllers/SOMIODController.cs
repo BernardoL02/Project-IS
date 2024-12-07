@@ -555,7 +555,7 @@ namespace SOMIOD.Controllers
 
         [HttpDelete]
         [Route("api/somiod/{application}/{container}")]
-        public IHttpActionResult DeleteApplication(string application, string container)
+        public IHttpActionResult DeleteContainer(string application, string container)
         {
             SqlConnection conn = null;
 
@@ -617,7 +617,7 @@ namespace SOMIOD.Controllers
             int affectedfRows = 0;
 
 
-            IHttpActionResult status = verifyParentofContainer(application, container);
+            IHttpActionResult status = verifyParentOfContainer(application, container);
 
             if (status.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
             {
@@ -681,7 +681,7 @@ namespace SOMIOD.Controllers
             Record record = null;
 
 
-            IHttpActionResult status = verifyParentofContainer(application, container);
+            IHttpActionResult status = verifyParentOfContainer(application, container);
 
             if (status.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
             {
@@ -734,11 +734,11 @@ namespace SOMIOD.Controllers
 
         [HttpDelete]
         [Route("api/somiod/{application}/{container}/record/{name}")]
-        public IHttpActionResult DeleteApplication(string application, string container, string name)
+        public IHttpActionResult DeleteRecord(string application, string container, string name)
         {
             SqlConnection conn = null;
 
-            IHttpActionResult status = verifyParentofContainer(application, container);
+            IHttpActionResult status = verifyParentOfContainer(application, container);
 
             if (status.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
             {
@@ -799,8 +799,6 @@ namespace SOMIOD.Controllers
         //-------------------------------------------------------------------------------------
         //--------------------------------- Suport Functions ----------------------------------
         //------------------------------------------------------------------------------------- 
-
-
 
         [HttpPost]
         [Route("api/somiod/{application}/{container}")]
@@ -972,7 +970,7 @@ namespace SOMIOD.Controllers
         }
 
 
-        private IHttpActionResult verifyParentofContainer(string application, string container)
+        private IHttpActionResult verifyParentOfContainer(string application, string container)
         {
             SqlConnection conn = null;
             SqlDataReader sqlReader = null;
@@ -1025,14 +1023,14 @@ namespace SOMIOD.Controllers
         {
             HandlerXML handlerXML = new HandlerXML();
 
-            bool isvalid = handlerXML.ValidateXML(recordXml);
+            string msgIsValid =  handlerXML.ValidateXML(recordXml);
 
-            if (isvalid == true)
+            if (msgIsValid == "Valid")
             {
                 return Content(HttpStatusCode.OK, "");
             }
 
-            return Content(HttpStatusCode.BadRequest, "");
+            return Content(HttpStatusCode.BadRequest, HandlerXML.responseError(msgIsValid, "400"), Configuration.Formatters.XmlFormatter);
         }
 
 

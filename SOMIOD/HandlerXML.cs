@@ -5,6 +5,7 @@ using System.Web;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Linq;
+using System.ComponentModel.DataAnnotations;
 
 
 namespace SOMIOD
@@ -12,60 +13,48 @@ namespace SOMIOD
     public class HandlerXML
     {
 
-        //XSD
-        string XmlFilePath = "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\XMLValidator.xsd";
-        string validationMessage = "";
-        private bool isValid;
+        #region XML Validation
+        string XmlFilePath = "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\XMLValidator.xsd";
+        string validationMessage = "Valid";
 
-        public bool ValidateXML(XElement xmlElement)
+        public string ValidateXML(XElement xmlElement)
         {
-            isValid = true;
             XmlDocument doc = new XmlDocument();
 
             if (xmlElement == null)
             {
-                isValid = false;
-                validationMessage = "ERROR: XML element is null."; // Mensagem de erro caso xmlElement seja null
-                return isValid; // Retorna false sem tentar continuar com o processamento
+                validationMessage = "ERROR: XML is null.";
+                return validationMessage;
             }
-
 
             try
             {
-                // Converter XElement para XmlDocument
                 using (System.IO.StringReader sr = new System.IO.StringReader(xmlElement.ToString()))
                 {
                     doc.LoadXml(sr.ReadToEnd());
                 }
 
-                // Adicionar o esquema XSD ao XmlDocument
                 doc.Schemas.Add(null, XmlFilePath);
 
-                // Validar o XML
                 doc.Validate(ValidationEventHandler);
-
             }
             catch (XmlException ex)
             {
-                isValid = false;
                 validationMessage = $"ERROR: {ex.ToString()}";
             }
             catch (XmlSchemaValidationException ex)
             {
-                isValid = false;
                 validationMessage = $"SCHEMA VALIDATION ERROR: {ex.Message}";
             }
             catch (Exception ex)
             {
-                isValid = false;
                 validationMessage = $"Unexpected error: {ex.Message}";
             }
-            return isValid;
+            return validationMessage;
         }
 
         private void ValidationEventHandler(object sender, ValidationEventArgs args)
         {
-            isValid = false;
             switch (args.Severity)
             {
                 case XmlSeverityType.Error:
@@ -78,10 +67,9 @@ namespace SOMIOD
                     break;
             }
         }
+        #endregion
 
-
-
-        //Responses
+        #region XML Responses
         public static XmlDocument responseApplications(List<Application> applicationList)
         {
             var xmlDoc = new XmlDocument();
@@ -145,7 +133,6 @@ namespace SOMIOD
             return xmlDoc;
         }
 
-
         public static XmlDocument responseContainers(List<Container> containersList)
         {
             var xmlDoc = new XmlDocument();
@@ -194,7 +181,6 @@ namespace SOMIOD
             return xmlDoc;
         }
 
-
         public static XmlDocument responseRecord(Record record)
         {
             var xmlDoc = new XmlDocument();
@@ -226,15 +212,9 @@ namespace SOMIOD
             return xmlDoc;
         }
 
+        #endregion
 
-
-
-
-
-
-
-
-        //Response errors
+        #region Error XML Responses
         public static XmlDocument responseError(string message, string errorCode)
         {
             var xmlDoc = new XmlDocument();
@@ -253,6 +233,6 @@ namespace SOMIOD
 
             return xmlDoc;
         }
-
+        #endregion
     }
 }
