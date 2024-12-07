@@ -14,7 +14,7 @@ namespace SOMIOD
     {
 
         #region XML Validation
-        string XmlFilePath = "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\XMLValidator.xsd";
+        string XmlFilePath = "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\XMLValidator.xsd";
         string validationMessage = "Valid";
 
         public string ValidateXML(XElement xmlElement)
@@ -208,6 +208,45 @@ namespace SOMIOD
             recordNode.AppendChild(recordParentNode);
 
             xmlDoc.AppendChild(recordNode);
+
+            return xmlDoc;
+        }
+
+        public static XmlDocument responseNotification(Notification notification)
+        {
+            var xmlDoc = new XmlDocument();
+
+            var notificationNode = xmlDoc.CreateElement("Notification");
+
+            var notificationIdNode = xmlDoc.CreateElement("Id");
+            notificationIdNode.InnerText = notification.Id.ToString();
+            notificationNode.AppendChild(notificationIdNode);
+
+            var notificationNameNode = xmlDoc.CreateElement("Name");
+            notificationNameNode.InnerText = notification.Name;
+            notificationNode.AppendChild(notificationNameNode);
+
+            var notificationEventNode = xmlDoc.CreateElement("Event");
+            notificationEventNode.InnerText = notification.Event.ToString();
+            notificationNode.AppendChild(notificationEventNode);
+
+            var notificationEndpointNode = xmlDoc.CreateElement("Endpoint");
+            notificationEndpointNode.InnerText = notification.Endpoint;
+            notificationNode.AppendChild(notificationEndpointNode);
+
+            var notificationEnabledNode = xmlDoc.CreateElement("Enabled");
+            notificationEnabledNode.InnerText = notification.Enabled.ToString();
+            notificationNode.AppendChild(notificationEnabledNode);
+
+            var notificationParentNode = xmlDoc.CreateElement("Parent");
+            notificationParentNode.InnerText = notification.Parent.ToString();
+            notificationNode.AppendChild(notificationParentNode);
+
+            var notificationCreationDateTimeNode = xmlDoc.CreateElement("CreationDateTime");
+            notificationCreationDateTimeNode.InnerText = notification.CreationDateTime.ToString("o");
+            notificationNode.AppendChild(notificationCreationDateTimeNode);
+
+            xmlDoc.AppendChild(notificationNode);
 
             return xmlDoc;
         }

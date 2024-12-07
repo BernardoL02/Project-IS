@@ -1,0 +1,10 @@
+[x] - Utilizar o verificar parentOf nas restantes funções
+[x] - Criar endpoints das notifications
+[x] - Utilizar o XML validator
+[x] - Questão do record e notification se são filhos do containerXX nos Gets
+[] - Otimização dos endpoints que chamam o ParentOf
+[] - Gets chamar a função element exist
+[x] - Tirar o sequence do Application XML e por all para dar o erro que não pode aparecer mais que uma vez
+ 
+No XML é preciso mensagens descritivas ou podemos só retornar XML inválido
+Temos que dar delete à restante informação que está relacionada com aquela que estamos a apagar

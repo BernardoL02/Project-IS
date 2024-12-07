@@ -27,7 +27,7 @@ namespace SOMIOD.Controllers
         string strConnection = System.Configuration.ConfigurationManager.ConnectionStrings["SOMIOD.Properties.Settings.ConnectionToDB"].ConnectionString;
 
 
-
+        #region Locate
 
         //-------------------------------------------------------------------------------------
         //--------------------------------------- Locate --------------------------------------
@@ -166,8 +166,10 @@ namespace SOMIOD.Controllers
 
             return Content(HttpStatusCode.OK, HandlerXML.responseContainers(NamesList), Configuration.Formatters.XmlFormatter);
         }
+        #endregion
 
 
+        #region Applications
 
         //-------------------------------------------------------------------------------------
         //------------------------------------ Applications -----------------------------------
@@ -179,9 +181,12 @@ namespace SOMIOD.Controllers
             SqlConnection conn = null;
             int affectedfRows = -1;
 
-            if (applicationXml == null)
+            HandlerXML handlerXML = new HandlerXML();
+            string validationMessage = handlerXML.ValidateXML(applicationXml);
+
+            if (!validationMessage.Equals("Valid"))
             {
-                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError("Invalid XML body.", "400"), Configuration.Formatters.XmlFormatter);
+                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"Invalid XML: {validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
             }
 
             try
@@ -235,9 +240,12 @@ namespace SOMIOD.Controllers
             SqlConnection conn = null;
             int affectedRows = -1;
 
-            if (applicationXml == null)
+            HandlerXML handlerXML = new HandlerXML();
+            string validationMessage = handlerXML.ValidateXML(applicationXml);
+
+            if (!validationMessage.Equals("Valid"))
             {
-                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError("Invalid XML body.", "400"), Configuration.Formatters.XmlFormatter);
+                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"Invalid XML: {validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
             }
 
             if (this.verifyApplicationExists(application) == null)
@@ -334,7 +342,10 @@ namespace SOMIOD.Controllers
             return Content(HttpStatusCode.OK, app, Configuration.Formatters.XmlFormatter);
         }
 
+        #endregion
 
+
+        #region Containers
         //-------------------------------------------------------------------------------------
         //------------------------------------- Containers ------------------------------------
         //------------------------------------------------------------------------------------- 
@@ -346,9 +357,12 @@ namespace SOMIOD.Controllers
             SqlConnection conn = null;
             int affectedfRows = -1;
 
-            if (containerXml == null)
+            HandlerXML handlerXML = new HandlerXML();
+            string validationMessage = handlerXML.ValidateXML(containerXml);
+
+            if (!validationMessage.Equals("Valid"))
             {
-                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError("Invalid XML body.", "400"), Configuration.Formatters.XmlFormatter);
+                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"Invalid XML: {validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
             }
 
             Application app = this.verifyApplicationExists(application);
@@ -411,17 +425,14 @@ namespace SOMIOD.Controllers
 
             Container containerToGet = null;
 
+            IHttpActionResult status = verifyParentOfContainer(application, container);
+
+            if (status.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
+            {
+                return status;
+            }
+
             Application app = this.verifyApplicationExists(application);
-
-            if (app == null)
-            {
-                return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Application was not found.", "404"), Configuration.Formatters.XmlFormatter);
-            }
-
-            if (this.verifyContainerExists(container) == null)
-            {
-                return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Container was not found.", "404"), Configuration.Formatters.XmlFormatter);
-            }
 
             try
             {
@@ -471,23 +482,24 @@ namespace SOMIOD.Controllers
             SqlConnection conn = null;
             int affectedRows = -1;
 
-            if (containerXml == null)
+            HandlerXML handlerXML = new HandlerXML();
+            string validationMessage = handlerXML.ValidateXML(containerXml);
+
+            if (!validationMessage.Equals("Valid"))
             {
-                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError("Invalid XML body.", "400"), Configuration.Formatters.XmlFormatter);
+                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"Invalid XML: {validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
+            }
+
+            IHttpActionResult status = verifyParentOfContainer(application, container);
+
+            if (status.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
+            {
+                return status;
             }
 
             Application app = this.verifyApplicationExists(application);
-            if (app == null)
-            {
-                return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Application was not found.", "404"), Configuration.Formatters.XmlFormatter);
-            }
-
             Container cont = this.verifyContainerExists(container);
-            if (cont == null)
-            {
-                return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Container was not found.", "404"), Configuration.Formatters.XmlFormatter);
-            }
-
+       
             //Verificar valores no xml
             string newName = containerXml.Element("Name")?.Value;
             string newParentId = containerXml.Element("Parent")?.Value;
@@ -559,19 +571,15 @@ namespace SOMIOD.Controllers
         {
             SqlConnection conn = null;
 
+            IHttpActionResult status = verifyParentOfContainer(application, container);
+
+            if (status.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
+            {
+                return status;
+            }
+
             Application app = this.verifyApplicationExists(application);
-            if (app == null)
-            {
-                return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Application was not found.", "404"), Configuration.Formatters.XmlFormatter);
-            }
-
             Container cont = this.verifyContainerExists(container);
-            if (cont == null)
-            {
-                return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Container was not found.", "404"), Configuration.Formatters.XmlFormatter);
-            }
-
-            // TODO Verificar se o Container Ã© filho da app
 
             try
             {
@@ -603,19 +611,28 @@ namespace SOMIOD.Controllers
 
             return Content(HttpStatusCode.OK, cont, Configuration.Formatters.XmlFormatter);
         }
+        #endregion
 
 
+        #region Record
 
         //-------------------------------------------------------------------------------------
         //--------------------------------------- Record --------------------------------------
         //------------------------------------------------------------------------------------- 
 
-        private IHttpActionResult PostRecord(string application, string container, [FromBody] XElement containerXml)
+        private IHttpActionResult PostRecord(string application, string container, [FromBody] XElement recordXml)
         {
             
             SqlConnection conn = null;
             int affectedfRows = 0;
 
+            HandlerXML handlerXML = new HandlerXML();
+            string validationMessage = handlerXML.ValidateXML(recordXml);
+
+            if (!validationMessage.Equals("Valid"))
+            {
+                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"Invalid XML: {validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
+            }
 
             IHttpActionResult status = verifyParentOfContainer(application, container);
 
@@ -629,11 +646,9 @@ namespace SOMIOD.Controllers
             {
                 var record = new
                 {
-                    Name = containerXml.Element("Name")?.Value,
-                    Content = containerXml.Element("Content")?.Value
+                    Name = recordXml.Element("Name")?.Value,
+                    Content = recordXml.Element("Content")?.Value
                 };
-
-                //TODO --> Validar que o XML tem o Name e o Content
 
                 conn = new SqlConnection(strConnection);
                 conn.Open();
@@ -687,6 +702,14 @@ namespace SOMIOD.Controllers
             {
                 return status;
             }
+
+            IHttpActionResult ischildren = verifyParentOfRecordAndNotification(container, "Record", name); ;
+
+            if (ischildren.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
+            {
+                return ischildren;
+            }
+           
 
             Container cont = this.verifyContainerExists(container);
 
@@ -743,7 +766,13 @@ namespace SOMIOD.Controllers
             if (status.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
             {
                 return status;
+            }
 
+            IHttpActionResult ischildren = verifyParentOfRecordAndNotification(container, "Record", name); ;
+
+            if (ischildren.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
+            {
+                return ischildren;
             }
 
             Container cont = this.verifyContainerExists(container);
@@ -779,16 +808,200 @@ namespace SOMIOD.Controllers
 
             return Content(HttpStatusCode.OK, record, Configuration.Formatters.XmlFormatter);
         }
+        #endregion
 
 
-
+        #region Notifications
         //-------------------------------------------------------------------------------------
         //------------------------------------ Notifications ----------------------------------
         //-------------------------------------------------------------------------------------
 
+        private IHttpActionResult PostNotification(string application, string container, [FromBody] XElement notificationXml)
+        {
+            SqlConnection conn = null;
+            int affectedfRows = 0;
+
+            HandlerXML handlerXML = new HandlerXML();
+            string validationMessage = handlerXML.ValidateXML(notificationXml);
+
+            if (!validationMessage.Equals("Valid"))
+            {
+                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"Invalid XML: {validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
+            }
+
+            IHttpActionResult status = verifyParentOfContainer(application, container);
+            if (status.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
+            {
+                return status;
+            }
+
+            Container cont = verifyContainerExists(container);
+            try
+            {
+                var notification = new
+                {
+                    Name = notificationXml.Element("Name").Value,
+                    Event = notificationXml.Element("Event").Value,
+                    Endpoint = notificationXml.Element("Endpoint").Value,
+                    Enabled = notificationXml.Element("Enabled").Value
+                };
+
+                conn = new SqlConnection(strConnection);
+                conn.Open();
+
+                SqlCommand command = new SqlCommand("INSERT INTO Notification(Name,Parent,Event,Endpoint,Enabled) " +
+                                                                 "VALUES (@name,@parentId,@event,@endpoint,@enabled)", conn);
+
+                command.Parameters.AddWithValue("@name", notification.Name);
+                command.Parameters.AddWithValue("@parentId", cont.Id);
+                command.Parameters.AddWithValue("@event", notification.Event);
+                command.Parameters.AddWithValue("@endpoint", notification.Endpoint);
+                command.Parameters.AddWithValue("@enabled", notification.Enabled);
+
+                affectedfRows = command.ExecuteNonQuery();
+            }
+            catch (SqlException ex)
+            {
+                if (ex.Number == 2627 || ex.Number == 2601)
+                {
+                    return Content(HttpStatusCode.Conflict, HandlerXML.responseError("Notification name already exists", "409"), Configuration.Formatters.XmlFormatter);
+                }
+                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
+            }
+            finally
+            {
+                if (conn != null) { conn.Close(); }
+            }
+
+            if (affectedfRows > 0)
+            {
+                return StatusCode(HttpStatusCode.Created);
+            }
+            else
+            {
+                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("The notification could not be created.", "500"), Configuration.Formatters.XmlFormatter);
+            }
+        }
 
 
+        [HttpGet]
+        [Route("api/somiod/{application}/{container}/notification/{name}")]
+        public IHttpActionResult GetNotification(string application, string container, string name)
+        {
+            SqlConnection conn = null;
+            SqlDataReader sqlReader = null;
 
+            Notification notification = null;
+
+            IHttpActionResult status = verifyParentOfContainer(application, container);
+
+            if (status.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
+            {
+                return status;
+            }
+
+            IHttpActionResult ischildren = verifyParentOfRecordAndNotification(container, "Notification", name);
+
+            if (ischildren.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
+            {
+                return ischildren;
+            }
+
+            Container cont = this.verifyContainerExists(container);
+
+            try
+            {
+                conn = new SqlConnection(strConnection);
+                conn.Open();
+
+                SqlCommand cmd = new SqlCommand("SELECT * FROM Notification WHERE name = @name AND Parent = @parantId", conn);
+                cmd.Parameters.AddWithValue("@name", name);
+                cmd.Parameters.AddWithValue("@parantId", cont.Id);
+
+                sqlReader = cmd.ExecuteReader();
+
+                while (sqlReader.Read())
+                {
+                    notification = new Notification
+                    {
+                        Id = (int)sqlReader["Id"],
+                        Name = (string)sqlReader["Name"],
+                        Event = (int)sqlReader["Event"],
+                        Endpoint = (string)sqlReader["Endpoint"],
+                        Enabled = (bool)sqlReader["Enabled"],
+                        Parent = (int)sqlReader["Parent"],
+                        CreationDateTime = (DateTime)sqlReader["CreationDateTime"]
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
+            }
+            finally
+            {
+                if (conn != null) { conn.Close(); }
+                if (sqlReader != null) { sqlReader.Close(); }
+            }
+
+            if (notification == null)
+            {
+                return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Notification was not found.", "404"), Configuration.Formatters.XmlFormatter);
+            }
+
+            return Content(HttpStatusCode.OK, HandlerXML.responseNotification(notification), Configuration.Formatters.XmlFormatter);
+        }
+
+
+        [HttpDelete]
+        [Route("api/somiod/{application}/{container}/notification/{name}")]
+        public IHttpActionResult DeleteNotification(string application, string container, string name)
+        {
+            SqlConnection conn = null;
+
+            IHttpActionResult status = verifyParentOfContainer(application, container);
+
+            if (status.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
+            {
+                return status;
+            }
+
+            Container cont = this.verifyContainerExists(container);
+            Notification notification = this.verifyNotifcationExists(name);
+
+            if (notification == null)
+            {
+                return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Notification was not found.", "404"), Configuration.Formatters.XmlFormatter);
+            }
+
+            try
+            {
+                conn = new SqlConnection(strConnection);
+                conn.Open();
+
+                SqlCommand cmd = new SqlCommand("DELETE FROM Notification WHERE Name = @name AND Parent = @parantId", conn);
+                cmd.Parameters.AddWithValue("@name", name);
+                cmd.Parameters.AddWithValue("@parantId", cont.Id);
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (SqlException ex)
+            {
+                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
+            }
+            catch (Exception ex)
+            {
+                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
+            }
+            finally
+            {
+                if (conn != null) { conn.Close(); }
+            }
+
+            return Content(HttpStatusCode.OK, notification, Configuration.Formatters.XmlFormatter);
+        }
+
+        #endregion
 
 
 
@@ -802,26 +1015,35 @@ namespace SOMIOD.Controllers
 
         [HttpPost]
         [Route("api/somiod/{application}/{container}")]
-        public IHttpActionResult PostRecordOrNotification(string application, string container, [FromBody] XElement recordXml)
+        public IHttpActionResult PostRecordOrNotification(string application, string container, [FromBody] XElement elementXML)
         {
-            if (recordXml == null)
+            HandlerXML handlerXML = new HandlerXML();
+            string validationMessage = handlerXML.ValidateXML(elementXML);
+
+            if (!validationMessage.Equals("Valid"))
             {
-                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError("Invalid XML body.", "400"), Configuration.Formatters.XmlFormatter);
+                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"Invalid XML: {validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
+            }
+
+            IHttpActionResult status = verifyParentOfContainer(application, container);
+
+            if (status.ExecuteAsync(CancellationToken.None).Result.StatusCode != HttpStatusCode.OK)
+            {
+                return status;
             }
 
             try
             {
-                string rootName = recordXml.Name.LocalName;
+                string rootName = elementXML.Name.LocalName;
 
                 if (rootName.Equals("Record", StringComparison.OrdinalIgnoreCase))
-                {
-                    
-                    return PostRecord(application, container, recordXml);
+                { 
+                    return PostRecord(application, container, elementXML);
                 }
 
                 if (rootName.Equals("Notification", StringComparison.OrdinalIgnoreCase))
                 {
-                    return Content(HttpStatusCode.OK, "Notification received.");
+                    return PostNotification(application, container, elementXML);
                 }
 
                 return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"Unexpected root element: {rootName}. Expected 'Record' or 'Notification'.", "400"), Configuration.Formatters.XmlFormatter);
@@ -969,6 +1191,54 @@ namespace SOMIOD.Controllers
             return null;
         }
 
+        private Notification verifyNotifcationExists(string name)
+        {
+            SqlConnection conn = null;
+            SqlDataReader sqlReader = null;
+            Notification notification = null;
+
+            try
+            {
+                conn = new SqlConnection(strConnection);
+                conn.Open();
+
+                SqlCommand command = new SqlCommand("SELECT * FROM Notification WHERE name = @notificationName", conn);
+                command.Parameters.AddWithValue("@notificationName", name);
+
+                sqlReader = command.ExecuteReader();
+
+                while (sqlReader.Read())
+                {
+                    notification = new Notification
+                    {
+                        Id = (int)sqlReader["Id"],
+                        Name = (string)sqlReader["Name"],
+                        Event = (int)sqlReader["Event"],
+                        Endpoint = (string)sqlReader["Endpoint"],
+                        Enabled = (bool)sqlReader["Enabled"],
+                        Parent = (int)sqlReader["Parent"],
+                        CreationDateTime = (DateTime)sqlReader["CreationDateTime"]
+                    };
+                }
+
+                if (notification != null)
+                {
+                    return notification;
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+            finally
+            {
+                if (conn != null) { conn.Close(); }
+                if (sqlReader != null) { sqlReader.Close(); }
+            }
+
+            return null;
+        }
+
 
         private IHttpActionResult verifyParentOfContainer(string application, string container)
         {
@@ -1016,6 +1286,100 @@ namespace SOMIOD.Controllers
 
             return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Container does not belong to the specified application.", "404"), Configuration.Formatters.XmlFormatter);
         }
+
+        private IHttpActionResult verifyParentOfRecordAndNotification(string container, string resource, string name)
+        {
+            SqlConnection conn = null;
+            SqlDataReader sqlReader = null;
+            object ischildren = null;
+
+            try
+            {
+                Container cont = this.verifyContainerExists(container);
+                if (cont == null)
+                {
+                    return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Container was not found.", "404"), Configuration.Formatters.XmlFormatter);
+                }
+
+                if (resource.Equals("Record", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (this.verifyRecordExists(name) == null)
+                    {
+                        return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Record was not found.", "404"), Configuration.Formatters.XmlFormatter);
+                    }
+                }
+                else if (resource.Equals("Notification", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (this.verifyNotifcationExists(name) == null)
+                    {
+                        return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Notification was not found.", "404"), Configuration.Formatters.XmlFormatter);
+                    }
+                }
+          
+
+                conn = new SqlConnection(strConnection);
+                conn.Open();
+
+                string query = $"SELECT * FROM {resource} WHERE Name = @name AND Parent = @parentId";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@name", name);
+                cmd.Parameters.AddWithValue("@parentId", cont.Id);
+
+                sqlReader = cmd.ExecuteReader();
+
+                if (sqlReader.Read())
+                {
+                    if (resource.Equals("Record", StringComparison.OrdinalIgnoreCase))
+                    {
+                        ischildren = new Record
+                        {
+                            Id = (int)sqlReader["Id"],
+                            Name = (string)sqlReader["Name"],
+                            Content = (string)sqlReader["Content"],
+                            CreationDateTime = (DateTime)sqlReader["CreationDateTime"],
+                            Parent = (int)sqlReader["Parent"]
+                        };
+                    }
+                    else if (resource.Equals("Notification", StringComparison.OrdinalIgnoreCase))
+                    {
+                        ischildren = new Notification
+                        {
+                            Id = (int)sqlReader["Id"],
+                            Name = (string)sqlReader["Name"],
+                            Event = (int)sqlReader["Event"],
+                            Endpoint = (string)sqlReader["Endpoint"],
+                            Enabled = (bool)sqlReader["Enabled"],
+                            CreationDateTime = (DateTime)sqlReader["CreationDateTime"],
+                            Parent = (int)sqlReader["Parent"]
+                        };
+                    }
+                }
+
+                if (ischildren != null)
+                {
+                    return Content(HttpStatusCode.OK, "OK");
+                }
+                else
+                {
+                    return Content(HttpStatusCode.NotFound, HandlerXML.responseError($"{resource} does not belong to the specified container.", "404"), Configuration.Formatters.XmlFormatter);
+                }
+            }
+            catch (SqlException ex)
+            {
+                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError($"SQL Error: {ex.Message}", "500"), Configuration.Formatters.XmlFormatter);
+            }
+            catch (Exception ex)
+            {
+                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError($"Unexpected Error: {ex.Message}", "500"), Configuration.Formatters.XmlFormatter);
+            }
+            finally
+            {
+                sqlReader?.Close();
+                conn?.Close();
+            }
+
+        }
+
 
         [HttpPost]
         [Route("api/testXSD/somiod")]
