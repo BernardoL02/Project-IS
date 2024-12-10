@@ -6,8 +6,13 @@
 [X] - Gets chamar a função element exist
 [x] - Tirar o sequence do Application XML e por all para dar o erro que não pode aparecer mais que uma vez
 [X] - Colocar caminho XML dinâmico
-[] - Otimizacao dos GETS
+[x] - Otimizacao dos GETS
+[x] - Validar os locates e Body dos locates
 
 -------- Perguntas Pof --------
-No XML é preciso mensagens descritivas ou podemos só retornar XML inválido
-Temos que dar delete à restante informação que está relacionada com aquela que estamos a apagar
+No XML é preciso mensagens descritivas ou podemos só retornar XML inválido - Excelente Abordagem
+Temos que dar delete à restante informação que está relacionada com aquela que estamos a apagar - Apagar tudo
+
+- Adicionar no relatório uma justificação bem fundamentada do porquê de não utilizarmos o atributo res_type (xml mais clean e não é obrigatório no enunciado)
+- Justificar o uso de mensagens descritivas mesmo que isso vá contra algumas boas práticas de segurança
+
