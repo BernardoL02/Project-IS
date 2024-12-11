@@ -8,6 +8,10 @@
 [X] - Colocar caminho XML dinâmico
 [x] - Otimizacao dos GETS
 [x] - Validar os locates e Body dos locates
+[] - Retirar warnings do projeto (ex)
+[] - Ao fazer delete remover tudo
+[] - Retirar da função verifyParentOfRecordAndNotification a procura do container, pois já é feita anteriormente
+[] - Verificar se existem + de um elemento no post da notification
 
 -------- Perguntas Pof --------
 No XML é preciso mensagens descritivas ou podemos só retornar XML inválido - Excelente Abordagem

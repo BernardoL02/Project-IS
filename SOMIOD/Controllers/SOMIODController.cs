@@ -18,6 +18,7 @@ using System.Xml.Serialization;
 using System.Configuration;
 using System.Net.Http;
 using System.Threading;
+using System.Collections;
 
 
 namespace SOMIOD.Controllers
@@ -146,11 +147,11 @@ namespace SOMIOD.Controllers
                         break;
 
                     case "RECORD":
-                        query = "SELECT Record.name FROM Record JOIN container ON Record.parent = container.id JOIN application ON container.parent = application.id WHERE application.name = @application";
+                        query = "SELECT Record.name FROM Record JOIN Container ON Record.parent = container.id JOIN application ON container.parent = application.id WHERE application.name = @application";
                         break;
 
                     case "NOTIFICATION":
-                        query = "SELECT Notification.name FROM Notification JOIN Notification ON Notification.parent = container.id JOIN application ON container.parent = application.id WHERE application.name = @application";
+                        query = "SELECT Notification.name FROM Notification JOIN Container ON Notification.parent = container.id JOIN application ON container.parent = application.id WHERE application.name = @application";
                         break;
 
                     default:
@@ -182,7 +183,9 @@ namespace SOMIOD.Controllers
                 if (sqlReader != null) { sqlReader.Close(); }
             }
 
-            return Content(HttpStatusCode.OK, HandlerXML.responseContainers(NamesList), Configuration.Formatters.XmlFormatter);
+            headerValue = headerValue.ToLower(); 
+
+            return Content(HttpStatusCode.OK, HandlerXML.responseContainers(NamesList, char.ToUpper(headerValue[0]) + headerValue.Substring(1)), Configuration.Formatters.XmlFormatter);
         }
         #endregion
 
@@ -662,7 +665,7 @@ namespace SOMIOD.Controllers
 
             if (resources.RecordOrNotification is ValidateResource validateResource)
             {
-                return Content(validateResource.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, validateResource.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
+                return Content(validateResource.ErrorCode, HandlerXML.responseError(validateResource.ErrorMessage, validateResource.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
             }
            
             return Content(HttpStatusCode.OK, HandlerXML.responseRecord((Record)resources.RecordOrNotification), Configuration.Formatters.XmlFormatter);
@@ -686,7 +689,7 @@ namespace SOMIOD.Controllers
 
             if (resources.RecordOrNotification is ValidateResource validateResource)
             {
-                return Content(validateResource.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, validateResource.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
+                return Content(validateResource.ErrorCode, HandlerXML.responseError(validateResource.ErrorMessage, validateResource.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
             }
             else
             {
@@ -809,7 +812,7 @@ namespace SOMIOD.Controllers
 
             if (resources.RecordOrNotification is ValidateResource validateResource)
             {
-                return Content(validateResource.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, validateResource.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
+                return Content(validateResource.ErrorCode, HandlerXML.responseError(validateResource.ErrorMessage, validateResource.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
             }
 
             return Content(HttpStatusCode.OK, HandlerXML.responseNotification((Notification)resources.RecordOrNotification), Configuration.Formatters.XmlFormatter);
@@ -833,7 +836,7 @@ namespace SOMIOD.Controllers
 
             if (resources.RecordOrNotification is ValidateResource validateResource)
             {
-                return Content(validateResource.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, validateResource.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
+                return Content(validateResource.ErrorCode, HandlerXML.responseError(validateResource.ErrorMessage, validateResource.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
             }
             else
             {
@@ -865,6 +868,73 @@ namespace SOMIOD.Controllers
             }
 
             return Content(HttpStatusCode.OK, HandlerXML.responseNotification((Notification)resources.RecordOrNotification), Configuration.Formatters.XmlFormatter);
+        }
+
+        [HttpPatch]
+        [Route("api/somiod/{application}/{container}/notification/{name}")]
+        public IHttpActionResult ToggleNotification(string application, string container, string name, [FromBody] XElement notificationXml)
+        {
+            SqlConnection conn = null;
+            int affectedRows = -1;
+
+            HandlerXML handlerXML = new HandlerXML();
+            string validationMessage = handlerXML.ValidateXML(notificationXml);
+
+            if (!validationMessage.Equals("Valid"))
+            {
+                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"Invalid XML: {validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
+            }
+
+            if (notificationXml.Elements().Count() != 1)
+            {
+                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError("The notification state change must contain only the 'Enabled' element.", "400"), Configuration.Formatters.XmlFormatter);
+            }
+
+            int enabled = int.Parse(notificationXml.Elements().First().Value);
+
+            ValidateResource resources = verifyParentOfContainer(application, container);
+
+            if (resources.ErrorCode != HttpStatusCode.OK)
+            {
+                return Content(resources.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, resources.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
+            }
+
+            resources.RecordOrNotification = verifyParentOfRecordAndNotification(container, "Notification", name);
+
+            if (resources.RecordOrNotification is ValidateResource validateResource)
+            {
+                return Content(validateResource.ErrorCode, HandlerXML.responseError(validateResource.ErrorMessage, validateResource.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
+            }
+
+            try
+            {
+                conn = new SqlConnection(strConnection);
+                conn.Open();
+
+                SqlCommand command = new SqlCommand("UPDATE Notification SET Enabled = @enabled WHERE Parent = @parantId AND name = @notificationName", conn);
+                command.Parameters.AddWithValue("@enabled", enabled);
+                command.Parameters.AddWithValue("@parantId", resources.Container.Id);
+                command.Parameters.AddWithValue("@notificationName", name);
+
+                affectedRows = command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
+            }
+            finally
+            {
+                if (conn != null) { conn.Close(); }
+            }
+
+            if (affectedRows > 0)
+            {
+                return Content(HttpStatusCode.OK, this.verifyNotifcationExists(name), Configuration.Formatters.XmlFormatter);
+            }
+            else
+            {
+                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("The notification could not be updated.", "500"), Configuration.Formatters.XmlFormatter);
+            }
         }
 
         #endregion
