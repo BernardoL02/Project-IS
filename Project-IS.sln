@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Switch", "Switch\Switch.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SOMIOD", "SOMIOD\SOMIOD.csproj", "{F6784133-4CC0-48A1-95B1-C7665BA9B125}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Publisher", "Publisher\Publisher.csproj", "{DEFB4607-CBA2-42E8-BF62-2C54083717DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Subscriber", "Subscriber\Subscriber.csproj", "{F296FA1B-D531-41D3-B6EE-EB72CA8BC744}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{F6784133-4CC0-48A1-95B1-C7665BA9B125}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6784133-4CC0-48A1-95B1-C7665BA9B125}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6784133-4CC0-48A1-95B1-C7665BA9B125}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEFB4607-CBA2-42E8-BF62-2C54083717DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEFB4607-CBA2-42E8-BF62-2C54083717DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEFB4607-CBA2-42E8-BF62-2C54083717DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEFB4607-CBA2-42E8-BF62-2C54083717DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F296FA1B-D531-41D3-B6EE-EB72CA8BC744}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F296FA1B-D531-41D3-B6EE-EB72CA8BC744}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F296FA1B-D531-41D3-B6EE-EB72CA8BC744}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F296FA1B-D531-41D3-B6EE-EB72CA8BC744}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
