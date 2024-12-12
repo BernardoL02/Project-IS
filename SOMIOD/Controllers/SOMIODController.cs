@@ -726,7 +726,7 @@ namespace SOMIOD.Controllers
 
             if (affectedfRows > 0)
             {
-                triggerNotification(1,record.Content, resources.Container.Id);
+                triggerNotification(1, record.Content, resources.Container.Id);
 
                 return StatusCode(HttpStatusCode.Created);
             }
@@ -764,6 +764,7 @@ namespace SOMIOD.Controllers
         {
             SqlConnection conn = null;
             SqlCommand cmd = null;
+            Record record = null;
 
             ValidateResource resources = verifyParentOfContainer(application, container);
 
@@ -780,7 +781,7 @@ namespace SOMIOD.Controllers
             }
             else
             {
-                resources.RecordOrNotification = (Record)resources.RecordOrNotification;
+                record = (Record)resources.RecordOrNotification;
             }
 
             try
@@ -806,6 +807,8 @@ namespace SOMIOD.Controllers
                 if (conn != null) { conn.Close(); }
                 if(cmd != null) { cmd.Dispose(); }
             }
+
+            triggerNotification(2, record.Content, resources.Container.Id);
 
             return Content(HttpStatusCode.OK, HandlerXML.responseRecord((Record)resources.RecordOrNotification), Configuration.Formatters.XmlFormatter);
         }
@@ -1031,7 +1034,7 @@ namespace SOMIOD.Controllers
             }
         }
 
-        private Notification triggerNotification(int evento, string content, int containerId)
+        private void triggerNotification(int evento, string content, int containerId)
         {
             SqlConnection conn = null;
             SqlCommand cmd = null;
@@ -1040,7 +1043,6 @@ namespace SOMIOD.Controllers
 
             try
             {
-
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
@@ -1050,51 +1052,33 @@ namespace SOMIOD.Controllers
 
                 sqlReader = cmd.ExecuteReader();
 
+
+                MqttClient mcClient = new MqttClient("127.0.0.1");
+
+                string clientId = Guid.NewGuid().ToString();
+
+                mcClient.Connect(clientId);
+
                 while (sqlReader.Read())
                 {
                     notification = new Notification
                     {
-                        Id = (int)sqlReader["Id"],
-                        Name = (string)sqlReader["Name"],
-                        Event = (int)sqlReader["Event"],
                         Endpoint = (string)sqlReader["Endpoint"],
-                        Enabled = (bool)sqlReader["Enabled"],
-                        Parent = (int)sqlReader["Parent"],
-                        CreationDateTime = (DateTime)sqlReader["CreationDateTime"]
                     };
-                }
 
-                if (notification != null)
-                {
-                    MqttClient mcClient = new MqttClient("127.0.0.1");
-
-                    string clientId = Guid.NewGuid().ToString();
-
-                    mcClient.Connect(clientId);
-
-                    if (mcClient.IsConnected)
+                    if (notification != null)
                     {
-                        mcClient.Publish(notification.Endpoint, Encoding.UTF8.GetBytes(notification.ToString()));
+                        if (mcClient.IsConnected)
+                        {
+                            mcClient.Publish(notification.Endpoint, Encoding.UTF8.GetBytes(content));
+                        }
                     }
-                    
                 }
-                else
-                {
-                    Console.WriteLine("No notifications found");
-                }
-                return notification;
-
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                return null;
             }
             finally
             {
-                sqlReader?.Close();
-                conn?.Close();
+                if(sqlReader != null) { sqlReader.Close(); }
+                if(conn != null) { conn.Close(); }
             }
         }
 
