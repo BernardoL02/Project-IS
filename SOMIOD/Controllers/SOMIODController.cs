@@ -63,6 +63,7 @@ namespace SOMIOD.Controllers
             string headerValue = null;
             SqlConnection conn = null;
             SqlDataReader reader = null;
+            SqlCommand command = null;
 
             if (Request.Headers.TryGetValues("somiod-locate", out headerValues))
             {
@@ -84,7 +85,7 @@ namespace SOMIOD.Controllers
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand command = new SqlCommand($"SELECT name FROM {headerValue}", conn);
+                command = new SqlCommand($"SELECT name FROM {headerValue}", conn);
 
                 reader = command.ExecuteReader();
 
@@ -102,8 +103,9 @@ namespace SOMIOD.Controllers
             }
             finally
             {
-                conn.Close();
-                reader.Close();
+                if (conn != null) { conn.Close(); }
+                if (reader != null) { reader.Close(); }
+                if (command != null) { command.Dispose(); }
             }
 
             return Content(System.Net.HttpStatusCode.OK, HandlerXML.responseApplications(applicationList), Configuration.Formatters.XmlFormatter);
@@ -118,6 +120,7 @@ namespace SOMIOD.Controllers
             string headerValue = null;
             SqlConnection conn = null;
             SqlDataReader sqlReader = null;
+            SqlCommand command = null;
             List<string> NamesList = null;
 
             Application applicationInfo = this.verifyApplicationExists(application);
@@ -163,7 +166,7 @@ namespace SOMIOD.Controllers
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand command = new SqlCommand(query, conn);
+                command = new SqlCommand(query, conn);
 
                 command.Parameters.AddWithValue("@application", application);
 
@@ -183,6 +186,7 @@ namespace SOMIOD.Controllers
             {
                 if(conn != null) { conn.Close(); }
                 if (sqlReader != null) { sqlReader.Close(); }
+                if (command != null) { command.Dispose(); }
             }
 
             headerValue = headerValue.ToLower(); 
@@ -201,6 +205,7 @@ namespace SOMIOD.Controllers
         [Route("api/somiod")]
         public IHttpActionResult PostApplication([FromBody] XElement applicationXml)
         {
+            SqlCommand command = null;
             SqlConnection conn = null;
             int affectedfRows = -1;
 
@@ -222,7 +227,7 @@ namespace SOMIOD.Controllers
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand command = new SqlCommand("INSERT INTO Application(Name) VALUES (@name)", conn);
+                command = new SqlCommand("INSERT INTO Application(Name) VALUES (@name)", conn);
                 command.Parameters.AddWithValue("@name", application.Name);
 
                 affectedfRows = command.ExecuteNonQuery();
@@ -243,6 +248,7 @@ namespace SOMIOD.Controllers
             finally
             {
                 if (conn != null) { conn.Close(); }
+                if (command != null) { command.Dispose(); }
             }
 
             if (affectedfRows > 0)
@@ -260,6 +266,7 @@ namespace SOMIOD.Controllers
         [Route("api/somiod/{application}")]
         public IHttpActionResult PatchApplication(string application, [FromBody] XElement applicationXml)
         {
+            SqlCommand command = null;
             SqlConnection conn = null;
             int affectedRows = -1;
 
@@ -287,7 +294,7 @@ namespace SOMIOD.Controllers
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand command = new SqlCommand("UPDATE Application SET Name = @newName WHERE Name = @appName", conn);
+                command = new SqlCommand("UPDATE Application SET Name = @newName WHERE Name = @appName", conn);
                 command.Parameters.AddWithValue("@newName", newName);
                 command.Parameters.AddWithValue("@appName", application);
 
@@ -309,6 +316,7 @@ namespace SOMIOD.Controllers
             finally
             {
                 if (conn != null) { conn.Close(); }
+                if (command != null) { command.Dispose(); }
             }
 
             if (affectedRows > 0)
@@ -401,6 +409,10 @@ namespace SOMIOD.Controllers
             finally
             {
                 if (conn != null) { conn.Close(); }
+                if (cmd != null) { cmd.Dispose(); }
+                if (cmdDeleteRecord != null) { cmd.Dispose(); }
+                if (cmdDeleteNotification != null) { cmd.Dispose(); }
+                if (cmdDeleteContainer != null) { cmd.Dispose(); }
             }
 
             return Content(HttpStatusCode.OK, app, Configuration.Formatters.XmlFormatter);
@@ -419,6 +431,7 @@ namespace SOMIOD.Controllers
         public IHttpActionResult PostContainer(string application, [FromBody] XElement containerXml)
         {
             SqlConnection conn = null;
+            SqlCommand command = null;
             int affectedfRows = -1;
 
             HandlerXML handlerXML = new HandlerXML();
@@ -446,7 +459,7 @@ namespace SOMIOD.Controllers
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand command = new SqlCommand("INSERT INTO Container(Name,Parent) VALUES (@name,@parantId)", conn);
+                command = new SqlCommand("INSERT INTO Container(Name,Parent) VALUES (@name,@parantId)", conn);
                 command.Parameters.AddWithValue("@name", container.Name);
                 command.Parameters.AddWithValue("@parantId", app.Id);
 
@@ -468,6 +481,7 @@ namespace SOMIOD.Controllers
             finally
             {
                 if (conn != null) { conn.Close(); }
+                if (command != null) { command.Dispose(); }
             }
 
             if (affectedfRows > 0)
@@ -500,6 +514,7 @@ namespace SOMIOD.Controllers
         public IHttpActionResult PatchContainer(string application, string container, [FromBody] XElement containerXml)
         {
             SqlConnection conn = null;
+            SqlCommand command = null;
             int affectedRows = -1;
 
             HandlerXML handlerXML = new HandlerXML();
@@ -535,7 +550,7 @@ namespace SOMIOD.Controllers
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand command = new SqlCommand("UPDATE Container SET Name = @newName, Parent = @newParentId WHERE Parent = @parantId AND name = @containerName", conn);
+                command = new SqlCommand("UPDATE Container SET Name = @newName, Parent = @newParentId WHERE Parent = @parantId AND name = @containerName", conn);
                 command.Parameters.AddWithValue("@newName", newName);
                 command.Parameters.AddWithValue("@newParentId", int.Parse(newParentId));
                 command.Parameters.AddWithValue("@parantId", resources.Application.Id);
@@ -564,6 +579,7 @@ namespace SOMIOD.Controllers
             finally
             {
                 if (conn != null) { conn.Close(); }
+                if (command != null) { command.Dispose(); }
             }
 
             if (affectedRows > 0)
@@ -581,7 +597,11 @@ namespace SOMIOD.Controllers
         [Route("api/somiod/{application}/{container}")]
         public IHttpActionResult DeleteContainer(string application, string container)
         {
+
             SqlConnection conn = null;
+            SqlCommand cmd = null;
+            SqlCommand cmdDeleteNotification = null;
+            SqlCommand cmdDeleteRecord = null;
 
             ValidateResource resources = verifyParentOfContainer(application, container);
 
@@ -595,10 +615,19 @@ namespace SOMIOD.Controllers
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand cmd = new SqlCommand("DELETE FROM Container WHERE Name = @name AND Parent = @parantId", conn);
-                cmd.Parameters.AddWithValue("@name", container);
-                cmd.Parameters.AddWithValue("@parantId", resources.Application.Id);
+                cmdDeleteRecord = new SqlCommand("DELETE FROM Record WHERE Parent = @containerId", conn);
+                cmdDeleteRecord.Parameters.AddWithValue("@containerId", resources.Container.Id);
+                cmdDeleteRecord.ExecuteNonQuery();
+
+                cmdDeleteNotification = new SqlCommand("DELETE FROM Notification WHERE Parent = @containerId", conn);
+                cmdDeleteNotification.Parameters.AddWithValue("@containerId", resources.Container.Id);
+                cmdDeleteNotification.ExecuteNonQuery();
+
+
+                cmd = new SqlCommand("DELETE FROM Container WHERE Id = @Id", conn);
+                cmd.Parameters.AddWithValue("@Id", resources.Container.Id);
                 cmd.ExecuteNonQuery();
+                conn.Close();
             }
             catch (SqlException ex)
             {
@@ -609,17 +638,22 @@ namespace SOMIOD.Controllers
 
                 return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
-            catch (Exception ex)
+            catch
             {
                 return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
             finally
             {
                 if (conn != null) { conn.Close(); }
+                if (cmd != null) { cmd.Dispose(); }
+                if (cmdDeleteNotification != null) { cmdDeleteNotification.Dispose(); }
+                if (cmdDeleteRecord != null) { cmdDeleteRecord.Dispose(); }
+
             }
 
             return Content(HttpStatusCode.OK, resources.Container, Configuration.Formatters.XmlFormatter);
         }
+
         #endregion
 
 
@@ -633,6 +667,7 @@ namespace SOMIOD.Controllers
         {
             
             SqlConnection conn = null;
+            SqlCommand command = null;
             int affectedfRows = 0;
 
             HandlerXML handlerXML = new HandlerXML();
@@ -661,7 +696,7 @@ namespace SOMIOD.Controllers
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand command = new SqlCommand("INSERT INTO Record(Name,Content,Parent) VALUES (@name,@content,@parentId)", conn);
+                command = new SqlCommand("INSERT INTO Record(Name,Content,Parent) VALUES (@name,@content,@parentId)", conn);
                 command.Parameters.AddWithValue("@name", record.Name);
                 command.Parameters.AddWithValue("@content", record.Content);
                 command.Parameters.AddWithValue("@parentId", resources.Container.Id);
@@ -679,7 +714,7 @@ namespace SOMIOD.Controllers
             finally
             {
                 if (conn != null) { conn.Close(); }
-              
+                if(command != null) { command.Dispose(); }
             }
 
             if (affectedfRows > 0)
@@ -720,6 +755,7 @@ namespace SOMIOD.Controllers
         public IHttpActionResult DeleteRecord(string application, string container, string name)
         {
             SqlConnection conn = null;
+            SqlCommand cmd = null;
 
             ValidateResource resources = verifyParentOfContainer(application, container);
 
@@ -744,7 +780,7 @@ namespace SOMIOD.Controllers
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand cmd = new SqlCommand("DELETE FROM Record WHERE Name = @name AND Parent = @parantId", conn);
+                cmd = new SqlCommand("DELETE FROM Record WHERE Name = @name AND Parent = @parantId", conn);
                 cmd.Parameters.AddWithValue("@name", name);
                 cmd.Parameters.AddWithValue("@parantId", resources.Container.Id);
                 cmd.ExecuteNonQuery();
@@ -760,6 +796,7 @@ namespace SOMIOD.Controllers
             finally
             {
                 if (conn != null) { conn.Close(); }
+                if(cmd != null) { cmd.Dispose(); }
             }
 
             return Content(HttpStatusCode.OK, HandlerXML.responseRecord((Record)resources.RecordOrNotification), Configuration.Formatters.XmlFormatter);
@@ -775,6 +812,7 @@ namespace SOMIOD.Controllers
         private IHttpActionResult PostNotification(string application, string container, [FromBody] XElement notificationXml)
         {
             SqlConnection conn = null;
+            SqlCommand command = null;
             int affectedfRows = 0;
 
             HandlerXML handlerXML = new HandlerXML();
@@ -805,7 +843,7 @@ namespace SOMIOD.Controllers
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand command = new SqlCommand("INSERT INTO Notification(Name,Parent,Event,Endpoint,Enabled) " +
+                command = new SqlCommand("INSERT INTO Notification(Name,Parent,Event,Endpoint,Enabled) " +
                                                                  "VALUES (@name,@parentId,@event,@endpoint,@enabled)", conn);
 
                 command.Parameters.AddWithValue("@name", notification.Name);
@@ -827,6 +865,7 @@ namespace SOMIOD.Controllers
             finally
             {
                 if (conn != null) { conn.Close(); }
+                if(command != null) { command.Dispose(); }
             }
 
             if (affectedfRows > 0)
@@ -867,6 +906,7 @@ namespace SOMIOD.Controllers
         public IHttpActionResult DeleteNotification(string application, string container, string name)
         {
             SqlConnection conn = null;
+            SqlCommand cmd = null;
 
             ValidateResource resources = verifyParentOfContainer(application, container);
 
@@ -891,7 +931,7 @@ namespace SOMIOD.Controllers
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand cmd = new SqlCommand("DELETE FROM Notification WHERE Name = @name AND Parent = @parantId", conn);
+                cmd = new SqlCommand("DELETE FROM Notification WHERE Name = @name AND Parent = @parantId", conn);
                 cmd.Parameters.AddWithValue("@name", name);
                 cmd.Parameters.AddWithValue("@parantId", resources.Container.Id);
 
@@ -908,6 +948,7 @@ namespace SOMIOD.Controllers
             finally
             {
                 if (conn != null) { conn.Close(); }
+                if (cmd != null) { cmd.Dispose(); }
             }
 
             return Content(HttpStatusCode.OK, HandlerXML.responseNotification((Notification)resources.RecordOrNotification), Configuration.Formatters.XmlFormatter);
@@ -918,6 +959,7 @@ namespace SOMIOD.Controllers
         public IHttpActionResult ToggleNotification(string application, string container, string name, [FromBody] XElement notificationXml)
         {
             SqlConnection conn = null;
+            SqlCommand command = null;
             int affectedRows = -1;
 
             HandlerXML handlerXML = new HandlerXML();
@@ -954,7 +996,7 @@ namespace SOMIOD.Controllers
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand command = new SqlCommand("UPDATE Notification SET Enabled = @enabled WHERE Parent = @parantId AND name = @notificationName", conn);
+                command = new SqlCommand("UPDATE Notification SET Enabled = @enabled WHERE Parent = @parantId AND name = @notificationName", conn);
                 command.Parameters.AddWithValue("@enabled", enabled);
                 command.Parameters.AddWithValue("@parantId", resources.Container.Id);
                 command.Parameters.AddWithValue("@notificationName", name);
@@ -968,6 +1010,7 @@ namespace SOMIOD.Controllers
             finally
             {
                 if (conn != null) { conn.Close(); }
+                if (command != null) {command.Dispose(); }
             }
 
             if (affectedRows > 0)
@@ -1031,6 +1074,7 @@ namespace SOMIOD.Controllers
         private Application verifyApplicationExists(string name)
         {
             SqlConnection conn = null;
+            SqlCommand command = null;
             SqlDataReader sqlReader = null;
             Application application = null;
 
@@ -1039,7 +1083,7 @@ namespace SOMIOD.Controllers
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand command = new SqlCommand("SELECT * FROM Application WHERE name = @appName", conn);
+                command = new SqlCommand("SELECT * FROM Application WHERE name = @appName", conn);
                 command.Parameters.AddWithValue("@appName", name);
 
                 sqlReader = command.ExecuteReader();
@@ -1067,6 +1111,7 @@ namespace SOMIOD.Controllers
             {
                 if (conn != null) { conn.Close(); }
                 if (sqlReader != null) { sqlReader.Close(); }
+                if (command != null) { command.Dispose(); }
             }
 
             return null;
@@ -1076,6 +1121,7 @@ namespace SOMIOD.Controllers
         private Container verifyContainerExists(string name)
         {
             SqlConnection conn = null;
+            SqlCommand command = null;
             SqlDataReader sqlReader = null;
             Container container = null;
 
@@ -1084,7 +1130,7 @@ namespace SOMIOD.Controllers
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand command = new SqlCommand("SELECT * FROM Container WHERE name = @containerName", conn);
+                command = new SqlCommand("SELECT * FROM Container WHERE name = @containerName", conn);
                 command.Parameters.AddWithValue("@containerName", name);
 
                 sqlReader = command.ExecuteReader();
@@ -1113,6 +1159,7 @@ namespace SOMIOD.Controllers
             {
                 if (conn != null) { conn.Close(); }
                 if (sqlReader != null) { sqlReader.Close(); }
+                if(command != null) { command.Dispose(); }
             }
 
             return null;
@@ -1121,6 +1168,7 @@ namespace SOMIOD.Controllers
         private Record verifyRecordExists(string name)
         {
             SqlConnection conn = null;
+            SqlCommand command = null;
             SqlDataReader sqlReader = null;
             Record record = null;
 
@@ -1129,7 +1177,7 @@ namespace SOMIOD.Controllers
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand command = new SqlCommand("SELECT * FROM Record WHERE name = @recordName", conn);
+                command = new SqlCommand("SELECT * FROM Record WHERE name = @recordName", conn);
                 command.Parameters.AddWithValue("@recordName", name);
 
                 sqlReader = command.ExecuteReader();
@@ -1159,6 +1207,7 @@ namespace SOMIOD.Controllers
             {
                 if (conn != null) { conn.Close(); }
                 if (sqlReader != null) { sqlReader.Close(); }
+                if (command != null) { command.Dispose(); }
             }
 
             return null;
@@ -1167,6 +1216,7 @@ namespace SOMIOD.Controllers
         private Notification verifyNotifcationExists(string name)
         {
             SqlConnection conn = null;
+            SqlCommand command = null;
             SqlDataReader sqlReader = null;
             Notification notification = null;
 
@@ -1175,7 +1225,7 @@ namespace SOMIOD.Controllers
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand command = new SqlCommand("SELECT * FROM Notification WHERE name = @notificationName", conn);
+                command = new SqlCommand("SELECT * FROM Notification WHERE name = @notificationName", conn);
                 command.Parameters.AddWithValue("@notificationName", name);
 
                 sqlReader = command.ExecuteReader();
@@ -1207,6 +1257,7 @@ namespace SOMIOD.Controllers
             {
                 if (conn != null) { conn.Close(); }
                 if (sqlReader != null) { sqlReader.Close(); }
+                if(command != null) { command.Dispose(); }
             }
 
             return null;
@@ -1216,6 +1267,7 @@ namespace SOMIOD.Controllers
         private ValidateResource verifyParentOfContainer(string application, string container)
         {
             SqlConnection conn = null;
+            SqlCommand cmd = null;
             SqlDataReader sqlReader = null;
 
             Container ischildren = null;
@@ -1234,29 +1286,42 @@ namespace SOMIOD.Controllers
                 return new ValidateResource(null, null, null, "Container was not found.", HttpStatusCode.NotFound);
             }
 
-            conn = new SqlConnection(strConnection);
-            conn.Open();
-
-            SqlCommand cmd = new SqlCommand("SELECT * FROM Container WHERE name = @name AND Parent = @parantId", conn);
-            cmd.Parameters.AddWithValue("@name", container);
-            cmd.Parameters.AddWithValue("@parantId", app.Id);
-
-            sqlReader = cmd.ExecuteReader();
-
-            while (sqlReader.Read())
+            try
             {
-                ischildren = new Container
+                conn = new SqlConnection(strConnection);
+                conn.Open();
+
+                cmd = new SqlCommand("SELECT * FROM Container WHERE name = @name AND Parent = @parantId", conn);
+                cmd.Parameters.AddWithValue("@name", container);
+                cmd.Parameters.AddWithValue("@parantId", app.Id);
+
+                sqlReader = cmd.ExecuteReader();
+
+                while (sqlReader.Read())
                 {
-                    Id = (int)sqlReader["Id"],
-                    Name = (string)sqlReader["Name"],
-                    CreationDateTime = (DateTime)sqlReader["CreationDateTime"],
-                    Parent = (int)sqlReader["Parent"]
-                };
-            }
+                    ischildren = new Container
+                    {
+                        Id = (int)sqlReader["Id"],
+                        Name = (string)sqlReader["Name"],
+                        CreationDateTime = (DateTime)sqlReader["CreationDateTime"],
+                        Parent = (int)sqlReader["Parent"]
+                    };
+                }
 
-            if (ischildren != null)
+                if (ischildren != null)
+                {
+                    return new ValidateResource(app, cont, null, null, HttpStatusCode.OK);
+                }
+            }
+            catch (Exception ex)
             {
-                return new ValidateResource(app, cont, null, null, HttpStatusCode.OK);
+                return new ValidateResource(null, null, null, "An error occurred while processing your request. Please try again later.", HttpStatusCode.InternalServerError);
+            }
+            finally
+            {
+                if (conn != null) { conn.Close(); }
+                if (sqlReader != null) { sqlReader.Close(); }
+                if (cmd != null) { cmd.Dispose(); }
             }
 
             return new ValidateResource(null, null, null, "Container does not belong to the specified application.", HttpStatusCode.NotFound);
@@ -1265,6 +1330,7 @@ namespace SOMIOD.Controllers
         private Object verifyParentOfRecordAndNotification(Container container, string resource, string name)
         {
             SqlConnection conn = null;
+            SqlCommand cmd = null;
             SqlDataReader sqlReader = null;
             object ischildren = null;
 
@@ -1289,7 +1355,7 @@ namespace SOMIOD.Controllers
                 conn.Open();
 
                 string query = $"SELECT * FROM {resource} WHERE Name = @name AND Parent = @parentId";
-                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@name", name);
                 cmd.Parameters.AddWithValue("@parentId", container.Id);
                 
@@ -1333,8 +1399,9 @@ namespace SOMIOD.Controllers
             }
             finally
             {
-                sqlReader?.Close();
-                conn?.Close();
+                if (conn != null) { conn.Close(); }
+                if (sqlReader != null) { sqlReader.Close(); }
+                if (cmd != null) { cmd.Dispose(); }
             }
 
             if (ischildren != null)
