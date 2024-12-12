@@ -12,6 +12,7 @@ using System.Xml.Linq;
 using SOMIOD.Models;
 using static System.Net.Mime.MediaTypeNames;
 using Application = SOMIOD.Models.Application;
+using Container = SOMIOD.Models.Container;
 using System.Xml;
 using System.IO;
 using System.Xml.Serialization;
@@ -19,6 +20,7 @@ using System.Configuration;
 using System.Net.Http;
 using System.Threading;
 using System.Collections;
+using System.ComponentModel;
 
 
 namespace SOMIOD.Controllers
@@ -325,6 +327,11 @@ namespace SOMIOD.Controllers
         public IHttpActionResult DeleteApplication(string application)
         {
             SqlConnection conn = null;
+            SqlDataReader reader = null;
+            SqlCommand cmd = null;
+            SqlCommand cmdDeleteContainer = null;
+            SqlCommand cmdDeleteRecord = null;
+            SqlCommand cmdDeleteNotification = null;
 
             Application app = this.verifyApplicationExists(application);
 
@@ -333,13 +340,49 @@ namespace SOMIOD.Controllers
                 return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Application was not found.", "404"), Configuration.Formatters.XmlFormatter);
             }
 
+
+            List<int> containersIds = new List<int>();
+
             try
             {
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
-                SqlCommand cmd = new SqlCommand("DELETE FROM Application WHERE Name = @name", conn);
-                cmd.Parameters.AddWithValue("@name", application);
+                cmd = new SqlCommand("SELECT Id FROM Container WHERE Parent = @appId", conn);
+                cmd.Parameters.AddWithValue("@appId", app.Id);
+
+                reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    containersIds.Add((int)reader["Id"]);
+                }
+
+                reader.Close();
+
+                cmdDeleteRecord = new SqlCommand("DELETE FROM Record WHERE Parent = @containerId", conn);
+                cmdDeleteRecord.Parameters.Add("@containerId", System.Data.SqlDbType.Int);
+
+                cmdDeleteNotification = new SqlCommand("DELETE FROM Notification WHERE Parent = @containerId", conn);
+                cmdDeleteNotification.Parameters.Add("@containerId", System.Data.SqlDbType.Int);
+
+                cmdDeleteContainer = new SqlCommand("DELETE FROM Container WHERE Id = @containerId", conn);
+                cmdDeleteContainer.Parameters.Add("@containerId", System.Data.SqlDbType.Int);
+
+                foreach (var containerId in containersIds)
+                {
+                    cmdDeleteRecord.Parameters["@containerId"].Value = containerId;
+                    cmdDeleteRecord.ExecuteNonQuery();
+
+                    cmdDeleteNotification.Parameters["@containerId"].Value = containerId;
+                    cmdDeleteNotification.ExecuteNonQuery();
+
+                    cmdDeleteContainer.Parameters["@containerId"].Value = containerId;
+                    cmdDeleteContainer.ExecuteNonQuery();
+                }
+
+                cmd = new SqlCommand("DELETE FROM Application WHERE Id = @Id", conn);
+                cmd.Parameters.AddWithValue("@Id", app.Id);
                 cmd.ExecuteNonQuery();
             }
             catch (SqlException ex)
@@ -661,7 +704,7 @@ namespace SOMIOD.Controllers
                 return Content(resources.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, resources.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
             }
 
-            resources.RecordOrNotification = verifyParentOfRecordAndNotification(container, "Record", name); ;
+            resources.RecordOrNotification = verifyParentOfRecordAndNotification(resources.Container, "Record", name); ;
 
             if (resources.RecordOrNotification is ValidateResource validateResource)
             {
@@ -685,7 +728,7 @@ namespace SOMIOD.Controllers
                 return Content(resources.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, resources.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
             }
 
-            resources.RecordOrNotification = verifyParentOfRecordAndNotification(container, "Record", name); ;
+            resources.RecordOrNotification = verifyParentOfRecordAndNotification(resources.Container, "Record", name); ;
 
             if (resources.RecordOrNotification is ValidateResource validateResource)
             {
@@ -808,7 +851,7 @@ namespace SOMIOD.Controllers
                 return Content(resources.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, resources.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
             }
 
-            resources.RecordOrNotification = verifyParentOfRecordAndNotification(container, "Notification", name); ;
+            resources.RecordOrNotification = verifyParentOfRecordAndNotification(resources.Container, "Notification", name); ;
 
             if (resources.RecordOrNotification is ValidateResource validateResource)
             {
@@ -832,7 +875,7 @@ namespace SOMIOD.Controllers
                 return Content(resources.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, resources.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
             }
 
-            resources.RecordOrNotification = verifyParentOfRecordAndNotification(container, "Notification", name);
+            resources.RecordOrNotification = verifyParentOfRecordAndNotification(resources.Container, "Notification", name);
 
             if (resources.RecordOrNotification is ValidateResource validateResource)
             {
@@ -899,7 +942,7 @@ namespace SOMIOD.Controllers
                 return Content(resources.ErrorCode, HandlerXML.responseError(resources.ErrorMessage, resources.ErrorCode.ToString()), Configuration.Formatters.XmlFormatter);
             }
 
-            resources.RecordOrNotification = verifyParentOfRecordAndNotification(container, "Notification", name);
+            resources.RecordOrNotification = verifyParentOfRecordAndNotification(resources.Container, "Notification", name);
 
             if (resources.RecordOrNotification is ValidateResource validateResource)
             {
@@ -1219,17 +1262,11 @@ namespace SOMIOD.Controllers
             return new ValidateResource(null, null, null, "Container does not belong to the specified application.", HttpStatusCode.NotFound);
         }
 
-        private Object verifyParentOfRecordAndNotification(string container, string resource, string name)
+        private Object verifyParentOfRecordAndNotification(Container container, string resource, string name)
         {
             SqlConnection conn = null;
             SqlDataReader sqlReader = null;
             object ischildren = null;
-
-            Container cont = this.verifyContainerExists(container);
-            if (cont == null)
-            {
-                return new ValidateResource(null, null, null, "Container was not found.", HttpStatusCode.NotFound);
-            }
 
             if (resource.Equals("Record", StringComparison.OrdinalIgnoreCase))
             {
@@ -1245,7 +1282,7 @@ namespace SOMIOD.Controllers
                     return new ValidateResource(null, null, null, "Notification was not found.", HttpStatusCode.NotFound);
                 }
             }
-
+            
             try
             {
                 conn = new SqlConnection(strConnection);
@@ -1254,7 +1291,7 @@ namespace SOMIOD.Controllers
                 string query = $"SELECT * FROM {resource} WHERE Name = @name AND Parent = @parentId";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@name", name);
-                cmd.Parameters.AddWithValue("@parentId", cont.Id);
+                cmd.Parameters.AddWithValue("@parentId", container.Id);
                 
                 sqlReader = cmd.ExecuteReader();
 
@@ -1308,22 +1345,6 @@ namespace SOMIOD.Controllers
             {
                 return new ValidateResource(null, null, null, $"{resource} does not belong to the specified container.", HttpStatusCode.NotFound);
             }
-        }
-
-        [HttpPost]
-        [Route("api/testXSD/somiod")]
-        public IHttpActionResult testXsd([FromBody] XElement recordXml)
-        {
-            HandlerXML handlerXML = new HandlerXML();
-
-            string msgIsValid =  handlerXML.ValidateXML(recordXml);
-
-            if (msgIsValid == "Valid")
-            {
-                return Content(HttpStatusCode.OK, "");
-            }
-
-            return Content(HttpStatusCode.BadRequest, HandlerXML.responseError(msgIsValid, "400"), Configuration.Formatters.XmlFormatter);
         }
 
         #endregion
