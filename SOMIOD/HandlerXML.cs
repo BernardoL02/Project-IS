@@ -23,7 +23,7 @@ namespace SOMIOD
 
             if (xmlElement == null)
             {
-                validationMessage = "ERROR: XML is null.";
+                validationMessage = "ERROR: XML can't be null.";
                 return validationMessage;
             }
 

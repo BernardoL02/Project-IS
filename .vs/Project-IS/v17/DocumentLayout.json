@@ -1,14 +1,14 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Tex\\Desktop\\Project-IS\\",
+  "WorkspaceRootPath": "C:\\Users\\josem\\source\\repos\\Project-IS\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{F296FA1B-D531-41D3-B6EE-EB72CA8BC744}|Subscriber\\Subscriber.csproj|c:\\users\\tex\\desktop\\project-is\\subscriber\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F296FA1B-D531-41D3-B6EE-EB72CA8BC744}|Subscriber\\Subscriber.csproj|solutionrelative:subscriber\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|c:\\users\\josem\\source\\repos\\project-is\\somiod\\controllers\\somiodcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|solutionrelative:somiod\\controllers\\somiodcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{DEFB4607-CBA2-42E8-BF62-2C54083717DB}|Publisher\\Publisher.csproj|c:\\users\\tex\\desktop\\project-is\\publisher\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DEFB4607-CBA2-42E8-BF62-2C54083717DB}|Publisher\\Publisher.csproj|solutionrelative:publisher\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|c:\\users\\josem\\source\\repos\\project-is\\somiod\\handlerxml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|solutionrelative:somiod\\handlerxml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,7 +18,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Bookmark",
@@ -38,28 +38,28 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\Tex\\Desktop\\Project-IS\\Subscriber\\Program.cs",
-              "RelativeDocumentMoniker": "Subscriber\\Program.cs",
-              "ToolTip": "C:\\Users\\Tex\\Desktop\\Project-IS\\Subscriber\\Program.cs",
-              "RelativeToolTip": "Subscriber\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "HandlerXML.cs",
+              "DocumentMoniker": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\HandlerXML.cs",
+              "RelativeDocumentMoniker": "SOMIOD\\HandlerXML.cs",
+              "ToolTip": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\HandlerXML.cs",
+              "RelativeToolTip": "SOMIOD\\HandlerXML.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAAA0wBwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-11T15:25:11.961Z",
+              "WhenOpened": "2024-12-12T09:30:36.804Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\Tex\\Desktop\\Project-IS\\Publisher\\Program.cs",
-              "RelativeDocumentMoniker": "Publisher\\Program.cs",
-              "ToolTip": "C:\\Users\\Tex\\Desktop\\Project-IS\\Publisher\\Program.cs",
-              "RelativeToolTip": "Publisher\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "SOMIODController.cs",
+              "DocumentMoniker": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\Controllers\\SOMIODController.cs",
+              "RelativeDocumentMoniker": "SOMIOD\\Controllers\\SOMIODController.cs",
+              "ToolTip": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\Controllers\\SOMIODController.cs",
+              "RelativeToolTip": "SOMIOD\\Controllers\\SOMIODController.cs",
+              "ViewState": "AgIAAM0DAAAAAAAAAAAmwL4DAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-11T15:24:53.36Z",
+              "WhenOpened": "2024-12-12T09:19:31.872Z",
               "EditorCaption": ""
             }
           ]

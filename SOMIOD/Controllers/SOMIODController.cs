@@ -207,7 +207,7 @@ namespace SOMIOD.Controllers
 
             if (!validationMessage.Equals("Valid"))
             {
-                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"Invalid XML: {validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
+                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"{validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
             }
 
             try
@@ -266,7 +266,7 @@ namespace SOMIOD.Controllers
 
             if (!validationMessage.Equals("Valid"))
             {
-                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"Invalid XML: {validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
+                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"{validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
             }
 
             if (this.verifyApplicationExists(application) == null)
@@ -383,7 +383,7 @@ namespace SOMIOD.Controllers
 
             if (!validationMessage.Equals("Valid"))
             {
-                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"Invalid XML: {validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
+                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"{validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
             }
 
             Application app = this.verifyApplicationExists(application);
@@ -464,7 +464,7 @@ namespace SOMIOD.Controllers
 
             if (!validationMessage.Equals("Valid"))
             {
-                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"Invalid XML: {validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
+                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"{validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
             }
 
             ValidateResource resources = verifyParentOfContainer(application, container);
@@ -597,7 +597,7 @@ namespace SOMIOD.Controllers
 
             if (!validationMessage.Equals("Valid"))
             {
-                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"Invalid XML: {validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
+                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"{validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
             }
 
             ValidateResource resources = verifyParentOfContainer(application, container);
@@ -739,7 +739,7 @@ namespace SOMIOD.Controllers
 
             if (!validationMessage.Equals("Valid"))
             {
-                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"Invalid XML: {validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
+                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"{validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
             }
 
             ValidateResource resources = verifyParentOfContainer(application, container);
@@ -882,14 +882,14 @@ namespace SOMIOD.Controllers
 
             if (!validationMessage.Equals("Valid"))
             {
-                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"Invalid XML: {validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
+                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"{validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
             }
 
             if (notificationXml.Elements().Count() != 1)
             {
                 return Content(HttpStatusCode.BadRequest, HandlerXML.responseError("The notification state change must contain only the 'Enabled' element.", "400"), Configuration.Formatters.XmlFormatter);
             }
-
+            
             int enabled = int.Parse(notificationXml.Elements().First().Value);
 
             ValidateResource resources = verifyParentOfContainer(application, container);
@@ -954,7 +954,7 @@ namespace SOMIOD.Controllers
 
             if (!validationMessage.Equals("Valid"))
             {
-                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"Invalid XML: {validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
+                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"{validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
             }
 
             try
@@ -968,6 +968,11 @@ namespace SOMIOD.Controllers
 
                 if (rootName.Equals("Notification", StringComparison.OrdinalIgnoreCase))
                 {
+                    if (elementXML.Elements().Count() == 1)
+                    {
+                        return Content(HttpStatusCode.BadRequest, HandlerXML.responseError("The request must include the 'Name', 'Event', 'Endpoint', and 'Enabled' elements in the notification post.", "400"), Configuration.Formatters.XmlFormatter);
+                    }
+
                     return PostNotification(application, container, elementXML);
                 }
 
