@@ -136,3 +136,7 @@ C:\Users\Tex\Desktop\Project-IS\SOMIOD\bin\M2Mqtt.Net.dll
 C:\Users\Tex\Desktop\Project-IS\SOMIOD\bin\M2Mqtt.Net.pdb
 C:\Users\Tex\Desktop\Project-IS\SOMIOD\bin\MQTTnet.dll
 C:\Users\Tex\Desktop\Project-IS\SOMIOD\bin\MQTTnet.xml
+C:\Users\josem\source\repos\Project-IS\SOMIOD\bin\M2Mqtt.Net.dll
+C:\Users\josem\source\repos\Project-IS\SOMIOD\bin\MQTTnet.dll
+C:\Users\josem\source\repos\Project-IS\SOMIOD\bin\M2Mqtt.Net.pdb
+C:\Users\josem\source\repos\Project-IS\SOMIOD\bin\MQTTnet.xml

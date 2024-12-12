@@ -674,6 +674,7 @@ namespace SOMIOD.Controllers
             SqlConnection conn = null;
             SqlCommand command = null;
             int affectedfRows = 0;
+            Record record = null;
 
             HandlerXML handlerXML = new HandlerXML();
             string validationMessage = handlerXML.ValidateXML(recordXml);
@@ -692,7 +693,7 @@ namespace SOMIOD.Controllers
 
             try
             {
-                var record = new
+                record = new Record
                 {
                     Name = recordXml.Element("Name")?.Value,
                     Content = recordXml.Element("Content")?.Value
@@ -725,7 +726,8 @@ namespace SOMIOD.Controllers
 
             if (affectedfRows > 0)
             {
-                triggerNotification("Bom dia");
+                triggerNotification(record.Content, "Channel/light_bulb");
+
                 return StatusCode(HttpStatusCode.Created);
             }
             else
@@ -1029,21 +1031,17 @@ namespace SOMIOD.Controllers
             }
         }
 
-        private void triggerNotification( string message)
+        private void triggerNotification(string message, string channel)
         {
-            MqttClient mcClient = new MqttClient(IPAddress.Parse("127.0.0.1"));
-            string[] mStrTopicsInfo = {"Channel light_bulb"};
-            mcClient.Connect(Guid.NewGuid().ToString());
-            if (!mcClient.IsConnected)
-            {
-                Console.WriteLine("Error connecting to message broker...");
-            }
+            MqttClient mcClient = new MqttClient("127.0.0.1");
 
-            mcClient.Publish("Channel light_bulb", Encoding.UTF8.GetBytes(message));
+            string clientId = Guid.NewGuid().ToString();
+
+            mcClient.Connect(clientId);
+
             if (mcClient.IsConnected)
             {
-                mcClient.Unsubscribe(mStrTopicsInfo);
-                mcClient.Disconnect();
+                mcClient.Publish(channel, Encoding.UTF8.GetBytes(message));
             }
         }
 
