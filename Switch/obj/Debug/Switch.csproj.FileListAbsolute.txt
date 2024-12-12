@@ -1,9 +1,0 @@
-C:\Users\Tex\Desktop\Project-IS\Switch\bin\Debug\Switch.exe.config
-C:\Users\Tex\Desktop\Project-IS\Switch\bin\Debug\Switch.exe
-C:\Users\Tex\Desktop\Project-IS\Switch\bin\Debug\Switch.pdb
-C:\Users\Tex\Desktop\Project-IS\Switch\obj\Debug\Switch.csproj.AssemblyReference.cache
-C:\Users\Tex\Desktop\Project-IS\Switch\obj\Debug\Switch.Properties.Resources.resources
-C:\Users\Tex\Desktop\Project-IS\Switch\obj\Debug\Switch.csproj.GenerateResource.cache
-C:\Users\Tex\Desktop\Project-IS\Switch\obj\Debug\Switch.csproj.CoreCompileInputs.cache
-C:\Users\Tex\Desktop\Project-IS\Switch\obj\Debug\Switch.exe
-C:\Users\Tex\Desktop\Project-IS\Switch\obj\Debug\Switch.pdb

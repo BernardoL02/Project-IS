@@ -132,3 +132,7 @@ C:\Users\josem\source\repos\Project-IS\SOMIOD\obj\Debug\SOMIOD.csproj.CoreCompil
 C:\Users\josem\source\repos\Project-IS\SOMIOD\obj\Debug\SOMIOD.csproj.Up2Date
 C:\Users\josem\source\repos\Project-IS\SOMIOD\obj\Debug\SOMIOD.dll
 C:\Users\josem\source\repos\Project-IS\SOMIOD\obj\Debug\SOMIOD.pdb
+C:\Users\Tex\Desktop\Project-IS\SOMIOD\bin\M2Mqtt.Net.dll
+C:\Users\Tex\Desktop\Project-IS\SOMIOD\bin\M2Mqtt.Net.pdb
+C:\Users\Tex\Desktop\Project-IS\SOMIOD\bin\MQTTnet.dll
+C:\Users\Tex\Desktop\Project-IS\SOMIOD\bin\MQTTnet.xml

@@ -1,9 +1,22 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\josem\\source\\repos\\Project-IS\\",
+  "WorkspaceRootPath": "C:\\Users\\Tex\\Desktop\\Project-IS\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|c:\\users\\josem\\source\\repos\\project-is\\somiod\\controllers\\somiodcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_LocalDB__MSSQLLocalDB/C__USERS_TEX_DESKTOP_PROJECT_IS_SOMIOD_APP_DATA_DATABASE.MDF/True/SqlTable/dbo.Record.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_LocalDB__MSSQLLocalDB/C__USERS_TEX_DESKTOP_PROJECT_IS_SOMIOD_APP_DATA_DATABASE.MDF/True/SqlTable/dbo.Notification.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_LocalDB__MSSQLLocalDB/C__USERS_TEX_DESKTOP_PROJECT_IS_SOMIOD_APP_DATA_DATABASE.MDF/True/SqlTable/dbo.Container.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|c:\\users\\tex\\desktop\\project-is\\somiod\\xmlvalidator.xsd||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|solutionrelative:somiod\\xmlvalidator.xsd||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|C:\\Users\\Tex\\Desktop\\Project-IS\\somiod\\controllers\\somiodcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|solutionrelative:somiod\\controllers\\somiodcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -14,7 +27,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Bookmark",
@@ -33,14 +46,61 @@
               "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
             },
             {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
+            },
+            {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "dbo.Record [Data]",
+              "DocumentMoniker": "ViewDataWindow_MSSQL__/_LocalDB__MSSQLLocalDB/C__USERS_TEX_DESKTOP_PROJECT_IS_SOMIOD_APP_DATA_DATABASE.MDF/True/SqlTable/dbo.Record.sql",
+              "ToolTip": "dbo.Record [Data]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2024-12-12T17:41:05.261Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "dbo.Notification [Data]",
+              "DocumentMoniker": "ViewDataWindow_MSSQL__/_LocalDB__MSSQLLocalDB/C__USERS_TEX_DESKTOP_PROJECT_IS_SOMIOD_APP_DATA_DATABASE.MDF/True/SqlTable/dbo.Notification.sql",
+              "ToolTip": "dbo.Notification [Data]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2024-12-12T17:40:55.706Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "dbo.Container [Data]",
+              "DocumentMoniker": "ViewDataWindow_MSSQL__/_LocalDB__MSSQLLocalDB/C__USERS_TEX_DESKTOP_PROJECT_IS_SOMIOD_APP_DATA_DATABASE.MDF/True/SqlTable/dbo.Container.sql",
+              "ToolTip": "dbo.Container [Data]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2024-12-12T16:42:32.847Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "XMLValidator.xsd",
+              "DocumentMoniker": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\XMLValidator.xsd",
+              "RelativeDocumentMoniker": "SOMIOD\\XMLValidator.xsd",
+              "ToolTip": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\XMLValidator.xsd",
+              "RelativeToolTip": "SOMIOD\\XMLValidator.xsd",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAABIAAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003579|",
+              "WhenOpened": "2024-12-12T16:42:07.78Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "SOMIODController.cs",
-              "DocumentMoniker": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\Controllers\\SOMIODController.cs",
+              "DocumentMoniker": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\Controllers\\SOMIODController.cs",
               "RelativeDocumentMoniker": "SOMIOD\\Controllers\\SOMIODController.cs",
-              "ToolTip": "C:\\Users\\josem\\source\\repos\\Project-IS\\SOMIOD\\Controllers\\SOMIODController.cs",
+              "ToolTip": "C:\\Users\\Tex\\Desktop\\Project-IS\\SOMIOD\\Controllers\\SOMIODController.cs",
               "RelativeToolTip": "SOMIOD\\Controllers\\SOMIODController.cs",
-              "ViewState": "AgIAADUCAAAAAAAAAADwv1ICAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAEAAAAAAAAAAAowBIEAAAlAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-12-12T09:19:31.872Z",
               "EditorCaption": ""

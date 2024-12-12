@@ -21,6 +21,11 @@ using System.Net.Http;
 using System.Threading;
 using System.Collections;
 using System.ComponentModel;
+using uPLibrary.Networking.M2Mqtt;
+using uPLibrary.Networking.M2Mqtt.Messages;
+using System.Text;
+
+
 
 
 namespace SOMIOD.Controllers
@@ -702,6 +707,7 @@ namespace SOMIOD.Controllers
                 command.Parameters.AddWithValue("@parentId", resources.Container.Id);
 
                 affectedfRows = command.ExecuteNonQuery();
+
             }
             catch (SqlException ex)
             {
@@ -719,6 +725,7 @@ namespace SOMIOD.Controllers
 
             if (affectedfRows > 0)
             {
+                triggerNotification("Bom dia");
                 return StatusCode(HttpStatusCode.Created);
             }
             else
@@ -726,7 +733,6 @@ namespace SOMIOD.Controllers
                 return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("The record could not be created.", "500"), Configuration.Formatters.XmlFormatter);
             }
         }
-
 
         [HttpGet]
         [Route("api/somiod/{application}/{container}/record/{name}")]
@@ -1020,6 +1026,24 @@ namespace SOMIOD.Controllers
             else
             {
                 return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("The notification could not be updated.", "500"), Configuration.Formatters.XmlFormatter);
+            }
+        }
+
+        private void triggerNotification( string message)
+        {
+            MqttClient mcClient = new MqttClient(IPAddress.Parse("127.0.0.1"));
+            string[] mStrTopicsInfo = {"Channel light_bulb"};
+            mcClient.Connect(Guid.NewGuid().ToString());
+            if (!mcClient.IsConnected)
+            {
+                Console.WriteLine("Error connecting to message broker...");
+            }
+
+            mcClient.Publish("Channel light_bulb", Encoding.UTF8.GetBytes(message));
+            if (mcClient.IsConnected)
+            {
+                mcClient.Unsubscribe(mStrTopicsInfo);
+                mcClient.Disconnect();
             }
         }
 
