@@ -726,7 +726,7 @@ namespace SOMIOD.Controllers
 
             if (affectedfRows > 0)
             {
-                triggerNotification(1, record.Content, resources.Container.Id);
+                triggerNotification(1, this.verifyRecordExists(record.Name), resources.Container.Id);
 
                 return StatusCode(HttpStatusCode.Created);
             }
@@ -808,7 +808,7 @@ namespace SOMIOD.Controllers
                 if(cmd != null) { cmd.Dispose(); }
             }
 
-            triggerNotification(2, record.Content, resources.Container.Id);
+            triggerNotification(2, record, resources.Container.Id);
 
             return Content(HttpStatusCode.OK, HandlerXML.responseRecord((Record)resources.RecordOrNotification), Configuration.Formatters.XmlFormatter);
         }
@@ -1034,7 +1034,7 @@ namespace SOMIOD.Controllers
             }
         }
 
-        private void triggerNotification(int evento, string content, int containerId)
+        private async void triggerNotification(int evento, Record record, int containerId)
         {
             SqlConnection conn = null;
             SqlCommand cmd = null;
@@ -1053,11 +1053,7 @@ namespace SOMIOD.Controllers
                 sqlReader = cmd.ExecuteReader();
 
 
-                MqttClient mcClient = new MqttClient("127.0.0.1");
-
-                string clientId = Guid.NewGuid().ToString();
-
-                mcClient.Connect(clientId);
+               
 
                 while (sqlReader.Read())
                 {
@@ -1065,13 +1061,40 @@ namespace SOMIOD.Controllers
                     {
                         Endpoint = (string)sqlReader["Endpoint"],
                     };
-
+                    
                     if (notification != null)
                     {
-                        if (mcClient.IsConnected)
+                        if (notification.Endpoint.StartsWith("mqtt", StringComparison.OrdinalIgnoreCase))
                         {
-                            mcClient.Publish(notification.Endpoint, Encoding.UTF8.GetBytes(content));
+                            MqttClient mcClient = new MqttClient("127.0.0.1");
+
+                            string clientId = Guid.NewGuid().ToString();
+
+                            mcClient.Connect(clientId);
+                            if (mcClient.IsConnected)
+                            {
+                                mcClient.Publish(notification.Endpoint, Encoding.UTF8.GetBytes(record.ToString()));
+                            }
                         }
+                        else
+                        {
+                            using (var httpClient = new HttpClient())
+                            {
+                                try
+                                {
+                                    var httpContent = new StringContent(record.ToString(), Encoding.UTF8, "application/xml");
+
+                                    var response = await httpClient.PostAsync(notification.Endpoint, httpContent);
+
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine($"Exceção ao enviar POST para {notification.Endpoint}: {ex.Message}");
+                                }
+                            }
+                        }
+
+                        
                     }
                 }
             }

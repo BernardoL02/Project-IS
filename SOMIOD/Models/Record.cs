@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
+using System.Xml.Linq;
 
 namespace SOMIOD.Models
 {
@@ -13,6 +15,17 @@ namespace SOMIOD.Models
         public DateTime CreationDateTime { get; set; }
         public int Parent { get; set; }
 
-        public Container Container { get; set; }
+        public override string ToString()
+        {
+            var notificationXml = new XElement("Record",
+                new XElement("Name", Name),
+                new XElement("Content", Content),
+                new XElement("CreationDateTime", CreationDateTime),
+                new XElement("Parent", Parent)
+            );
+
+            return notificationXml.ToString();
+        }
+
     }
 }
