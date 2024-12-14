@@ -102,7 +102,7 @@ namespace SOMIOD.Controllers
                     });
                 }
             }
-            catch (Exception ex)
+            catch 
             {
                 return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
@@ -183,7 +183,7 @@ namespace SOMIOD.Controllers
                     NamesList.Add(name);
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
@@ -246,7 +246,7 @@ namespace SOMIOD.Controllers
 
                 return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
-            catch (Exception ex)
+            catch
             {
                 return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
@@ -314,7 +314,7 @@ namespace SOMIOD.Controllers
 
                 return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
-            catch (Exception ex)
+            catch
             {
                 return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
@@ -407,7 +407,7 @@ namespace SOMIOD.Controllers
 
                 return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
-            catch (Exception ex)
+            catch
             {
                 return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
@@ -479,7 +479,7 @@ namespace SOMIOD.Controllers
 
                 return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
-            catch (Exception ex)
+            catch 
             {
                 return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
@@ -577,7 +577,7 @@ namespace SOMIOD.Controllers
 
                 return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
-            catch (Exception ex)
+            catch
             {
                 return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
@@ -675,14 +675,6 @@ namespace SOMIOD.Controllers
             SqlCommand command = null;
             int affectedfRows = 0;
             Record record = null;
-
-            HandlerXML handlerXML = new HandlerXML();
-            string validationMessage = handlerXML.ValidateXML(recordXml);
-
-            if (!validationMessage.Equals("Valid"))
-            {
-                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"{validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
-            }
 
             ValidateResource resources = verifyParentOfContainer(application, container);
 
@@ -794,11 +786,7 @@ namespace SOMIOD.Controllers
                 cmd.Parameters.AddWithValue("@parantId", resources.Container.Id);
                 cmd.ExecuteNonQuery();
             }
-            catch (SqlException ex)
-            { 
-                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
-            }
-            catch (Exception ex)
+            catch 
             {
                 return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
@@ -825,14 +813,6 @@ namespace SOMIOD.Controllers
             SqlConnection conn = null;
             SqlCommand command = null;
             int affectedfRows = 0;
-
-            HandlerXML handlerXML = new HandlerXML();
-            string validationMessage = handlerXML.ValidateXML(notificationXml);
-
-            if (!validationMessage.Equals("Valid"))
-            {
-                return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"{validationMessage}", "400"), Configuration.Formatters.XmlFormatter);
-            }
 
             ValidateResource resources = verifyParentOfContainer(application, container);
 
@@ -948,11 +928,7 @@ namespace SOMIOD.Controllers
 
                 cmd.ExecuteNonQuery();
             }
-            catch (SqlException ex)
-            {
-                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
-            }
-            catch (Exception ex)
+            catch
             {
                 return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
@@ -1014,7 +990,7 @@ namespace SOMIOD.Controllers
 
                 affectedRows = command.ExecuteNonQuery();
             }
-            catch (Exception ex)
+            catch
             {
                 return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
@@ -1034,12 +1010,14 @@ namespace SOMIOD.Controllers
             }
         }
 
-        private async void triggerNotification(int evento, Record record, int containerId)
+        private void triggerNotification(int evento, Record record, int containerId)
         {
             SqlConnection conn = null;
             SqlCommand cmd = null;
             Notification notification = null;
             SqlDataReader sqlReader = null;
+            HttpClient httpClient = null;
+            HttpContent httpContent = null;
 
             try
             {
@@ -1051,9 +1029,6 @@ namespace SOMIOD.Controllers
                 cmd.Parameters.AddWithValue("@parantId", containerId);
 
                 sqlReader = cmd.ExecuteReader();
-
-
-               
 
                 while (sqlReader.Read())
                 {
@@ -1078,23 +1053,12 @@ namespace SOMIOD.Controllers
                         }
                         else
                         {
-                            using (var httpClient = new HttpClient())
-                            {
-                                try
-                                {
-                                    var httpContent = new StringContent(record.ToString(), Encoding.UTF8, "application/xml");
+                             httpClient = new HttpClient();
+                            
+                             httpContent = new StringContent(record.ToString(), Encoding.UTF8, "application/xml");
 
-                                    var response = await httpClient.PostAsync(notification.Endpoint, httpContent);
-
-                                }
-                                catch (Exception ex)
-                                {
-                                    Console.WriteLine($"Exceção ao enviar POST para {notification.Endpoint}: {ex.Message}");
-                                }
-                            }
-                        }
-
-                        
+                            var response = httpClient.PostAsync(notification.Endpoint, httpContent);
+                        }   
                     }
                 }
             }
@@ -1102,6 +1066,8 @@ namespace SOMIOD.Controllers
             {
                 if(sqlReader != null) { sqlReader.Close(); }
                 if(conn != null) { conn.Close(); }
+                if(httpClient != null) { httpClient.Dispose(); }
+                if(httpContent != null) { httpContent.Dispose(); }
             }
         }
 
@@ -1147,7 +1113,7 @@ namespace SOMIOD.Controllers
                 return Content(HttpStatusCode.BadRequest, HandlerXML.responseError($"Unexpected root element: {rootName}. Expected 'Record' or 'Notification'.", "400"), Configuration.Formatters.XmlFormatter);
 
             }
-            catch (Exception ex)
+            catch
             {
                 return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
@@ -1185,7 +1151,7 @@ namespace SOMIOD.Controllers
                     return application;
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 return null;
             }
@@ -1198,7 +1164,6 @@ namespace SOMIOD.Controllers
 
             return null;
         }
-
 
         private Container verifyContainerExists(string name)
         {
@@ -1233,7 +1198,7 @@ namespace SOMIOD.Controllers
                     return container;
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 return null;
             }
@@ -1281,7 +1246,7 @@ namespace SOMIOD.Controllers
                     return record;
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 return null;
             }
@@ -1331,7 +1296,7 @@ namespace SOMIOD.Controllers
                     return notification;
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 return null;
             }
@@ -1395,7 +1360,7 @@ namespace SOMIOD.Controllers
                     return new ValidateResource(app, cont, null, null, HttpStatusCode.OK);
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 return new ValidateResource(null, null, null, "An error occurred while processing your request. Please try again later.", HttpStatusCode.InternalServerError);
             }
@@ -1471,11 +1436,7 @@ namespace SOMIOD.Controllers
                     }
                 }
             }
-            catch (SqlException ex)
-            {
-                return new ValidateResource(null, null, null, "An error occurred while processing your request. Please try again later.", HttpStatusCode.InternalServerError);
-            }
-            catch (Exception ex)
+            catch
             {
                 return new ValidateResource(null, null, null, "An error occurred while processing your request. Please try again later.", HttpStatusCode.InternalServerError);
             }
