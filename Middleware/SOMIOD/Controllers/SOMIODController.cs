@@ -718,7 +718,7 @@ namespace SOMIOD.Controllers
 
             if (affectedfRows > 0)
             {
-                triggerNotification(1, this.verifyRecordExists(record.Name), resources.Container.Id);
+                triggerNotification(1, resources.Application, resources.Container, this.verifyRecordExists(record.Name));
 
                 return StatusCode(HttpStatusCode.Created);
             }
@@ -796,7 +796,7 @@ namespace SOMIOD.Controllers
                 if(cmd != null) { cmd.Dispose(); }
             }
 
-            triggerNotification(2, record, resources.Container.Id);
+            triggerNotification(2, resources.Application, resources.Container, record);
 
             return Content(HttpStatusCode.OK, HandlerXML.responseRecord((Record)resources.RecordOrNotification), Configuration.Formatters.XmlFormatter);
         }
@@ -1010,7 +1010,7 @@ namespace SOMIOD.Controllers
             }
         }
 
-        private void triggerNotification(int evento, Record record, int containerId)
+        private void triggerNotification(int evento, Application application, Container container, Record record)
         {
             SqlConnection conn = null;
             SqlCommand cmd = null;
@@ -1026,7 +1026,7 @@ namespace SOMIOD.Controllers
 
                 cmd = new SqlCommand("SELECT * FROM Notification WHERE event = @evento AND Parent = @parantId AND Enabled = 1", conn);
                 cmd.Parameters.AddWithValue("@evento", evento);
-                cmd.Parameters.AddWithValue("@parantId", containerId);
+                cmd.Parameters.AddWithValue("@parantId", container.Id);
 
                 sqlReader = cmd.ExecuteReader();
 
@@ -1036,31 +1036,42 @@ namespace SOMIOD.Controllers
                     {
                         Endpoint = (string)sqlReader["Endpoint"],
                     };
-                    
-                    if (notification != null)
+
+                    try
                     {
-                        if (notification.Endpoint.StartsWith("mqtt", StringComparison.OrdinalIgnoreCase))
+                        if (notification != null)
                         {
-                            MqttClient mcClient = new MqttClient("127.0.0.1");
-
-                            string clientId = Guid.NewGuid().ToString();
-
-                            mcClient.Connect(clientId);
-                            if (mcClient.IsConnected)
+                            if (notification.Endpoint.StartsWith("mqtt", StringComparison.OrdinalIgnoreCase))
                             {
-                                mcClient.Publish(notification.Endpoint, Encoding.UTF8.GetBytes(record.ToString()));
+                                MqttClient mcClient = new MqttClient("127.0.0.1");
+
+                                string clientId = Guid.NewGuid().ToString();
+
+                                mcClient.Connect(clientId);
+                                if (mcClient.IsConnected)
+                                {
+                                    mcClient.Publish("api/somiod/" + application.Name + "/" + container.Name, Encoding.UTF8.GetBytes(record.ToString()), MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE, true);
+                                }
+                            }
+                            else
+                            {
+                                httpClient = new HttpClient();
+
+                                httpContent = new StringContent(record.ToString(), Encoding.UTF8, "application/xml");
+
+                                var response = httpClient.PostAsync(notification.Endpoint, httpContent);
                             }
                         }
-                        else
-                        {
-                             httpClient = new HttpClient();
-                            
-                             httpContent = new StringContent(record.ToString(), Encoding.UTF8, "application/xml");
-
-                            var response = httpClient.PostAsync(notification.Endpoint, httpContent);
-                        }   
+                    }
+                    catch
+                    {
+                        continue;
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
             finally
             {
