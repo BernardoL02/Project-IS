@@ -24,6 +24,7 @@ using System.ComponentModel;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
 using System.Text;
+using System.Web.UI.WebControls;
 
 
 
@@ -213,6 +214,7 @@ namespace SOMIOD.Controllers
             SqlCommand command = null;
             SqlConnection conn = null;
             int affectedfRows = -1;
+            Application application = null;
 
             HandlerXML handlerXML = new HandlerXML();
             string validationMessage = handlerXML.ValidateXML(applicationXml);
@@ -224,7 +226,7 @@ namespace SOMIOD.Controllers
 
             try
             {
-                var application = new
+                application = new Application
                 {
                     Name = applicationXml.Element("Name")?.Value
                 };
@@ -258,7 +260,7 @@ namespace SOMIOD.Controllers
 
             if (affectedfRows > 0)
             {
-                return StatusCode(HttpStatusCode.Created);
+                return Content(HttpStatusCode.OK, this.verifyApplicationExists(application.Name), Configuration.Formatters.XmlFormatter);
             }
             else
             {
@@ -438,6 +440,7 @@ namespace SOMIOD.Controllers
             SqlConnection conn = null;
             SqlCommand command = null;
             int affectedfRows = -1;
+            Container container = null;
 
             HandlerXML handlerXML = new HandlerXML();
             string validationMessage = handlerXML.ValidateXML(containerXml);
@@ -456,7 +459,7 @@ namespace SOMIOD.Controllers
 
             try
             {
-                var container = new
+                container = new Container
                 {
                     Name = containerXml.Element("Name")?.Value
                 };
@@ -491,7 +494,8 @@ namespace SOMIOD.Controllers
 
             if (affectedfRows > 0)
             {
-                return StatusCode(HttpStatusCode.Created);
+                
+                return Content(HttpStatusCode.OK, this.verifyContainerExists(container.Name), Configuration.Formatters.XmlFormatter);
             }
             else
             {
@@ -715,12 +719,14 @@ namespace SOMIOD.Controllers
                 if (conn != null) { conn.Close(); }
                 if(command != null) { command.Dispose(); }
             }
-
+            
             if (affectedfRows > 0)
             {
                 triggerNotification(1, resources.Application, resources.Container, this.verifyRecordExists(record.Name));
 
-                return StatusCode(HttpStatusCode.Created);
+                return Content(HttpStatusCode.OK, this.verifyRecordExists(record.Name), Configuration.Formatters.XmlFormatter);
+                
+
             }
             else
             {
@@ -813,6 +819,7 @@ namespace SOMIOD.Controllers
             SqlConnection conn = null;
             SqlCommand command = null;
             int affectedfRows = 0;
+            Notification notification = null;
 
             ValidateResource resources = verifyParentOfContainer(application, container);
 
@@ -823,12 +830,12 @@ namespace SOMIOD.Controllers
 
             try
             {
-                var notification = new
+                 notification = new Notification
                 {
                     Name = notificationXml.Element("Name").Value,
-                    Event = notificationXml.Element("Event").Value,
+                    Event = int.Parse(notificationXml.Element("Event").Value),
                     Endpoint = notificationXml.Element("Endpoint").Value,
-                    Enabled = notificationXml.Element("Enabled").Value
+                    Enabled = bool.Parse(notificationXml.Element("Enabled").Value)
                 };
 
                 conn = new SqlConnection(strConnection);
@@ -861,7 +868,7 @@ namespace SOMIOD.Controllers
 
             if (affectedfRows > 0)
             {
-                return StatusCode(HttpStatusCode.Created);
+                return Content(HttpStatusCode.Created, this.verifyNotifcationExists(notification.Name), Configuration.Formatters.XmlFormatter);
             }
             else
             {
