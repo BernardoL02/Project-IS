@@ -14,7 +14,7 @@ namespace SOMIOD
     public class HandlerXML
     {
         #region XML Validation
-        string xmlFilePath = Path.Combine(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.FullName, "Project-IS", "SOMIOD", "XMLValidator.xsd"); 
+        string xmlFilePath = Path.Combine(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.FullName, "Middleware", "SOMIOD", "XMLValidator.xsd"); 
         string validationMessage = "Valid";
 
         public string ValidateXML(XElement xmlElement)

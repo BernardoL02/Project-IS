@@ -8,11 +8,14 @@
 [X] - Colocar caminho XML dinâmico
 [x] - Otimizacao dos GETS
 [x] - Validar os locates e Body dos locates
-[] - Retirar warnings do projeto (ex)
-[] - Ao fazer delete remover tudo
-[] - Retirar da função verifyParentOfRecordAndNotification a procura do container, pois já é feita anteriormente
-[] - Verificar se existem + de um elemento no post da notification
-[] - Colocar no xsd que endpoint tem de começar com http ou mqtt
+[x] - Retirar warnings do projeto (ex)
+[x] - Ao fazer delete remover tudo
+[x] - Retirar da função verifyParentOfRecordAndNotification a procura do container, pois já é feita anteriormente
+[x] - Verificar se existem + de um elemento no post da notification
+[x] - Colocar no xsd que endpoint tem de começar com http ou mqtt
+[x] - Retornar nos post o elemento criado
+[] - Gerar nomes automaticamente se nao for fornecido ou se ja existirem
+[] - Mudar formato das notifications
 
 -------- Perguntas Pof --------
 No XML é preciso mensagens descritivas ou podemos só retornar XML inválido - Excelente Abordagem
@@ -21,3 +24,8 @@ Temos que dar delete à restante informação que está relacionada com aquela q
 - Adicionar no relatório uma justificação bem fundamentada do porquê de não utilizarmos o atributo res_type (xml mais clean e não é obrigatório no enunciado)
 - Justificar o uso de mensagens descritivas mesmo que isso vá contra algumas boas práticas de segurança
 
+
+//Extras
+Temos os posts de notifications e records a verificar o nome do elemento root
+Extra desenvolver um método que devolva toda a hierarquia do elemento no locate dos records/notifications e containers
+Endpoints notifications apenas pode conter http:// ou mqtt://
