@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>MQTT Messages</title>
+    <script>
+      window.onload = () => {
+        document.getElementById("topic").value = "mqtt://127.0.0.1";
+      };
+
+      async function fetchMessages() {
+        const response = await fetch("/messages");
+        const messages = await response.json();
+        const container = document.getElementById("messages");
+        container.innerText = ""; // Limpa a área
+
+        messages.forEach((msg) => {
+          const div = document.createElement("div");
+          // Verifica se a mensagem é JSON e formata de forma legível
+          div.textContent = JSON.stringify(msg, null, 2);
+          container.appendChild(div);
+        });
+      }
+
+      setInterval(fetchMessages, 1000);
+
+      async function configureMQTT() {
+        const host = document.getElementById("host").value;
+        let topic = document.getElementById("topic").value;
+
+        // Remover "mqtt://" se estiver presente
+        if (topic.startsWith("mqtt://")) {
+          topic = topic.replace("mqtt://", "");
+        }
+
+        if (host && topic) {
+          const response = await fetch(
+            `/configure/${host}/${encodeURIComponent(topic)}`
+          );
+          alert(await response.text());
+        } else {
+          alert("Por favor, insira o host e o tópico.");
+        }
+      }
+
+      async function disconnectMQTT() {
+        const response = await fetch("/disconnect");
+        alert(await response.text());
+      }
+    </script>
+  </head>
+  <body>
+    <h1>MQTT Messages</h1>
+    <div>
+      <label for="host">MQTT Host:</label>
+      <input type="text" id="host" placeholder="127.0.0.1" />
+      <label for="topic">MQTT Topic:</label>
+      <input type="text" id="topic" placeholder="127.0.0.1" />
+      <button onclick="configureMQTT()">Conectar</button>
+      <button onclick="disconnectMQTT()">Desconectar</button>
+    </div>
+    <h2>Mensagens Recebidas</h2>
+    <pre id="messages"></pre>
+  </body>
+</html>
