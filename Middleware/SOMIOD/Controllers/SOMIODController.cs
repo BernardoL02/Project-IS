@@ -1021,14 +1021,20 @@ namespace SOMIOD.Controllers
                         {
                             if (notification.Endpoint.StartsWith("mqtt", StringComparison.OrdinalIgnoreCase))
                             {
-                                MqttClient mcClient = new MqttClient("127.0.0.1");
+                                var uri = new Uri(notification.Endpoint);
+
+                                string host = uri.Host;
+                                int port = uri.Port;
+                                string channel = "api/somiod/" + application.Name + "/" + container.Name;
+
+                                MqttClient mcClient = (port > 0) ? new MqttClient(host, port, false, null, null, MqttSslProtocols.None) : new MqttClient(host);
 
                                 string clientId = Guid.NewGuid().ToString();
 
                                 mcClient.Connect(clientId);
                                 if (mcClient.IsConnected)
                                 {
-                                    mcClient.Publish("api/somiod/" + application.Name + "/" + container.Name, Encoding.UTF8.GetBytes(record.ToString()), MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE, true);
+                                    mcClient.Publish(channel, Encoding.UTF8.GetBytes(record.ToString()), MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE, false);
                                 }
                             }
                             else
