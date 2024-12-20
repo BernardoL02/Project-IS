@@ -16,7 +16,7 @@
 [x] - Retornar nos post o elemento criado
 [x] - Gerar nomes automaticamente se nao for fornecido ou se ja existirem
 [x] - Mudar formato das notifications
-[] - Extra no locate 
+[x] - Extra no locate 
 [x] - Endpoin no mqtt
 [x] - Ver erro na pagina ao correr o código 
 
