@@ -214,7 +214,7 @@ namespace SOMIOD.Controllers
             SqlCommand command = null;
             SqlConnection conn = null;
             int affectedfRows = -1;
-            Application application = null;
+            string applicationName = null;
 
             HandlerXML handlerXML = new HandlerXML();
             string validationMessage = handlerXML.ValidateXML(applicationXml);
@@ -226,27 +226,15 @@ namespace SOMIOD.Controllers
 
             try
             {
-                application = new Application
-                {
-                    Name = applicationXml.Element("Name")?.Value
-                };
+                applicationName = this.verifyApplicationExists(applicationXml.Element("Name")?.Value) != null ? GenerateUniqueName("Application") : applicationXml.Element("Name")?.Value;
 
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
                 command = new SqlCommand("INSERT INTO Application(Name) VALUES (@name)", conn);
-                command.Parameters.AddWithValue("@name", application.Name);
+                command.Parameters.AddWithValue("@name", applicationName);
 
                 affectedfRows = command.ExecuteNonQuery();
-            }
-            catch (SqlException ex)
-            {
-                if (ex.Number == 2627 || ex.Number == 2601)
-                {
-                    return Content(HttpStatusCode.Conflict, HandlerXML.responseError("Application name already exists", "409"), Configuration.Formatters.XmlFormatter);
-                }
-
-                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
             catch
             {
@@ -260,7 +248,7 @@ namespace SOMIOD.Controllers
 
             if (affectedfRows > 0)
             {
-                return Content(HttpStatusCode.OK, this.verifyApplicationExists(application.Name), Configuration.Formatters.XmlFormatter);
+                return Content(HttpStatusCode.OK, this.verifyApplicationExists(applicationName), Configuration.Formatters.XmlFormatter);
             }
             else
             {
@@ -440,7 +428,7 @@ namespace SOMIOD.Controllers
             SqlConnection conn = null;
             SqlCommand command = null;
             int affectedfRows = -1;
-            Container container = null;
+            string containerName = null;
 
             HandlerXML handlerXML = new HandlerXML();
             string validationMessage = handlerXML.ValidateXML(containerXml);
@@ -459,28 +447,16 @@ namespace SOMIOD.Controllers
 
             try
             {
-                container = new Container
-                {
-                    Name = containerXml.Element("Name")?.Value
-                };
+                containerName = this.verifyContainerExists(containerXml.Element("Name")?.Value) != null ? GenerateUniqueName("Container") : containerXml.Element("Name")?.Value;
 
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
                 command = new SqlCommand("INSERT INTO Container(Name,Parent) VALUES (@name,@parantId)", conn);
-                command.Parameters.AddWithValue("@name", container.Name);
+                command.Parameters.AddWithValue("@name", containerName);
                 command.Parameters.AddWithValue("@parantId", app.Id);
 
                 affectedfRows = command.ExecuteNonQuery();
-            }
-            catch (SqlException ex)
-            {
-                if (ex.Number == 2627 || ex.Number == 2601)
-                {
-                    return Content(HttpStatusCode.Conflict, HandlerXML.responseError("Container name already exists", "409"), Configuration.Formatters.XmlFormatter);
-                }
-
-                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
             catch 
             {
@@ -495,7 +471,7 @@ namespace SOMIOD.Controllers
             if (affectedfRows > 0)
             {
                 
-                return Content(HttpStatusCode.OK, this.verifyContainerExists(container.Name), Configuration.Formatters.XmlFormatter);
+                return Content(HttpStatusCode.OK, this.verifyContainerExists(containerName), Configuration.Formatters.XmlFormatter);
             }
             else
             {
@@ -679,6 +655,7 @@ namespace SOMIOD.Controllers
             SqlCommand command = null;
             int affectedfRows = 0;
             Record record = null;
+            string recordName = null;
 
             ValidateResource resources = verifyParentOfContainer(application, container);
 
@@ -689,9 +666,11 @@ namespace SOMIOD.Controllers
 
             try
             {
+                recordName = this.verifyRecordExists(recordXml.Element("Name")?.Value) != null ? GenerateUniqueName("Record") : recordXml.Element("Name")?.Value;
+
                 record = new Record
                 {
-                    Name = recordXml.Element("Name")?.Value,
+                    Name = recordName,
                     Content = recordXml.Element("Content")?.Value
                 };
 
@@ -704,14 +683,9 @@ namespace SOMIOD.Controllers
                 command.Parameters.AddWithValue("@parentId", resources.Container.Id);
 
                 affectedfRows = command.ExecuteNonQuery();
-
             }
-            catch (SqlException ex)
-            {
-                if (ex.Number == 2627 || ex.Number == 2601)
-                {
-                    return Content(HttpStatusCode.Conflict, HandlerXML.responseError("Record name already exists", "409"), Configuration.Formatters.XmlFormatter);
-                }
+            catch 
+            { 
                 return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
             finally
@@ -725,8 +699,6 @@ namespace SOMIOD.Controllers
                 triggerNotification(1, resources.Application, resources.Container, this.verifyRecordExists(record.Name));
 
                 return Content(HttpStatusCode.OK, this.verifyRecordExists(record.Name), Configuration.Formatters.XmlFormatter);
-                
-
             }
             else
             {
@@ -820,6 +792,7 @@ namespace SOMIOD.Controllers
             SqlCommand command = null;
             int affectedfRows = 0;
             Notification notification = null;
+            string notificationName = null;
 
             ValidateResource resources = verifyParentOfContainer(application, container);
 
@@ -830,9 +803,11 @@ namespace SOMIOD.Controllers
 
             try
             {
-                 notification = new Notification
+                notificationName = this.verifyNotifcationExists(notificationXml.Element("Name")?.Value) != null ? GenerateUniqueName("Notification") : notificationXml.Element("Name")?.Value;
+
+                notification = new Notification
                 {
-                    Name = notificationXml.Element("Name").Value,
+                    Name = notificationName,
                     Event = int.Parse(notificationXml.Element("Event").Value),
                     Endpoint = notificationXml.Element("Endpoint").Value,
                     Enabled = bool.Parse(notificationXml.Element("Enabled").Value)
@@ -852,12 +827,8 @@ namespace SOMIOD.Controllers
 
                 affectedfRows = command.ExecuteNonQuery();
             }
-            catch (SqlException ex)
-            {
-                if (ex.Number == 2627 || ex.Number == 2601)
-                {
-                    return Content(HttpStatusCode.Conflict, HandlerXML.responseError("Notification name already exists", "409"), Configuration.Formatters.XmlFormatter);
-                }
+            catch
+            { 
                 return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
             finally
@@ -1475,6 +1446,10 @@ namespace SOMIOD.Controllers
             }
         }
 
+        private string GenerateUniqueName(string baseName)
+        {
+            return $"{baseName}_{Guid.NewGuid()}";
+        }
         #endregion
     }
 }
