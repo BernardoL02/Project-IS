@@ -15,10 +15,10 @@
 [x] - Colocar no xsd que endpoint tem de começar com http ou mqtt
 [x] - Retornar nos post o elemento criado
 [x] - Gerar nomes automaticamente se nao for fornecido ou se ja existirem
-[] - Mudar formato das notifications
+[x] - Mudar formato das notifications
 [] - Extra no locate 
-[] - Endpoin no mqtt
-[] - Ver erro na pagina ao correr o código 
+[x] - Endpoin no mqtt
+[x] - Ver erro na pagina ao correr o código 
 
 
 -------- Perguntas Pof --------

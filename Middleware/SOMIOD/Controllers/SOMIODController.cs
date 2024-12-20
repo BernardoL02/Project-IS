@@ -1034,14 +1034,14 @@ namespace SOMIOD.Controllers
                                 mcClient.Connect(clientId);
                                 if (mcClient.IsConnected)
                                 {
-                                    mcClient.Publish(channel, Encoding.UTF8.GetBytes(record.ToString()), MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE, false);
+                                    mcClient.Publish(channel, Encoding.UTF8.GetBytes(record.ToString(evento)), MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE, false);
                                 }
                             }
                             else
                             {
                                 httpClient = new HttpClient();
 
-                                httpContent = new StringContent(record.ToString(), Encoding.UTF8, "application/xml");
+                                httpContent = new StringContent(record.ToString(evento), Encoding.UTF8, "application/xml");
 
                                 var response = httpClient.PostAsync(notification.Endpoint, httpContent);
                             }
