@@ -25,6 +25,7 @@ using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
 using System.Text;
 using System.Web.UI.WebControls;
+using System.Resources;
 
 
 
@@ -117,7 +118,6 @@ namespace SOMIOD.Controllers
             return Content(System.Net.HttpStatusCode.OK, HandlerXML.responseApplications(applicationList), Configuration.Formatters.XmlFormatter);
         }
 
-
         [HttpGet]
         [Route("api/somiod/{application}")]
         public IHttpActionResult LocateContainersRecordsNotifications(string application)
@@ -199,6 +199,110 @@ namespace SOMIOD.Controllers
 
             return Content(HttpStatusCode.OK, HandlerXML.responseContainers(NamesList, char.ToUpper(headerValue[0]) + headerValue.Substring(1)), Configuration.Formatters.XmlFormatter);
         }
+
+        //Função Extra
+        [HttpGet]
+        [Route("api/somiod/{resourceName}/parent")]
+        public IHttpActionResult getParent(string resourceName)
+        {
+            IEnumerable<string> headerValues;
+            string headerValue = null;
+            string query = null;
+
+            int parentId = -1;
+            Container container = null;
+
+            SqlConnection conn = null;
+            SqlDataReader reader = null;
+            SqlCommand command = null;
+
+            if (Request.Headers.TryGetValues("somiod-locate", out headerValues))
+            {
+                headerValue = headerValues.FirstOrDefault()?.ToUpper();
+            }
+
+            switch (headerValue)
+            {
+                case "APPLICATION":
+                    return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Applications dosn't have parents.", "404"), Configuration.Formatters.XmlFormatter);
+
+                case "CONTAINER":
+
+                    container = this.verifyContainerExists(resourceName);
+                    
+                    if(container == null)
+                    {
+                        return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Container was not found.", "404"), Configuration.Formatters.XmlFormatter);
+                    }
+
+                    parentId = container.Parent;
+
+                    query = "SELECT Application.Name AS ApplicationName FROM Application WHERE Application.Id = @parentId";
+
+                    break;
+
+                case "RECORD":
+                case "NOTIFICATION":
+
+                    object parentResource = headerValue == "RECORD"
+                          ? (object)this.verifyRecordExists(resourceName)
+                          : (object)this.verifyNotifcationExists(resourceName);
+
+                    if (parentResource == null)
+                    {
+                        headerValue = headerValue == "RECORD" ? "Record" : "Notification";
+                        return Content(HttpStatusCode.NotFound, HandlerXML.responseError($"{headerValue} was not found.", "404"), Configuration.Formatters.XmlFormatter);
+                    }
+
+                    parentId = parentResource is Record record ? record.Parent : ((Notification)parentResource).Parent;
+                    
+                    query = "SELECT Container.Name AS containerName, Application.Name AS ApplicationName FROM Container JOIN Application ON Container.Parent = Application.Id WHERE Container.Id = @parentId";
+
+                    break;
+
+                default:
+                    return Content(HttpStatusCode.BadRequest, HandlerXML.responseError("Invalid Header. Expected values are 'Container', 'Record', or 'Notification'.", "400"), Configuration.Formatters.XmlFormatter);
+            }
+
+
+            string applicationName = null;
+            string containerName = null;
+
+            try
+            {
+                conn = new SqlConnection(strConnection);
+                conn.Open();
+
+                command = new SqlCommand(query, conn);
+                
+                command.Parameters.AddWithValue("@parentId", parentId);
+
+                reader = command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    applicationName = reader["ApplicationName"].ToString();
+
+                    if(headerValue != "CONTAINER")
+                    {
+                        containerName = reader["containerName"].ToString();
+                    }
+                }
+            }
+            catch
+            {
+                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
+            }
+            finally
+            {
+                if (conn != null) { conn.Close(); }
+                if (reader != null) { reader.Close(); }
+                if (command != null) { command.Dispose(); }
+            }
+
+            return Content(HttpStatusCode.OK, HandlerXML.responseParentsHierarchy(applicationName, containerName), Configuration.Formatters.XmlFormatter);
+        }
+
         #endregion
 
 
