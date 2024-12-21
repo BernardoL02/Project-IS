@@ -61,8 +61,8 @@ namespace Publisher
         {
 
             XElement xml = new XElement("Record",
-                new XElement("Name", "1"),
-                new XElement("Content", "abrir")
+                new XElement("Name", "Record1"),
+                new XElement("Content", "on")
             );
 
             try
@@ -98,8 +98,8 @@ namespace Publisher
         {
 
             XElement xml = new XElement("Record",
-                new XElement("Name", "2"),
-                new XElement("Content", "fechar")
+                new XElement("Name", "Record2"),
+                new XElement("Content", "off")
             );
 
             try
