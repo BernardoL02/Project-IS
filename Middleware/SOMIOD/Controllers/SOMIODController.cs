@@ -25,6 +25,7 @@ using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
 using System.Text;
 using System.Web.UI.WebControls;
+using System.Resources;
 
 
 
@@ -117,7 +118,6 @@ namespace SOMIOD.Controllers
             return Content(System.Net.HttpStatusCode.OK, HandlerXML.responseApplications(applicationList), Configuration.Formatters.XmlFormatter);
         }
 
-
         [HttpGet]
         [Route("api/somiod/{application}")]
         public IHttpActionResult LocateContainersRecordsNotifications(string application)
@@ -199,6 +199,110 @@ namespace SOMIOD.Controllers
 
             return Content(HttpStatusCode.OK, HandlerXML.responseContainers(NamesList, char.ToUpper(headerValue[0]) + headerValue.Substring(1)), Configuration.Formatters.XmlFormatter);
         }
+
+        //Função Extra
+        [HttpGet]
+        [Route("api/somiod/{resourceName}/parent")]
+        public IHttpActionResult getParent(string resourceName)
+        {
+            IEnumerable<string> headerValues;
+            string headerValue = null;
+            string query = null;
+
+            int parentId = -1;
+            Container container = null;
+
+            SqlConnection conn = null;
+            SqlDataReader reader = null;
+            SqlCommand command = null;
+
+            if (Request.Headers.TryGetValues("somiod-locate", out headerValues))
+            {
+                headerValue = headerValues.FirstOrDefault()?.ToUpper();
+            }
+
+            switch (headerValue)
+            {
+                case "APPLICATION":
+                    return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Applications dosn't have parents.", "404"), Configuration.Formatters.XmlFormatter);
+
+                case "CONTAINER":
+
+                    container = this.verifyContainerExists(resourceName);
+                    
+                    if(container == null)
+                    {
+                        return Content(HttpStatusCode.NotFound, HandlerXML.responseError("Container was not found.", "404"), Configuration.Formatters.XmlFormatter);
+                    }
+
+                    parentId = container.Parent;
+
+                    query = "SELECT Application.Name AS ApplicationName FROM Application WHERE Application.Id = @parentId";
+
+                    break;
+
+                case "RECORD":
+                case "NOTIFICATION":
+
+                    object parentResource = headerValue == "RECORD"
+                          ? (object)this.verifyRecordExists(resourceName)
+                          : (object)this.verifyNotifcationExists(resourceName);
+
+                    if (parentResource == null)
+                    {
+                        headerValue = headerValue == "RECORD" ? "Record" : "Notification";
+                        return Content(HttpStatusCode.NotFound, HandlerXML.responseError($"{headerValue} was not found.", "404"), Configuration.Formatters.XmlFormatter);
+                    }
+
+                    parentId = parentResource is Record record ? record.Parent : ((Notification)parentResource).Parent;
+                    
+                    query = "SELECT Container.Name AS containerName, Application.Name AS ApplicationName FROM Container JOIN Application ON Container.Parent = Application.Id WHERE Container.Id = @parentId";
+
+                    break;
+
+                default:
+                    return Content(HttpStatusCode.BadRequest, HandlerXML.responseError("Invalid Header. Expected values are 'Container', 'Record', or 'Notification'.", "400"), Configuration.Formatters.XmlFormatter);
+            }
+
+
+            string applicationName = null;
+            string containerName = null;
+
+            try
+            {
+                conn = new SqlConnection(strConnection);
+                conn.Open();
+
+                command = new SqlCommand(query, conn);
+                
+                command.Parameters.AddWithValue("@parentId", parentId);
+
+                reader = command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    applicationName = reader["ApplicationName"].ToString();
+
+                    if(headerValue != "CONTAINER")
+                    {
+                        containerName = reader["containerName"].ToString();
+                    }
+                }
+            }
+            catch
+            {
+                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
+            }
+            finally
+            {
+                if (conn != null) { conn.Close(); }
+                if (reader != null) { reader.Close(); }
+                if (command != null) { command.Dispose(); }
+            }
+
+            return Content(HttpStatusCode.OK, HandlerXML.responseParentsHierarchy(applicationName, containerName), Configuration.Formatters.XmlFormatter);
+        }
+
         #endregion
 
 
@@ -214,7 +318,7 @@ namespace SOMIOD.Controllers
             SqlCommand command = null;
             SqlConnection conn = null;
             int affectedfRows = -1;
-            Application application = null;
+            string applicationName = null;
 
             HandlerXML handlerXML = new HandlerXML();
             string validationMessage = handlerXML.ValidateXML(applicationXml);
@@ -226,27 +330,15 @@ namespace SOMIOD.Controllers
 
             try
             {
-                application = new Application
-                {
-                    Name = applicationXml.Element("Name")?.Value
-                };
+                applicationName = this.verifyApplicationExists(applicationXml.Element("Name")?.Value) != null ? GenerateUniqueName("Application") : applicationXml.Element("Name")?.Value;
 
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
                 command = new SqlCommand("INSERT INTO Application(Name) VALUES (@name)", conn);
-                command.Parameters.AddWithValue("@name", application.Name);
+                command.Parameters.AddWithValue("@name", applicationName);
 
                 affectedfRows = command.ExecuteNonQuery();
-            }
-            catch (SqlException ex)
-            {
-                if (ex.Number == 2627 || ex.Number == 2601)
-                {
-                    return Content(HttpStatusCode.Conflict, HandlerXML.responseError("Application name already exists", "409"), Configuration.Formatters.XmlFormatter);
-                }
-
-                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
             catch
             {
@@ -260,7 +352,7 @@ namespace SOMIOD.Controllers
 
             if (affectedfRows > 0)
             {
-                return Content(HttpStatusCode.OK, this.verifyApplicationExists(application.Name), Configuration.Formatters.XmlFormatter);
+                return Content(HttpStatusCode.OK, this.verifyApplicationExists(applicationName), Configuration.Formatters.XmlFormatter);
             }
             else
             {
@@ -440,7 +532,7 @@ namespace SOMIOD.Controllers
             SqlConnection conn = null;
             SqlCommand command = null;
             int affectedfRows = -1;
-            Container container = null;
+            string containerName = null;
 
             HandlerXML handlerXML = new HandlerXML();
             string validationMessage = handlerXML.ValidateXML(containerXml);
@@ -459,28 +551,16 @@ namespace SOMIOD.Controllers
 
             try
             {
-                container = new Container
-                {
-                    Name = containerXml.Element("Name")?.Value
-                };
+                containerName = this.verifyContainerExists(containerXml.Element("Name")?.Value) != null ? GenerateUniqueName("Container") : containerXml.Element("Name")?.Value;
 
                 conn = new SqlConnection(strConnection);
                 conn.Open();
 
                 command = new SqlCommand("INSERT INTO Container(Name,Parent) VALUES (@name,@parantId)", conn);
-                command.Parameters.AddWithValue("@name", container.Name);
+                command.Parameters.AddWithValue("@name", containerName);
                 command.Parameters.AddWithValue("@parantId", app.Id);
 
                 affectedfRows = command.ExecuteNonQuery();
-            }
-            catch (SqlException ex)
-            {
-                if (ex.Number == 2627 || ex.Number == 2601)
-                {
-                    return Content(HttpStatusCode.Conflict, HandlerXML.responseError("Container name already exists", "409"), Configuration.Formatters.XmlFormatter);
-                }
-
-                return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
             catch 
             {
@@ -495,7 +575,7 @@ namespace SOMIOD.Controllers
             if (affectedfRows > 0)
             {
                 
-                return Content(HttpStatusCode.OK, this.verifyContainerExists(container.Name), Configuration.Formatters.XmlFormatter);
+                return Content(HttpStatusCode.OK, this.verifyContainerExists(containerName), Configuration.Formatters.XmlFormatter);
             }
             else
             {
@@ -679,6 +759,7 @@ namespace SOMIOD.Controllers
             SqlCommand command = null;
             int affectedfRows = 0;
             Record record = null;
+            string recordName = null;
 
             ValidateResource resources = verifyParentOfContainer(application, container);
 
@@ -689,9 +770,11 @@ namespace SOMIOD.Controllers
 
             try
             {
+                recordName = this.verifyRecordExists(recordXml.Element("Name")?.Value) != null ? GenerateUniqueName("Record") : recordXml.Element("Name")?.Value;
+
                 record = new Record
                 {
-                    Name = recordXml.Element("Name")?.Value,
+                    Name = recordName,
                     Content = recordXml.Element("Content")?.Value
                 };
 
@@ -704,14 +787,9 @@ namespace SOMIOD.Controllers
                 command.Parameters.AddWithValue("@parentId", resources.Container.Id);
 
                 affectedfRows = command.ExecuteNonQuery();
-
             }
-            catch (SqlException ex)
-            {
-                if (ex.Number == 2627 || ex.Number == 2601)
-                {
-                    return Content(HttpStatusCode.Conflict, HandlerXML.responseError("Record name already exists", "409"), Configuration.Formatters.XmlFormatter);
-                }
+            catch 
+            { 
                 return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
             finally
@@ -725,8 +803,6 @@ namespace SOMIOD.Controllers
                 triggerNotification(1, resources.Application, resources.Container, this.verifyRecordExists(record.Name));
 
                 return Content(HttpStatusCode.OK, this.verifyRecordExists(record.Name), Configuration.Formatters.XmlFormatter);
-                
-
             }
             else
             {
@@ -820,6 +896,7 @@ namespace SOMIOD.Controllers
             SqlCommand command = null;
             int affectedfRows = 0;
             Notification notification = null;
+            string notificationName = null;
 
             ValidateResource resources = verifyParentOfContainer(application, container);
 
@@ -830,9 +907,11 @@ namespace SOMIOD.Controllers
 
             try
             {
-                 notification = new Notification
+                notificationName = this.verifyNotifcationExists(notificationXml.Element("Name")?.Value) != null ? GenerateUniqueName("Notification") : notificationXml.Element("Name")?.Value;
+
+                notification = new Notification
                 {
-                    Name = notificationXml.Element("Name").Value,
+                    Name = notificationName,
                     Event = int.Parse(notificationXml.Element("Event").Value),
                     Endpoint = notificationXml.Element("Endpoint").Value,
                     Enabled = bool.Parse(notificationXml.Element("Enabled").Value)
@@ -852,12 +931,8 @@ namespace SOMIOD.Controllers
 
                 affectedfRows = command.ExecuteNonQuery();
             }
-            catch (SqlException ex)
-            {
-                if (ex.Number == 2627 || ex.Number == 2601)
-                {
-                    return Content(HttpStatusCode.Conflict, HandlerXML.responseError("Notification name already exists", "409"), Configuration.Formatters.XmlFormatter);
-                }
+            catch
+            { 
                 return Content(HttpStatusCode.InternalServerError, HandlerXML.responseError("An error occurred while processing your request. Please try again later.", "500"), Configuration.Formatters.XmlFormatter);
             }
             finally
@@ -1050,21 +1125,27 @@ namespace SOMIOD.Controllers
                         {
                             if (notification.Endpoint.StartsWith("mqtt", StringComparison.OrdinalIgnoreCase))
                             {
-                                MqttClient mcClient = new MqttClient("127.0.0.1");
+                                var uri = new Uri(notification.Endpoint);
+
+                                string host = uri.Host;
+                                int port = uri.Port;
+                                string channel = "api/somiod/" + application.Name + "/" + container.Name;
+
+                                MqttClient mcClient = (port > 0) ? new MqttClient(host, port, false, null, null, MqttSslProtocols.None) : new MqttClient(host);
 
                                 string clientId = Guid.NewGuid().ToString();
 
                                 mcClient.Connect(clientId);
                                 if (mcClient.IsConnected)
                                 {
-                                    mcClient.Publish("api/somiod/" + application.Name + "/" + container.Name, Encoding.UTF8.GetBytes(record.ToString()), MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE, true);
+                                    mcClient.Publish(channel, Encoding.UTF8.GetBytes(record.ToString(evento)), MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE, false);
                                 }
                             }
                             else
                             {
                                 httpClient = new HttpClient();
 
-                                httpContent = new StringContent(record.ToString(), Encoding.UTF8, "application/xml");
+                                httpContent = new StringContent(record.ToString(evento), Encoding.UTF8, "application/xml");
 
                                 var response = httpClient.PostAsync(notification.Endpoint, httpContent);
                             }
@@ -1475,6 +1556,10 @@ namespace SOMIOD.Controllers
             }
         }
 
+        private string GenerateUniqueName(string baseName)
+        {
+            return $"{baseName}_{Guid.NewGuid()}";
+        }
         #endregion
     }
 }
