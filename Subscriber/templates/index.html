@@ -2,64 +2,50 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>MQTT Messages</title>
-    <script>
-      window.onload = () => {
-        document.getElementById("topic").value = "mqtt://127.0.0.1";
-      };
-
-      async function fetchMessages() {
-        const response = await fetch("/messages");
-        const messages = await response.json();
-        const container = document.getElementById("messages");
-        container.innerText = ""; // Limpa a área
-
-        messages.forEach((msg) => {
-          const div = document.createElement("div");
-          // Verifica se a mensagem é JSON e formata de forma legível
-          div.textContent = JSON.stringify(msg, null, 2);
-          container.appendChild(div);
-        });
-      }
-
-      setInterval(fetchMessages, 1000);
-
-      async function configureMQTT() {
-        const host = document.getElementById("host").value;
-        let topic = document.getElementById("topic").value;
-
-        // Remover "mqtt://" se estiver presente
-        if (topic.startsWith("mqtt://")) {
-          topic = topic.replace("mqtt://", "");
-        }
-
-        if (host && topic) {
-          const response = await fetch(
-            `/configure/${host}/${encodeURIComponent(topic)}`
-          );
-          alert(await response.text());
-        } else {
-          alert("Por favor, insira o host e o tópico.");
-        }
-      }
-
-      async function disconnectMQTT() {
-        const response = await fetch("/disconnect");
-        alert(await response.text());
-      }
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Controle da Lâmpada</title>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body>
-    <h1>MQTT Messages</h1>
-    <div>
-      <label for="host">MQTT Host:</label>
-      <input type="text" id="host" placeholder="127.0.0.1" />
-      <label for="topic">MQTT Topic:</label>
-      <input type="text" id="topic" placeholder="127.0.0.1" />
-      <button onclick="configureMQTT()">Conectar</button>
-      <button onclick="disconnectMQTT()">Desconectar</button>
+  <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded shadow-md w-96 text-center">
+      <h1 class="text-2xl font-bold mb-6">Controle da Lâmpada</h1>
+
+      <!-- Exibir mensagens de sucesso ou erro -->
+      {% if message %}
+      <div
+        class="mb-4 p-4 {% if 'sucesso' in message %}bg-green-100 border-l-4 border-green-500 text-green-700{% else %}bg-red-100 border-l-4 border-red-500 text-red-700{% endif %}"
+      >
+        <p>{{ message }}</p>
+      </div>
+      {% endif %}
+
+      <!-- Imagem da lâmpada com base no estado atual -->
+      <div class="mb-6">
+        {% if state == 'on' %}
+        <img
+          src="{{ url_for('static', filename='lamp_on.png') }}"
+          alt="Lâmpada Ligada"
+          class="mx-auto w-24 h-24"
+        />
+        {% else %}
+        <img
+          src="{{ url_for('static', filename='lamp_off.png') }}"
+          alt="Lâmpada Desligada"
+          class="mx-auto w-24 h-24"
+        />
+        {% endif %}
+      </div>
+
+      <!-- Label para mostrar o estado atual da lâmpada -->
+      <div class="mb-6">
+        <span class="text-lg font-semibold">
+          Estado da Lâmpada: {% if state == 'on' %}
+          <span class="text-green-500">Ligada</span>
+          {% else %}
+          <span class="text-red-500">Desligada</span>
+          {% endif %}
+        </span>
+      </div>
     </div>
-    <h2>Mensagens Recebidas</h2>
-    <pre id="messages"></pre>
   </body>
 </html>
