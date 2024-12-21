@@ -5,6 +5,9 @@ import threading
 import paho.mqtt.client as mqtt
 import urllib3
 from datetime import datetime
+import subprocess
+import sys
+from pathlib import Path
 
 # Suprimir avisos de HTTPS não verificados
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -241,6 +244,45 @@ def on_message(client, userdata, msg):
     except ET.ParseError as e:
         print(f"Erro ao parsear a mensagem XML: {e}")
 
+def check_and_install_requirements(requirements_file="requirements.txt"):
+    """Verifica e instala dependências usadas no código."""
+    required_packages = ["Flask", "paho-mqtt", "requests", "urllib3"]
+
+    try:
+        # Verificar se o arquivo requirements.txt existe
+        requirements_path = Path(requirements_file)
+        if not requirements_path.exists():
+            print(f"{requirements_file} não encontrado. Criando um novo arquivo...")
+            with open(requirements_file, "w") as file:
+                file.write("\n".join(required_packages))
+
+        # Carregar pacotes do arquivo requirements.txt
+        with open(requirements_file, "r") as file:
+            packages_in_file = [line.strip() for line in file if line.strip()]
+
+        # Verificar pacotes ausentes
+        missing_packages = set(required_packages) - set(packages_in_file)
+
+        # Adicionar pacotes ausentes ao requirements.txt
+        if missing_packages:
+            print(f"Adicionando pacotes ausentes ao {requirements_file}: {', '.join(missing_packages)}")
+            with open(requirements_file, "a") as file:
+                file.write("\n" + "\n".join(missing_packages))
+
+        # Instalar pacotes necessários
+        for package in required_packages:
+            try:
+                __import__(package.split('==')[0].split('>=')[0].strip())
+            except ImportError:
+                print(f"Pacote {package} não encontrado. Instalando...")
+                subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+
+        print("Todas as dependências estão instaladas e atualizadas.")
+    except Exception as e:
+        print(f"Erro ao verificar ou instalar dependências: {e}")
+        sys.exit(1)
+
+
 
 # Configuração do cliente MQTT em uma thread separada
 def mqtt_thread():
@@ -256,6 +298,7 @@ def mqtt_thread():
         print(f"Erro ao conectar ao broker MQTT: {e}")
 
 if __name__ == "__main__":
+    check_and_install_requirements()
     setup_resources()
 
     # Cria thread separada para escutar no endpoint HTTP
