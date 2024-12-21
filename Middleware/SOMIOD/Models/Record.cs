@@ -15,17 +15,20 @@ namespace SOMIOD.Models
         public DateTime CreationDateTime { get; set; }
         public int Parent { get; set; }
 
-        public override string ToString()
+        public string ToString(int evento)
         {
-            var notificationXml = new XElement("Record",
-                new XElement("Name", Name),
-                new XElement("Content", Content),
-                new XElement("CreationDateTime", CreationDateTime),
-                new XElement("Parent", Parent)
+            var notificationXml = new XElement("Notification",  
+                new XElement("Record",
+                    new XElement("Id", Id),
+                    new XElement("Name", Name),
+                    new XElement("Content", Content),
+                    new XElement("CreationDateTime", CreationDateTime),
+                    new XElement("Parent", Parent)
+                ),
+                new XElement("Event", evento)  
             );
 
-            return notificationXml.ToString();
+            return notificationXml.ToString(); 
         }
-
     }
 }

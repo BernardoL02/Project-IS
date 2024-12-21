@@ -231,6 +231,31 @@ namespace SOMIOD
             return xmlDoc;
         }
 
+        public static XmlDocument responseParentsHierarchy(string applicationName, string containerName)
+        {
+            XmlDocument xmlDoc = new XmlDocument();
+
+            XmlElement applicationNode = xmlDoc.CreateElement("Application");
+            xmlDoc.AppendChild(applicationNode);
+
+            XmlElement applicationNameNode = xmlDoc.CreateElement("Name");
+            applicationNameNode.InnerText = applicationName;
+            applicationNode.AppendChild(applicationNameNode);
+
+            if (!string.IsNullOrEmpty(containerName))
+            {
+                XmlElement containerNode = xmlDoc.CreateElement("Container");
+
+                XmlElement containerNameNode = xmlDoc.CreateElement("Name");
+                containerNameNode.InnerText = containerName;
+                containerNode.AppendChild(containerNameNode);
+
+                applicationNode.AppendChild(containerNode);
+            }
+
+            return xmlDoc;
+        }
+
         #endregion
 
         #region Error XML Responses

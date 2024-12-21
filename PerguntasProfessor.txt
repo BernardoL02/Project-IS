@@ -14,8 +14,12 @@
 [x] - Verificar se existem + de um elemento no post da notification
 [x] - Colocar no xsd que endpoint tem de começar com http ou mqtt
 [x] - Retornar nos post o elemento criado
-[] - Gerar nomes automaticamente se nao for fornecido ou se ja existirem
-[] - Mudar formato das notifications
+[x] - Gerar nomes automaticamente se nao for fornecido ou se ja existirem
+[x] - Mudar formato das notifications
+[x] - Extra no locate 
+[x] - Endpoin no mqtt
+[x] - Ver erro na pagina ao correr o código 
+
 
 -------- Perguntas Pof --------
 No XML é preciso mensagens descritivas ou podemos só retornar XML inválido - Excelente Abordagem
