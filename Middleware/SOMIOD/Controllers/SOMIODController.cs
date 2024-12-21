@@ -26,6 +26,7 @@ using uPLibrary.Networking.M2Mqtt.Messages;
 using System.Text;
 using System.Web.UI.WebControls;
 using System.Resources;
+using System.Threading.Tasks;
 
 
 
@@ -1140,7 +1141,6 @@ namespace SOMIOD.Controllers
                                 if (mcClient.IsConnected)
                                 {
                                     mcClient.Publish(channel, Encoding.UTF8.GetBytes(record.ToString(evento)), MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE, false);
-                                    mcClient.Disconnect();
                                 }
                             }
                             else

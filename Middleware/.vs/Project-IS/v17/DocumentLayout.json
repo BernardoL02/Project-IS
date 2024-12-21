@@ -3,17 +3,8 @@
   "WorkspaceRootPath": "C:\\Users\\josem\\source\\repos\\Project-IS\\Middleware\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_LocalDB__MSSQLLocalDB/C__USERS_JOSEM_SOURCE_REPOS_PROJECT_IS_MIDDLEWARE_SOMIOD_APP_DATA_DATABASE.MDF/True/SqlTable/dbo.Notification.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|c:\\users\\josem\\source\\repos\\project-is\\middleware\\somiod\\controllers\\somiodcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|C:\\Users\\josem\\source\\repos\\Project-IS\\Middleware\\somiod\\controllers\\somiodcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|solutionrelative:somiod\\controllers\\somiodcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_LocalDB__MSSQLLocalDB/C__USERS_JOSEM_SOURCE_REPOS_PROJECT_IS_MIDDLEWARE_SOMIOD_APP_DATA_DATABASE.MDF/True/SqlTable/dbo.Container.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_LocalDB__MSSQLLocalDB/C__USERS_JOSEM_SOURCE_REPOS_PROJECT_IS_MIDDLEWARE_SOMIOD_APP_DATA_DATABASE.MDF/True/SqlTable/dbo.Application.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
     }
   ],
   "DocumentGroupContainers": [
@@ -23,17 +14,17 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 8,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "SOMIODController.cs",
               "DocumentMoniker": "C:\\Users\\josem\\source\\repos\\Project-IS\\Middleware\\SOMIOD\\Controllers\\SOMIODController.cs",
               "RelativeDocumentMoniker": "SOMIOD\\Controllers\\SOMIODController.cs",
               "ToolTip": "C:\\Users\\josem\\source\\repos\\Project-IS\\Middleware\\SOMIOD\\Controllers\\SOMIODController.cs",
               "RelativeToolTip": "SOMIOD\\Controllers\\SOMIODController.cs",
-              "ViewState": "AgIAAGAEAAAAAAAAAAAAwHgEAAAdAAAAAAAAAA==",
+              "ViewState": "AgIAAFsEAAAAAAAAAAAAAHgEAAAdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-12-17T09:22:46.148Z",
               "IsPinned": true,
@@ -58,36 +49,6 @@
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "dbo.Container [Data]",
-              "DocumentMoniker": "ViewDataWindow_MSSQL__/_LocalDB__MSSQLLocalDB/C__USERS_JOSEM_SOURCE_REPOS_PROJECT_IS_MIDDLEWARE_SOMIOD_APP_DATA_DATABASE.MDF/True/SqlTable/dbo.Container.sql",
-              "ToolTip": "dbo.Container [Data]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
-              "WhenOpened": "2024-12-21T18:08:25.331Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "dbo.Application [Data]",
-              "DocumentMoniker": "ViewDataWindow_MSSQL__/_LocalDB__MSSQLLocalDB/C__USERS_JOSEM_SOURCE_REPOS_PROJECT_IS_MIDDLEWARE_SOMIOD_APP_DATA_DATABASE.MDF/True/SqlTable/dbo.Application.sql",
-              "ToolTip": "dbo.Application [Data]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
-              "WhenOpened": "2024-12-21T18:08:23.662Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "dbo.Notification [Data]",
-              "DocumentMoniker": "ViewDataWindow_MSSQL__/_LocalDB__MSSQLLocalDB/C__USERS_JOSEM_SOURCE_REPOS_PROJECT_IS_MIDDLEWARE_SOMIOD_APP_DATA_DATABASE.MDF/True/SqlTable/dbo.Notification.sql",
-              "ToolTip": "dbo.Notification [Data]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
-              "WhenOpened": "2024-12-21T18:06:53.997Z",
-              "EditorCaption": ""
             }
           ]
         }
