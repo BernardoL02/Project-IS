@@ -9,10 +9,10 @@
       // Função para buscar o estado atual da lâmpada do servidor
       async function fetchLampState() {
         try {
-          const response = await fetch("/state", { method: "GET" }); // Use o endpoint correto
+          const response = await fetch("/state", { method: "GET" });
           if (response.ok) {
-            const data = await response.json(); // Supondo que o servidor retorne JSON
-            updateLampState(data.state); // Atualiza o estado com a resposta
+            const data = await response.json();
+            updateLampState(data.state);
           } else {
             console.error("Erro ao buscar estado da lâmpada:", response.status);
           }
@@ -21,7 +21,6 @@
         }
       }
 
-      // Função para atualizar a imagem e o estado dinamicamente
       function updateLampState(state) {
         const lampImage = document.getElementById("lamp-image");
         const lampStateText = document.getElementById("lamp-state-text");
@@ -39,12 +38,45 @@
         }
       }
 
-      // Atualizar o estado da lâmpada a cada 3 segundos
+      // Função para buscar mensagens recebidas
+      async function fetchMessages() {
+        try {
+          const mqttResponse = await fetch("/mqtt-messages", { method: "GET" });
+          const httpResponse = await fetch("/http-messages", { method: "GET" });
+
+          if (mqttResponse.ok && httpResponse.ok) {
+            const mqttData = await mqttResponse.json();
+            const httpData = await httpResponse.json();
+
+            updateMessages("mqtt-messages-box", mqttData.messages);
+            updateMessages("http-messages-box", httpData.messages);
+          } else {
+            console.error(
+              "Erro ao buscar mensagens:",
+              mqttResponse.status,
+              httpResponse.status
+            );
+          }
+        } catch (error) {
+          console.error("Erro na requisição de mensagens:", error);
+        }
+      }
+
+      // Função para atualizar mensagens nos retângulos
+      function updateMessages(elementId, messages) {
+        const container = document.getElementById(elementId);
+        container.innerHTML = messages
+          .map((message) => `<p class="text-sm">${message}</p>`)
+          .join("");
+      }
+
+      // Atualizar o estado da lâmpada e mensagens a cada 3 segundos
       setInterval(fetchLampState, 3000);
+      setInterval(fetchMessages, 3000);
     </script>
   </head>
   <body class="bg-gray-100 flex items-center justify-center min-h-screen">
-    <div class="bg-white p-8 rounded shadow-md w-96 text-center">
+    <div class="bg-white p-8 rounded shadow-md w-full max-w-4xl text-center">
       <h1 class="text-2xl font-bold mb-6">Controle da Lâmpada</h1>
 
       <!-- Imagem da lâmpada com base no estado atual -->
@@ -57,18 +89,36 @@
         />
       </div>
 
-      <!-- Label para mostrar o estado atual da lâmpada -->
+      <!-- Estado atual da lâmpada -->
       <div class="mb-6">
         <span class="text-lg font-semibold">
           Estado da Lâmpada:
           <span id="lamp-state-text">
-            {% if state == 'on' %}
-            <span class="text-green-500">Ligada</span>
-            {% else %}
-            <span class="text-red-500">Desligada</span>
-            {% endif %}
+            {% if state == 'on' %}<span class="text-green-500">Ligada</span>{%
+            else %}<span class="text-red-500">Desligada</span>{% endif %}
           </span>
         </span>
+      </div>
+
+      <!-- Retângulos para exibição das mensagens -->
+      <div class="flex justify-between">
+        <!-- Retângulo MQTT -->
+        <div class="bg-gray-200 p-4 w-1/2 mx-2 rounded shadow">
+          <h2 class="text-lg font-bold mb-2">Mensagens MQTT</h2>
+          <div
+            id="mqtt-messages-box"
+            class="text-left h-32 overflow-y-auto bg-white p-2 rounded shadow"
+          ></div>
+        </div>
+
+        <!-- Retângulo HTTP -->
+        <div class="bg-gray-200 p-4 w-1/2 mx-2 rounded shadow">
+          <h2 class="text-lg font-bold mb-2">Mensagens HTTP</h2>
+          <div
+            id="http-messages-box"
+            class="text-left h-32 overflow-y-auto bg-white p-2 rounded shadow"
+          ></div>
+        </div>
       </div>
     </div>
   </body>
