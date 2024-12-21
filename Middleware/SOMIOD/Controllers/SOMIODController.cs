@@ -26,6 +26,7 @@ using uPLibrary.Networking.M2Mqtt.Messages;
 using System.Text;
 using System.Web.UI.WebControls;
 using System.Resources;
+using System.Threading.Tasks;
 
 
 
@@ -1136,6 +1137,7 @@ namespace SOMIOD.Controllers
                                 string clientId = Guid.NewGuid().ToString();
 
                                 mcClient.Connect(clientId);
+
                                 if (mcClient.IsConnected)
                                 {
                                     mcClient.Publish(channel, Encoding.UTF8.GetBytes(record.ToString(evento)), MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE, false);
@@ -1143,11 +1145,13 @@ namespace SOMIOD.Controllers
                             }
                             else
                             {
+                                string data = record.ToString(evento);
+
                                 httpClient = new HttpClient();
+                                    
+                                httpContent = new StringContent(data, Encoding.UTF8, "application/xml");
 
-                                httpContent = new StringContent(record.ToString(evento), Encoding.UTF8, "application/xml");
-
-                                var response = httpClient.PostAsync(notification.Endpoint, httpContent);
+                                HttpResponseMessage response = httpClient.PostAsync(notification.Endpoint, httpContent).Result;
                             }
                         }
                     }
