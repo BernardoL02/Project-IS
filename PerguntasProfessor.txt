@@ -30,6 +30,11 @@ Temos que dar delete à restante informação que está relacionada com aquela q
 
 
 //Extras
-Temos os posts de notifications e records a verificar o nome do elemento root
+Temos os posts de notifications e records a verificar o nome do elemento root não usamos o res_type no xml dos pededos
 Extra desenvolver um método que devolva toda a hierarquia do elemento no locate dos records/notifications e containers
 Endpoints notifications apenas pode conter http:// ou mqtt://
+
+
+
+
+
