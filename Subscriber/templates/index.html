@@ -85,7 +85,7 @@
           id="lamp-image"
           src="{% if state == 'on' %}{{ url_for('static', filename='lamp_on.png') }}{% else %}{{ url_for('static', filename='lamp_off.png') }}{% endif %}"
           alt="{% if state == 'on' %}Lâmpada Ligada{% else %}Lâmpada Desligada{% endif %}"
-          class="mx-auto w-24 h-24"
+          class="mx-auto w-44 h-44"
         />
       </div>
 
@@ -105,6 +105,7 @@
         <!-- Retângulo MQTT -->
         <div class="bg-gray-200 p-4 w-1/2 mx-2 rounded shadow">
           <h2 class="text-lg font-bold mb-2">Mensagens MQTT</h2>
+          <p class="text-sm text-gray-600 mb-2">Event: 1 (Post: Record)</p>
           <div
             id="mqtt-messages-box"
             class="text-left h-32 overflow-y-auto bg-white p-2 rounded shadow"
@@ -114,6 +115,7 @@
         <!-- Retângulo HTTP -->
         <div class="bg-gray-200 p-4 w-1/2 mx-2 rounded shadow">
           <h2 class="text-lg font-bold mb-2">Mensagens HTTP</h2>
+          <p class="text-sm text-gray-600 mb-2">Event: 2 (Delete: Record)</p>
           <div
             id="http-messages-box"
             class="text-left h-32 overflow-y-auto bg-white p-2 rounded shadow"

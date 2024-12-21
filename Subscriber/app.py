@@ -9,7 +9,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-# Suprimir avisos de HTTPS não verificados
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 app = Flask(__name__)
@@ -24,13 +23,12 @@ current_state = None
 mqtt_messages = []
 http_messages = []
 
-# Configurações do broker MQTT
-MQTT_BROKER = "localhost"  # Endereço do broker (Mosquitto)
-MQTT_PORT = 1883           # Porta padrão MQTT
-MQTT_TOPIC = "api/somiod/Lighting/light_bulb"  # Tópico para controle da lâmpada
+MQTT_BROKER = "localhost"
+MQTT_PORT = 1883 
+MQTT_TOPIC = "api/somiod/Lighting/light_bulb" 
 
+# Verifica se a aplicação já existe.
 def check_application_exists(application_name):
-    """Verifica se a aplicação já existe."""
     response = requests.get(f"{BASE_URL}/{application_name}", headers=HEADERS, verify=False)
     if response.status_code == 200:
         root = ET.fromstring(response.content)
@@ -39,8 +37,8 @@ def check_application_exists(application_name):
             return True
     return False
 
+# Cria a aplicação se ela ainda não existir.
 def create_application():
-    """Cria a aplicação se ela ainda não existir."""
     application_name = "Lighting"
     if check_application_exists(application_name):
         print(f"A aplicacao '{application_name}' ja existente.")
@@ -50,8 +48,8 @@ def create_application():
     response = requests.post(BASE_URL, data=xml_data, headers=HEADERS, verify=False)
     return response.status_code in [200, 201, 409]
 
+# Verifica se o container já existe dentro de uma aplicação.
 def check_container_exists(application_name, container_name):
-    """Verifica se o container já existe dentro de uma aplicação."""
     response = requests.get(f"{BASE_URL}/{application_name}/{container_name}", headers=HEADERS, verify=False)
     if response.status_code == 200:
         root = ET.fromstring(response.content)
@@ -60,8 +58,8 @@ def check_container_exists(application_name, container_name):
             return True
     return False
 
+# Cria o container se ele ainda não existir.
 def create_container():
-    """Cria o container se ele ainda não existir."""
     application_name = "Lighting"
     container_name = "light_bulb"
     if check_container_exists(application_name, container_name):
@@ -73,9 +71,8 @@ def create_container():
     return response.status_code in [200, 201, 409]
 
 
-
+# Verifica se a notificação já existe dentro de um container.
 def check_notification_exists(application_name, container_name, notification_name):
-    """Verifica se a notificação já existe dentro de um container."""
     response = requests.get(f"{BASE_URL}/{application_name}/{container_name}/notification/{notification_name}", headers=HEADERS, verify=False)
     if response.status_code == 200:
         root = ET.fromstring(response.content)
@@ -84,12 +81,11 @@ def check_notification_exists(application_name, container_name, notification_nam
             return True
     return False
 
+# Cria notificações MQTT e HTTP se ainda não existirem.
 def create_notification():
-    """Cria notificações MQTT e HTTP se ainda não existirem."""
     application_name = "Lighting"
     container_name = "light_bulb"
 
-    # Configuração para o canal MQTT
     notification_name_mqtt = "sub_mqtt"
     if check_notification_exists(application_name, container_name, notification_name_mqtt):
         print(f"A notificacao MQTT '{notification_name_mqtt}' ja existe no container '{container_name}'.")
@@ -126,12 +122,11 @@ def create_notification():
         else:
             print(f"Erro ao criar a notificação HTTP: {response_http.status_code}")
 
+# Lida com notificações HTTP recebidas no endpoint.
 @app.route("/notify_http", methods=["POST"])
 def notify_http():
-    """Lida com notificações HTTP recebidas no endpoint."""
     global http_messages
     try:
-        # Parseia o XML recebido para processar a notificação
         data = request.data.decode("utf-8")
         root = ET.fromstring(data)
         record = root.find("Record")
@@ -141,16 +136,13 @@ def notify_http():
             content = record.find("Content").text
             timestamp = record.find("CreationDateTime").text
 
-            # Formatar a data
             formatted_date = datetime.fromisoformat(timestamp).strftime("%d/%m/%Y %H:%M:%S")
 
-            # Formatar a mensagem no estilo desejado
             formatted_message = f"{record_id} {record_name.split('_')[0]} - {content} - {formatted_date}"
 
-            # Adicionar mensagem à lista de mensagens HTTP
-            if formatted_message not in http_messages:  # Evitar duplicatas
+            if formatted_message not in http_messages:
                 http_messages.append(formatted_message)
-                http_messages = http_messages[-20:]  # Manter no máximo 20 mensagens
+                http_messages = http_messages[-20:]
                 print(f"Mensagem HTTP formatada adicionada: {formatted_message}")
 
         return "Notification received via HTTP", 200
@@ -168,7 +160,6 @@ def get_http_messages():
     return {"messages": http_messages}, 200
 
 def setup_resources():
-    """Cria os recursos automaticamente ao iniciar a aplicação."""
     if create_application():
         create_container()
         create_notification()
@@ -180,15 +171,13 @@ def index():
 
 @app.route("/", methods=["POST"])
 def root_notify():
-    """Trata notificações enviadas diretamente para '/'."""
-    return notify_http()  # Redireciona para o handler de notificações
+    return notify_http()
 
 # Rota para receber notificações e atualizar o estado da lâmpada
 @app.route("/notify", methods=["POST"])
 def notify():
     global current_state
 
-    # Parseia o XML recebido para obter o estado
     data = request.data
     root = ET.fromstring(data)
     content = root.find("Content").text
@@ -203,7 +192,7 @@ def notify():
 @app.route("/state", methods=["GET"])
 def get_state():
     global current_state
-    return {"state": current_state}, 200  # Retorna o estado como JSON
+    return {"state": current_state}, 200
 
 
 # Função para tratar mensagens recebidas via MQTT
@@ -213,7 +202,6 @@ def on_message(client, userdata, msg):
     payload = msg.payload.decode("utf-8")
     
     try:
-        # Parsear o XML recebido
         root = ET.fromstring(payload)
         record = root.find("Record")
         if record is not None:
@@ -222,18 +210,15 @@ def on_message(client, userdata, msg):
             content = record.find("Content").text
             timestamp = record.find("CreationDateTime").text
 
-            # Formatar a data
             formatted_date = datetime.fromisoformat(timestamp).strftime("%d/%m/%Y %H:%M:%S")
 
-            # Formatar a mensagem no estilo desejado
             formatted_message = f"{record_id} {record_name.split('_')[0]} - {content} - {formatted_date}"
 
-            if formatted_message not in mqtt_messages:  # Evitar duplicatas
+            if formatted_message not in mqtt_messages: 
                 mqtt_messages.append(formatted_message)
-                mqtt_messages = mqtt_messages[-20:]  # Manter no máximo 20 mensagens
+                mqtt_messages = mqtt_messages[-20:]
                 print(f"Mensagem formatada adicionada: {formatted_message}")
 
-            # Atualizar o estado da lâmpada
             global current_state
             if content == "on":
                 current_state = "on"
@@ -244,44 +229,26 @@ def on_message(client, userdata, msg):
     except ET.ParseError as e:
         print(f"Erro ao parsear a mensagem XML: {e}")
 
+# Verifica e instala dependências do arquivo requirements.txt.
 def check_and_install_requirements(requirements_file="requirements.txt"):
-    """Verifica e instala dependências usadas no código."""
-    required_packages = ["Flask", "paho-mqtt", "requests", "urllib3"]
-
     try:
-        # Verificar se o arquivo requirements.txt existe
         requirements_path = Path(requirements_file)
         if not requirements_path.exists():
-            print(f"{requirements_file} não encontrado. Criando um novo arquivo...")
-            with open(requirements_file, "w") as file:
-                file.write("\n".join(required_packages))
+            raise FileNotFoundError(f"Arquivo {requirements_file} não encontrado.")
+        
+        with open(requirements_path, "r") as file:
+            packages = [line.strip() for line in file if line.strip()]
 
-        # Carregar pacotes do arquivo requirements.txt
-        with open(requirements_file, "r") as file:
-            packages_in_file = [line.strip() for line in file if line.strip()]
-
-        # Verificar pacotes ausentes
-        missing_packages = set(required_packages) - set(packages_in_file)
-
-        # Adicionar pacotes ausentes ao requirements.txt
-        if missing_packages:
-            print(f"Adicionando pacotes ausentes ao {requirements_file}: {', '.join(missing_packages)}")
-            with open(requirements_file, "a") as file:
-                file.write("\n" + "\n".join(missing_packages))
-
-        # Instalar pacotes necessários
-        for package in required_packages:
+        for package in packages:
             try:
                 __import__(package.split('==')[0].split('>=')[0].strip())
             except ImportError:
-                print(f"Pacote {package} não encontrado. Instalando...")
+                print(f"Pacote {package} não está instalado. Instalando agora...")
                 subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-
-        print("Todas as dependências estão instaladas e atualizadas.")
+        print("Todas as dependências foram verificadas e instaladas.")
     except Exception as e:
         print(f"Erro ao verificar ou instalar dependências: {e}")
         sys.exit(1)
-
 
 
 # Configuração do cliente MQTT em uma thread separada
@@ -290,7 +257,6 @@ def mqtt_thread():
     client.on_message = on_message
     try:
         client.connect(MQTT_BROKER, MQTT_PORT, 60)
-        # Certifique-se de que o subscribe é chamado apenas uma vez
         client.subscribe(MQTT_TOPIC, qos=0)
         print(f"Inscrito no tópico: {MQTT_TOPIC}")
         client.loop_forever()
@@ -301,7 +267,7 @@ if __name__ == "__main__":
     check_and_install_requirements()
     setup_resources()
 
-    # Cria thread separada para escutar no endpoint HTTP
+    # Cria thread separada para o endpoint HTTP
     http_listener = threading.Thread(
         target=lambda: app.run(port=1884, debug=False, use_reloader=False)
     )
@@ -313,6 +279,5 @@ if __name__ == "__main__":
     mqtt_listener.daemon = True
     mqtt_listener.start()
 
-    # Roda o servidor Flask principal
     app.run(debug=False)
 

@@ -8,3 +8,13 @@ D:\Projeto_IS\Project-IS\Publisher\obj\Debug\Publisher.csproj.GenerateResource.c
 D:\Projeto_IS\Project-IS\Publisher\obj\Debug\Publisher.csproj.CoreCompileInputs.cache
 D:\Projeto_IS\Project-IS\Publisher\obj\Debug\Publisher.exe
 D:\Projeto_IS\Project-IS\Publisher\obj\Debug\Publisher.pdb
+C:\Users\MvCrespo\Desktop\IS\Project-IS\Publisher\bin\Debug\Publisher.exe.config
+C:\Users\MvCrespo\Desktop\IS\Project-IS\Publisher\bin\Debug\Publisher.exe
+C:\Users\MvCrespo\Desktop\IS\Project-IS\Publisher\bin\Debug\Publisher.pdb
+C:\Users\MvCrespo\Desktop\IS\Project-IS\Publisher\obj\Debug\Publisher.csproj.AssemblyReference.cache
+C:\Users\MvCrespo\Desktop\IS\Project-IS\Publisher\obj\Debug\Publisher.Form1.resources
+C:\Users\MvCrespo\Desktop\IS\Project-IS\Publisher\obj\Debug\Publisher.Properties.Resources.resources
+C:\Users\MvCrespo\Desktop\IS\Project-IS\Publisher\obj\Debug\Publisher.csproj.GenerateResource.cache
+C:\Users\MvCrespo\Desktop\IS\Project-IS\Publisher\obj\Debug\Publisher.csproj.CoreCompileInputs.cache
+C:\Users\MvCrespo\Desktop\IS\Project-IS\Publisher\obj\Debug\Publisher.exe
+C:\Users\MvCrespo\Desktop\IS\Project-IS\Publisher\obj\Debug\Publisher.pdb
