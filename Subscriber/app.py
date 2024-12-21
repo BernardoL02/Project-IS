@@ -17,37 +17,92 @@ HEADERS = {"Content-Type": "application/xml"}
 current_state = None
 
 # Configurações do broker MQTT
-MQTT_BROKER = "localhost"       # Endereço do broker (Mosquitto)
-MQTT_PORT = 1883                # Porta padrão MQTT
-MQTT_TOPIC = "lamp/control"     # Tópico para controle da lâmpada
+MQTT_BROKER = "localhost"  # Endereço do broker (Mosquitto)
+MQTT_PORT = 1883           # Porta padrão MQTT
+MQTT_TOPIC = "api/somiod/Lighting/light_bulb"  # Tópico para controle da lâmpada
+
+def check_application_exists(application_name):
+    """Verifica se a aplicação já existe."""
+    response = requests.get(f"{BASE_URL}/{application_name}", headers=HEADERS, verify=False)
+    if response.status_code == 200:
+        root = ET.fromstring(response.content)
+        name = root.find("Name").text
+        if name == application_name:
+            return True
+    return False
 
 def create_application():
-    xml_data = "<Application><Name>Lighting</Name></Application>"
+    """Cria a aplicação se ela ainda não existir."""
+    application_name = "Lighting"
+    if check_application_exists(application_name):
+        print(f"A aplicacao '{application_name}' ja existente.")
+        return True
+
+    xml_data = f"<Application><Name>{application_name}</Name></Application>"
     response = requests.post(BASE_URL, data=xml_data, headers=HEADERS, verify=False)
     return response.status_code in [200, 201, 409]
 
+def check_container_exists(application_name, container_name):
+    """Verifica se o container já existe dentro de uma aplicação."""
+    response = requests.get(f"{BASE_URL}/{application_name}/{container_name}", headers=HEADERS, verify=False)
+    if response.status_code == 200:
+        root = ET.fromstring(response.content)
+        name = root.find("Name").text
+        if name == container_name:
+            return True
+    return False
+
 def create_container():
-    xml_data = "<Container><Name>light_bulb</Name></Container>"
-    response = requests.post(f"{BASE_URL}/Lighting", data=xml_data, headers=HEADERS, verify=False)
+    """Cria o container se ele ainda não existir."""
+    application_name = "Lighting"
+    container_name = "light_bulb"
+    if check_container_exists(application_name, container_name):
+        print(f"O container '{container_name}' ja existe na aplicacao '{application_name}'.")
+        return True
+
+    xml_data = f"<Container><Name>{container_name}</Name></Container>"
+    response = requests.post(f"{BASE_URL}/{application_name}", data=xml_data, headers=HEADERS, verify=False)
     return response.status_code in [200, 201, 409]
 
+
+
+def check_notification_exists(application_name, container_name, notification_name):
+    """Verifica se a notificação já existe dentro de um container."""
+    response = requests.get(f"{BASE_URL}/{application_name}/{container_name}/notification/{notification_name}", headers=HEADERS, verify=False)
+    if response.status_code == 200:
+        root = ET.fromstring(response.content)
+        name = root.find("Name").text
+        if name == notification_name:
+            return True
+    return False
+
 def create_notification():
-    xml_data = """
+    """Cria a notificação se ela ainda não existir."""
+    application_name = "Lighting"
+    container_name = "light_bulb"
+    notification_name = "state_change"
+    if check_notification_exists(application_name, container_name, notification_name):
+        print(f"A notificacao '{notification_name}' ja existe no container '{container_name}'.")
+        return True
+
+    xml_data = f"""
     <Notification>
-        <Name>state_change</Name>
+        <Name>{notification_name}</Name>
         <Event>1</Event>
         <Endpoint>mqtt://localhost:1883</Endpoint>
         <Enabled>true</Enabled>
     </Notification>
     """
-    response = requests.post(f"{BASE_URL}/Lighting/light_bulb", data=xml_data, headers=HEADERS, verify=False)
+    response = requests.post(f"{BASE_URL}/{application_name}/{container_name}", data=xml_data, headers=HEADERS, verify=False)
     return response.status_code in [200, 201, 409]
+
+
 
 def setup_resources():
     """Cria os recursos automaticamente ao iniciar a aplicação."""
-    create_application()
-    create_container()
-    create_notification()
+    if create_application():
+        create_container()
+        create_notification()
 
 @app.route("/", methods=["GET"])
 def index():
@@ -71,19 +126,33 @@ def notify():
 
     return "Notification received", 200
 
+@app.route("/state", methods=["GET"])
+def get_state():
+    global current_state
+    return {"state": current_state}, 200  # Retorna o estado como JSON
+
+
 # Função para tratar mensagens recebidas via MQTT
 def on_message(client, userdata, msg):
     global current_state
     payload = msg.payload.decode("utf-8")
     print(f"Mensagem recebida via MQTT: {payload}")
 
-    if payload == "on":
-        current_state = "on"
-    elif payload == "off":
-        current_state = "off"
-    else:
-        print(f"Mensagem desconhecida: {payload}")
-
+    try:
+        # Parsear o XML recebido
+        root = ET.fromstring(payload)
+        record = root.find("Record")
+        if record is not None:
+            content = record.find("Content").text
+            if content == "on":
+                current_state = "on"
+            elif content == "off":
+                current_state = "off"
+            print(f"Estado atualizado: {current_state}")
+        else:
+            print("Formato de mensagem inesperado. Nenhum 'Record' encontrado.")
+    except ET.ParseError as e:
+        print(f"Erro ao parsear a mensagem XML: {e}")
 
 # Configuração do cliente MQTT em uma thread separada
 def mqtt_thread():

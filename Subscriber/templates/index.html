@@ -5,45 +5,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Controle da Lâmpada</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Função para buscar o estado atual da lâmpada do servidor
+      async function fetchLampState() {
+        try {
+          const response = await fetch("/state", { method: "GET" }); // Use o endpoint correto
+          if (response.ok) {
+            const data = await response.json(); // Supondo que o servidor retorne JSON
+            updateLampState(data.state); // Atualiza o estado com a resposta
+          } else {
+            console.error("Erro ao buscar estado da lâmpada:", response.status);
+          }
+        } catch (error) {
+          console.error("Erro na requisição:", error);
+        }
+      }
+
+      // Função para atualizar a imagem e o estado dinamicamente
+      function updateLampState(state) {
+        const lampImage = document.getElementById("lamp-image");
+        const lampStateText = document.getElementById("lamp-state-text");
+
+        if (state === "on") {
+          lampImage.src = "{{ url_for('static', filename='lamp_on.png') }}";
+          lampImage.alt = "Lâmpada Ligada";
+          lampStateText.innerHTML =
+            '<span class="text-green-500">Ligada</span>';
+        } else {
+          lampImage.src = "{{ url_for('static', filename='lamp_off.png') }}";
+          lampImage.alt = "Lâmpada Desligada";
+          lampStateText.innerHTML =
+            '<span class="text-red-500">Desligada</span>';
+        }
+      }
+
+      // Atualizar o estado da lâmpada a cada 3 segundos
+      setInterval(fetchLampState, 3000);
+    </script>
   </head>
   <body class="bg-gray-100 flex items-center justify-center min-h-screen">
     <div class="bg-white p-8 rounded shadow-md w-96 text-center">
       <h1 class="text-2xl font-bold mb-6">Controle da Lâmpada</h1>
 
-      <!-- Exibir mensagens de sucesso ou erro -->
-      {% if message %}
-      <div
-        class="mb-4 p-4 {% if 'sucesso' in message %}bg-green-100 border-l-4 border-green-500 text-green-700{% else %}bg-red-100 border-l-4 border-red-500 text-red-700{% endif %}"
-      >
-        <p>{{ message }}</p>
-      </div>
-      {% endif %}
-
       <!-- Imagem da lâmpada com base no estado atual -->
       <div class="mb-6">
-        {% if state == 'on' %}
         <img
-          src="{{ url_for('static', filename='lamp_on.png') }}"
-          alt="Lâmpada Ligada"
+          id="lamp-image"
+          src="{% if state == 'on' %}{{ url_for('static', filename='lamp_on.png') }}{% else %}{{ url_for('static', filename='lamp_off.png') }}{% endif %}"
+          alt="{% if state == 'on' %}Lâmpada Ligada{% else %}Lâmpada Desligada{% endif %}"
           class="mx-auto w-24 h-24"
         />
-        {% else %}
-        <img
-          src="{{ url_for('static', filename='lamp_off.png') }}"
-          alt="Lâmpada Desligada"
-          class="mx-auto w-24 h-24"
-        />
-        {% endif %}
       </div>
 
       <!-- Label para mostrar o estado atual da lâmpada -->
       <div class="mb-6">
         <span class="text-lg font-semibold">
-          Estado da Lâmpada: {% if state == 'on' %}
-          <span class="text-green-500">Ligada</span>
-          {% else %}
-          <span class="text-red-500">Desligada</span>
-          {% endif %}
+          Estado da Lâmpada:
+          <span id="lamp-state-text">
+            {% if state == 'on' %}
+            <span class="text-green-500">Ligada</span>
+            {% else %}
+            <span class="text-red-500">Desligada</span>
+            {% endif %}
+          </span>
         </span>
       </div>
     </div>
