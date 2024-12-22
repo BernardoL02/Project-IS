@@ -3,7 +3,11 @@
   "WorkspaceRootPath": "C:\\Users\\josem\\source\\repos\\Project-IS\\Middleware\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|C:\\Users\\josem\\source\\repos\\Project-IS\\Middleware\\somiod\\controllers\\somiodcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|c:\\users\\josem\\source\\repos\\project-is\\middleware\\somiod\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|solutionrelative:somiod\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|c:\\users\\josem\\source\\repos\\project-is\\middleware\\somiod\\controllers\\somiodcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{F6784133-4CC0-48A1-95B1-C7665BA9B125}|SOMIOD\\SOMIOD.csproj|solutionrelative:somiod\\controllers\\somiodcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -14,20 +18,33 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "SOMIODController.cs",
               "DocumentMoniker": "C:\\Users\\josem\\source\\repos\\Project-IS\\Middleware\\SOMIOD\\Controllers\\SOMIODController.cs",
               "RelativeDocumentMoniker": "SOMIOD\\Controllers\\SOMIODController.cs",
               "ToolTip": "C:\\Users\\josem\\source\\repos\\Project-IS\\Middleware\\SOMIOD\\Controllers\\SOMIODController.cs",
               "RelativeToolTip": "SOMIOD\\Controllers\\SOMIODController.cs",
-              "ViewState": "AgIAACgAAAAAAAAAAAAmwDcAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAABcAAAAAAAAAAAAiwDcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-12-17T09:22:46.148Z",
               "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "index.html",
+              "DocumentMoniker": "C:\\Users\\josem\\source\\repos\\Project-IS\\Middleware\\SOMIOD\\index.html",
+              "RelativeDocumentMoniker": "SOMIOD\\index.html",
+              "ToolTip": "C:\\Users\\josem\\source\\repos\\Project-IS\\Middleware\\SOMIOD\\index.html",
+              "RelativeToolTip": "SOMIOD\\index.html",
+              "ViewState": "AgIAAKcBAAAAAAAAAAAAALsBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2024-12-22T17:48:10.989Z",
               "EditorCaption": ""
             },
             {

@@ -94,13 +94,13 @@
 
         .request-container {
             margin-top: 15px;
-            padding: 3px; /* Padding ainda mais reduzido */
+            padding: 3px; 
             background-color: #f4f4f4;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            font-size: 14px; /* Fonte ainda mais pequena */
-            width: 80%; /* Menor largura, 80% da tela */
-            max-width: 400px; /* Largura máxima ainda mais estreita */
+            font-size: 14px;
+            width: 80%; 
+            max-width: 400px; 
             margin-left: auto;
             margin-right: auto;
         }
@@ -109,7 +109,7 @@
             width: 100%;
             padding: 8px;
             margin: 4px 0;
-            font-size: 14px; /* Tamanho da fonte menor */
+            font-size: 14px; 
             border-radius: 6px;
             border: 1px solid #ddd;
             max-width: 320px;
@@ -119,7 +119,7 @@
             width: 100%;
             padding: 8px;
             margin: 4px 0;
-            font-size: 14px; /* Tamanho da fonte menor */
+            font-size: 14px; 
             border-radius: 6px;
             border: 1px solid #ddd;
             max-width: 300px;
@@ -145,7 +145,6 @@
                 background-color: #3e8e41;
             }
 
-        /* Exibe a lista de nomes na parte inferior */
         .response-container {
             margin-top: 20px;
             padding: 15px;
@@ -170,7 +169,6 @@
                 margin-bottom: 8px;
             }
 
-        /* Estilos para o modal (popup) */
         .modal {
             display: none;
             position: fixed;
@@ -264,7 +262,6 @@
             </form>
         </div>
 
-        <!-- Modal para exibir as respostas -->
         <div id="modal" class="modal">
             <div class="modal-content">
                 <span class="close" id="closeModal">&times;</span>
@@ -279,7 +276,6 @@
 </html>
 
 <script>
-    // Verifica permissão para notificações
     if (Notification.permission !== 'granted') {
         Notification.requestPermission();
     }
@@ -289,12 +285,11 @@
         if (Notification.permission === 'granted') {
             const notification = new Notification(title, {
                 body: body,
-                icon: 'https://example.com/icon.png' // Adicione um ícone se desejar
+                icon: 'https://example.com/icon.png' 
             });
         }
     }
 
-    // Função para abrir o modal
     function openModal(content) {
         const modal = document.getElementById('modal');
         const modalBody = document.getElementById('modalBody');
@@ -302,17 +297,14 @@
         modal.style.display = 'flex';
     }
 
-    // Fechar o modal ao clicar no X
     document.getElementById('closeModal').addEventListener('click', function () {
         document.getElementById('modal').style.display = 'none';
     });
 
-    // Escutador para mudanças no dropdown de "locate-type"
     document.getElementById('locate-type').addEventListener('change', function () {
         const locateType = this.value;
         const somiodHeaderDropdown = document.getElementById('somiod-header');
 
-        // Ajusta a rota e o dropdown de "somiod-locate" conforme o tipo de "locate"
         if (locateType === 'application') {
             document.getElementById('route').value = '/api/somiod';
             somiodHeaderDropdown.innerHTML = `<option value="application">Application</option>`;
@@ -333,7 +325,6 @@
         }
     });
 
-    // Envio da requisição
     document.getElementById('customRequestForm').addEventListener('submit', function (event) {
         event.preventDefault();
 
@@ -360,65 +351,61 @@
             });
     });
 
-    // Função para exibir os nomes das respostas
-    // Função para exibir os nomes das respostas
     function displayNames(xmlData) {
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(xmlData, "text/xml");
 
-        // Obtém o tipo selecionado de "locate-type"
         const locateType = document.getElementById('locate-type').value;
         const somiodHeader = document.getElementById('somiod-header').value;
         let content = '<ul class="name-list">';
-        let noDataFound = true; // Flag para verificar se há dados
+        let noDataFound = true;
 
         if (locateType === 'resources') {
-            // Para "Locate Resources"
+      
             const applications = xmlDoc.getElementsByTagName('Application');
             if (applications.length === 0) {
                 content = '<p>Nenhum dado encontrado.</p>';
             } else {
                 for (let i = 0; i < applications.length; i++) {
-                    // Exibe apenas os Containers
+                    
                     const containers = applications[i].getElementsByTagName('Container');
                     for (let j = 0; j < containers.length; j++) {
                         const name = containers[j].getElementsByTagName('Name')[0].textContent;
                         content += `<li>${name}</li>`;
-                        noDataFound = false; // Dados encontrados
+                        noDataFound = false; 
                     }
 
-                    // Exibe apenas os Records
                     const records = applications[i].getElementsByTagName('Record');
                     for (let j = 0; j < records.length; j++) {
                         const name = records[j].getElementsByTagName('Name')[0].textContent;
                         content += `<li>${name}</li>`;
-                        noDataFound = false; // Dados encontrados
+                        noDataFound = false; 
                     }
 
-                    // Exibe apenas as Notifications
+                  
                     const notifications = applications[i].getElementsByTagName('Notification');
                     for (let j = 0; j < notifications.length; j++) {
                         const name = notifications[j].getElementsByTagName('Name')[0].textContent;
                         content += `<li>${name}</li>`;
-                        noDataFound = false; // Dados encontrados
+                        noDataFound = false;
                     }
                 }
             }
         } else if (locateType === 'application') {
-            // Para "Locate Applications"
+            
             const applications = xmlDoc.getElementsByTagName('Application');
             if (applications.length === 0) {
                 content = '<p>Nenhum dado encontrado.</p>';
             } else {
                 for (let i = 0; i < applications.length; i++) {
-                    // Exibe apenas o nome da Application
+ 
                     const name = applications[i].getElementsByTagName('Name')[0].textContent;
                     content += `<li>${name}</li>`;
-                    noDataFound = false; // Dados encontrados
+                    noDataFound = false; 
                 }
             }
         } else if (locateType === 'parents') {
-            // Para "Locate Parents"
+  
             const applications = xmlDoc.getElementsByTagName('Application');
             if (applications.length === 0) {
                 content = '<p>Nenhum dado encontrado.</p>';
@@ -426,18 +413,15 @@
                 for (let i = 0; i < applications.length; i++) {
                     const applicationName = applications[i].getElementsByTagName('Name')[0].textContent;
 
-                    // Exibe os containers ou seus filhos (Notification ou Record) dependendo do header
                     if (somiodHeader === 'container') {
-                        // Se o somiod-locate for "container", exibe apenas o nome da Application
                         content += `<li>Parent: ${applicationName}</li>`;
-                        noDataFound = false; // Dados encontrados
+                        noDataFound = false;
                     } else if (somiodHeader === 'notification' || somiodHeader === 'record') {
-                        // Se for "notification" ou "record", exibe a Application e os Containers
                         const containers = applications[i].getElementsByTagName('Container');
                         for (let j = 0; j < containers.length; j++) {
                             const containerName = containers[j].getElementsByTagName('Name')[0].textContent;
                             content += `<li>Application Parent - ${applicationName} <br> <br> Container Parent - ${containerName}</li>`;
-                            noDataFound = false; // Dados encontrados
+                            noDataFound = false; 
                         }
                     }
                 }
@@ -446,21 +430,18 @@
 
         content += '</ul>';
 
-        // Se nenhum dado foi encontrado, mostrar uma mensagem
         if (noDataFound) {
             content = '<p><strong>Nenhum dado encontrado.</strong></p>';
         }
 
         openModal(content);
 
-        // Mostrar notificação com os nomes, caso haja dados
         if (!noDataFound) {
             showNotification('Dados Encontrados', 'Clique para ver os resultados.');
         }
     }
 
 
-    // Função para exibir erro
     function displayError(errorData) {
         openModal('<p><strong>Erro ao consultar os dados:<br><br> </strong> ' + errorData + '</p>');
     }
