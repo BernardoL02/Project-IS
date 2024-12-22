@@ -20,104 +20,121 @@
 
         .container {
             background-color: #fff;
-            padding: 30px;
+            padding: 15px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             text-align: center;
-            width: 80%;
-            max-width: 600px;
+            width: 90%;
+            max-width: 500px;
             margin-bottom: 20px;
         }
 
         div {
-            margin-bottom: 30px;
+            margin-bottom: 15px;
         }
 
         h1 {
-            font-size: 36px;
+            font-size: 24px;
             color: #000000;
         }
 
         p {
-            font-size: 18px;
+            font-size: 14px;
             color: #555;
         }
 
         .students {
-            margin-top: 20px;
-            font-size: 18px;
+            margin-top: 15px;
+            font-size: 14px;
             color: #333;
         }
 
         .somiod {
-            font-size: 25px;
+            font-size: 18px;
             color: #000000;
             font-weight: 600;
         }
 
         .student {
-            margin: 10px 0;
+            margin: 5px 0;
         }
 
         .footer {
-            margin-top: 50px;
-            font-size: 5px;
+            margin-top: 20px;
+            font-size: 8px;
             color: #888;
         }
 
         button {
-            background-color: #4CAF50; /* Verde */
+            background-color: #4CAF50;
             color: white;
             border: none;
-            padding: 15px 20px;
-            font-size: 16px;
+            padding: 10px 15px;
+            font-size: 12px;
             font-weight: bold;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
             button:hover {
-                background-color: #45a049; /* Verde mais escuro ao passar o mouse */
-                transform: scale(1.05); /* Leve aumento */
+                background-color: #45a049;
+                transform: scale(1.05);
             }
 
             button:active {
-                background-color: #3e8e41; /* Verde ainda mais escuro ao clicar */
-                transform: scale(0.95); /* Leve redução */
+                background-color: #3e8e41;
+                transform: scale(0.95);
             }
 
         a {
-            text-decoration: none; /* Remove sublinhado do link */
+            text-decoration: none;
         }
 
         .request-container {
-            margin-top: 30px;
-            padding: 20px;
+            margin-top: 15px;
+            padding: 3px; /* Padding ainda mais reduzido */
             background-color: #f4f4f4;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            font-size: 14px; /* Fonte ainda mais pequena */
+            width: 80%; /* Menor largura, 80% da tela */
+            max-width: 400px; /* Largura máxima ainda mais estreita */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            margin: 4px 0;
+            font-size: 14px; /* Tamanho da fonte menor */
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            max-width: 320px;
         }
 
         input {
             width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            font-size: 16px;
-            border-radius: 8px;
+            padding: 8px;
+            margin: 4px 0;
+            font-size: 14px; /* Tamanho da fonte menor */
+            border-radius: 6px;
             border: 1px solid #ddd;
+            max-width: 300px;
         }
 
         .request-button {
             background-color: #4CAF50;
             color: white;
-            font-size: 16px;
-            padding: 10px 20px;
+            font-size: 13px;
+            padding: 8px 15px;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s ease;
+            margin-bottom: 5px
         }
 
             .request-button:hover {
@@ -130,36 +147,70 @@
 
         /* Exibe a lista de nomes na parte inferior */
         .response-container {
-            margin-top: 30px;
-            padding: 20px;
+            margin-top: 20px;
+            padding: 15px;
             background-color: #f4f4f4;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 600px;
+            max-width: 500px;
         }
 
         .name-list {
-            font-size: 18px;
+            font-size: 14px;
             color: #333;
             list-style: none;
             padding: 0;
             margin: 0;
+            max-height: 200px;
+            overflow-y: auto;
         }
 
             .name-list li {
-                margin-bottom: 10px;
+                margin-bottom: 8px;
             }
 
-        /* Exibe a mensagem de erro */
-        .error-message {
-            margin-top: 30px;
+        /* Estilos para o modal (popup) */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #fff;
             padding: 15px;
-            background-color: #ffdddd;
-            border: 1px solid #f5c6cb;
-            border-radius: 8px;
-            color: #721c24;
+            border-radius: 6px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .modal-header {
             font-size: 18px;
+            font-weight: bold;
+        }
+
+        .modal-body {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .close {
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            color: #888;
         }
     </style>
 </head>
@@ -178,104 +229,241 @@
         </div>
 
         <a href="https://localhost:44322/swagger/ui/index#/SOMIOD" target="_blank">
-            <button>
+            <button style="margin-top: 10px; margin-bottom: 10px;">
                 Abrir Swagger UI
             </button>
         </a>
 
         <div class="request-container">
-            <h2>Rotas para o Locate</h2>
+            <h2>Locate Requests</h2>
 
             <form action="#" method="POST" id="customRequestForm">
+
                 <div>
-                    <label for="route">Rota (ex: /api/somiod):</label>
+                    <label for="locate-type">Escolha o tipo de locate</label>
+                    <select id="locate-type" name="locate-type" required>
+                        <option value="application">Locate Applications</option>
+                        <option value="resources">Locate Resources</option>
+                        <option value="parents">Locate Parents</option>
+                    </select>
+                </div>
+
+                <div id="route-container">
+                    <label for="route">Base URL</label> <br />
                     <input type="text" id="route" name="route" value="/api/somiod" required />
                 </div>
 
-                <div>
-                    <label for="somiod-header">Cabeçalho "somiod-locate" (ex: application):</label>
-                    <input type="text" id="somiod-header" name="somiod-header" value="application" required />
+                <div id="somiod-header-container">
+                    <label for="somiod-header">Header "somiod-locate"</label>
+                    <select id="somiod-header" name="somiod-header">
+                        <option value="application">Application</option>
+                    </select>
                 </div>
 
-                <button type="submit" class="request-button">Enviar Requisição</button>
+                <button type="submit" class="request-button">Enviar</button>
             </form>
         </div>
 
-        <!-- Container para exibir a lista de nomes -->
-        <div class="response-container" id="responseContainer" style="display: none;">
-            <h3>Aplicações:</h3>
-            <ul class="name-list" id="nameList"></ul>
-        </div>
-
-        <!-- Container para exibir mensagens de erro -->
-        <div class="error-message" id="errorMessage" style="display: none;">
-            <p id="errorText"></p>
-        </div>
-
-        <div class="footer">
-            <p>2024/2025</p>
+        <!-- Modal para exibir as respostas -->
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="closeModal">&times;</span>
+                <div class="modal-header">
+                    Response
+                </div>
+                <div class="modal-body" id="modalBody"></div>
+            </div>
         </div>
     </div>
+</body>
+</html>
 
-    <script>
-        document.getElementById('customRequestForm').addEventListener('submit', function (event) {
-            event.preventDefault();
+<script>
+    // Verifica permissão para notificações
+    if (Notification.permission !== 'granted') {
+        Notification.requestPermission();
+    }
 
-            const route = document.getElementById('route').value;
-            const somiodHeader = document.getElementById('somiod-header').value;
+    // Função para exibir a notificação
+    function showNotification(title, body) {
+        if (Notification.permission === 'granted') {
+            const notification = new Notification(title, {
+                body: body,
+                icon: 'https://example.com/icon.png' // Adicione um ícone se desejar
+            });
+        }
+    }
 
-            // Enviando a requisição com o cabeçalho somiod-locate como "application"
-            fetch('https://localhost:44322' + route, {
-                method: 'GET',  // Modifique conforme necessário (GET, POST, etc)
-                headers: {
-                    'somiod-locate': somiodHeader,
-                    'Content-Type': 'application/json',
+    // Função para abrir o modal
+    function openModal(content) {
+        const modal = document.getElementById('modal');
+        const modalBody = document.getElementById('modalBody');
+        modalBody.innerHTML = content;
+        modal.style.display = 'flex';
+    }
+
+    // Fechar o modal ao clicar no X
+    document.getElementById('closeModal').addEventListener('click', function () {
+        document.getElementById('modal').style.display = 'none';
+    });
+
+    // Escutador para mudanças no dropdown de "locate-type"
+    document.getElementById('locate-type').addEventListener('change', function () {
+        const locateType = this.value;
+        const somiodHeaderDropdown = document.getElementById('somiod-header');
+
+        // Ajusta a rota e o dropdown de "somiod-locate" conforme o tipo de "locate"
+        if (locateType === 'application') {
+            document.getElementById('route').value = '/api/somiod';
+            somiodHeaderDropdown.innerHTML = `<option value="application">Application</option>`;
+        } else if (locateType === 'resources') {
+            document.getElementById('route').value = '/api/somiod/{applicationName}';
+            somiodHeaderDropdown.innerHTML = `
+                        <option value="container">Container</option>
+                        <option value="record">Record</option>
+                        <option value="notification">Notification</option>
+                    `;
+        } else if (locateType === 'parents') {
+            document.getElementById('route').value = '/api/somiod/{resourceName}/parent';
+            somiodHeaderDropdown.innerHTML = `
+         <option value="container">Container</option>
+         <option value="record">Record</option>
+         <option value="notification">Notification</option>
+     `;
+        }
+    });
+
+    // Envio da requisição
+    document.getElementById('customRequestForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const route = document.getElementById('route').value;
+        const somiodHeader = document.getElementById('somiod-header').value;
+
+        fetch('https://localhost:44322' + route, {
+            method: 'GET',
+            headers: {
+                'somiod-locate': somiodHeader,
+                'Content-Type': 'application/json',
+            }
+        })
+            .then(response => response.text())
+            .then(data => {
+                if (data.includes('<Error>')) {
+                    displayError(data);
+                } else {
+                    displayNames(data);
                 }
             })
-                .then(response => response.text())  // Obtém a resposta como texto (XML)
-                .then(data => {
-                    // Verifica se a resposta contém erro
-                    if (data.includes('<Error>')) {
-                        displayError(data);
-                    } else {
-                        // Exibe os nomes extraídos do XML na página
-                        displayNames(data);
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro:', error);
-                });
-        });
+            .catch(error => {
+                console.error('Erro:', error);
+            });
+    });
 
-        // Função para exibir os nomes extraídos do XML
-        function displayNames(xmlData) {
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(xmlData, "text/xml");
+    // Função para exibir os nomes das respostas
+    // Função para exibir os nomes das respostas
+    function displayNames(xmlData) {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlData, "text/xml");
+
+        // Obtém o tipo selecionado de "locate-type"
+        const locateType = document.getElementById('locate-type').value;
+        const somiodHeader = document.getElementById('somiod-header').value;
+        let content = '<ul class="name-list">';
+        let noDataFound = true; // Flag para verificar se há dados
+
+        if (locateType === 'resources') {
+            // Para "Locate Resources"
             const applications = xmlDoc.getElementsByTagName('Application');
-            const nameList = document.getElementById('nameList');
-            nameList.innerHTML = '';  // Limpa a lista existente
+            if (applications.length === 0) {
+                content = '<p>Nenhum dado encontrado.</p>';
+            } else {
+                for (let i = 0; i < applications.length; i++) {
+                    // Exibe apenas os Containers
+                    const containers = applications[i].getElementsByTagName('Container');
+                    for (let j = 0; j < containers.length; j++) {
+                        const name = containers[j].getElementsByTagName('Name')[0].textContent;
+                        content += `<li>${name}</li>`;
+                        noDataFound = false; // Dados encontrados
+                    }
 
-            for (let i = 0; i < applications.length; i++) {
-                const name = applications[i].getElementsByTagName('Name')[0].textContent;
-                const li = document.createElement('li');
-                li.textContent = name;
-                nameList.appendChild(li);
+                    // Exibe apenas os Records
+                    const records = applications[i].getElementsByTagName('Record');
+                    for (let j = 0; j < records.length; j++) {
+                        const name = records[j].getElementsByTagName('Name')[0].textContent;
+                        content += `<li>${name}</li>`;
+                        noDataFound = false; // Dados encontrados
+                    }
+
+                    // Exibe apenas as Notifications
+                    const notifications = applications[i].getElementsByTagName('Notification');
+                    for (let j = 0; j < notifications.length; j++) {
+                        const name = notifications[j].getElementsByTagName('Name')[0].textContent;
+                        content += `<li>${name}</li>`;
+                        noDataFound = false; // Dados encontrados
+                    }
+                }
             }
+        } else if (locateType === 'application') {
+            // Para "Locate Applications"
+            const applications = xmlDoc.getElementsByTagName('Application');
+            if (applications.length === 0) {
+                content = '<p>Nenhum dado encontrado.</p>';
+            } else {
+                for (let i = 0; i < applications.length; i++) {
+                    // Exibe apenas o nome da Application
+                    const name = applications[i].getElementsByTagName('Name')[0].textContent;
+                    content += `<li>${name}</li>`;
+                    noDataFound = false; // Dados encontrados
+                }
+            }
+        } else if (locateType === 'parents') {
+            // Para "Locate Parents"
+            const applications = xmlDoc.getElementsByTagName('Application');
+            if (applications.length === 0) {
+                content = '<p>Nenhum dado encontrado.</p>';
+            } else {
+                for (let i = 0; i < applications.length; i++) {
+                    const applicationName = applications[i].getElementsByTagName('Name')[0].textContent;
 
-            document.getElementById('responseContainer').style.display = 'block';
-            document.getElementById('errorMessage').style.display = 'none'; // Oculta a mensagem de erro, se houver
+                    // Exibe os containers ou seus filhos (Notification ou Record) dependendo do header
+                    if (somiodHeader === 'container') {
+                        // Se o somiod-locate for "container", exibe apenas o nome da Application
+                        content += `<li>Parent: ${applicationName}</li>`;
+                        noDataFound = false; // Dados encontrados
+                    } else if (somiodHeader === 'notification' || somiodHeader === 'record') {
+                        // Se for "notification" ou "record", exibe a Application e os Containers
+                        const containers = applications[i].getElementsByTagName('Container');
+                        for (let j = 0; j < containers.length; j++) {
+                            const containerName = containers[j].getElementsByTagName('Name')[0].textContent;
+                            content += `<li>Application Parent - ${applicationName} <br> <br> Container Parent - ${containerName}</li>`;
+                            noDataFound = false; // Dados encontrados
+                        }
+                    }
+                }
+            }
         }
 
-        // Função para exibir a mensagem de erro
-        function displayError(xmlData) {
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(xmlData, "text/xml");
-            const errorMessage = xmlDoc.getElementsByTagName('Message')[0].textContent;
+        content += '</ul>';
 
-            document.getElementById('errorText').textContent = errorMessage;
-            document.getElementById('errorMessage').style.display = 'block';
-            document.getElementById('responseContainer').style.display = 'none'; // Oculta a lista de nomes, se houver erro
+        // Se nenhum dado foi encontrado, mostrar uma mensagem
+        if (noDataFound) {
+            content = '<p><strong>Nenhum dado encontrado.</strong></p>';
         }
-    </script>
+
+        openModal(content);
+
+        // Mostrar notificação com os nomes, caso haja dados
+        if (!noDataFound) {
+            showNotification('Dados Encontrados', 'Clique para ver os resultados.');
+        }
+    }
+
+
+    // Função para exibir erro
+    function displayError(errorData) {
+        openModal('<p><strong>Erro ao consultar os dados:<br><br> </strong> ' + errorData + '</p>');
+    }
+</script>
 </body>
 </html>
