@@ -210,7 +210,7 @@ namespace SOMIOD
                 //----------------------------- Record -----------------------------
                 else if(operation.operationId == "SOMIOD_PostRecordOrNotification")
                 {
-                    string xml2 = "XML para criar uma notification:\n\n\n<Notification>\n\n<Name>DefaultNotification</Name>\n\n<Event>2</Event>\n\n<Endpoint>mqtt://example.com</Endpoint>\n\n<Enabled>true</Enabled>\n\n</Notification>";
+                    string xml2 = "Este endpoint cria records e notifications, ele identifica o root node passado no body.\n\n\nXML para criar uma notification:\n\n\n<Notification>\n\n<Name>DefaultNotification</Name>\n\n<Event>1</Event>\n\n<Endpoint>mqtt://127.0.0.1</Endpoint>\n\n<Enabled>true</Enabled>\n\n</Notification>";
 
                     string escapedXml2 = System.Net.WebUtility.HtmlEncode(xml2);
 
