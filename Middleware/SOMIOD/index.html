@@ -14,6 +14,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
             height: 100vh;
         }
 
@@ -25,6 +26,7 @@
             text-align: center;
             width: 80%;
             max-width: 600px;
+            margin-bottom: 20px;
         }
 
         div {
@@ -89,6 +91,76 @@
         a {
             text-decoration: none; /* Remove sublinhado do link */
         }
+
+        .request-container {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f4f4f4;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .request-button {
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+            .request-button:hover {
+                background-color: #45a049;
+            }
+
+            .request-button:active {
+                background-color: #3e8e41;
+            }
+
+        /* Exibe a lista de nomes na parte inferior */
+        .response-container {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f4f4f4;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .name-list {
+            font-size: 18px;
+            color: #333;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+            .name-list li {
+                margin-bottom: 10px;
+            }
+
+        /* Exibe a mensagem de erro */
+        .error-message {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #ffdddd;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            color: #721c24;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
@@ -104,12 +176,106 @@
             <div class="student">Bernardo Lopes - 2222048</div>
             <div class="student">José Delgado   - 2222049</div>
         </div>
+
         <a href="https://localhost:44322/swagger/ui/index#/SOMIOD" target="_blank">
-            <button>Abrir Swagger UI</button>
+            <button>
+                Abrir Swagger UI
+            </button>
         </a>
+
+        <div class="request-container">
+            <h2>Rotas para o Locate</h2>
+
+            <form action="#" method="POST" id="customRequestForm">
+                <div>
+                    <label for="route">Rota (ex: /api/somiod):</label>
+                    <input type="text" id="route" name="route" value="/api/somiod" required />
+                </div>
+
+                <div>
+                    <label for="somiod-header">Cabeçalho "somiod-locate" (ex: application):</label>
+                    <input type="text" id="somiod-header" name="somiod-header" value="application" required />
+                </div>
+
+                <button type="submit" class="request-button">Enviar Requisição</button>
+            </form>
+        </div>
+
+        <!-- Container para exibir a lista de nomes -->
+        <div class="response-container" id="responseContainer" style="display: none;">
+            <h3>Aplicações:</h3>
+            <ul class="name-list" id="nameList"></ul>
+        </div>
+
+        <!-- Container para exibir mensagens de erro -->
+        <div class="error-message" id="errorMessage" style="display: none;">
+            <p id="errorText"></p>
+        </div>
+
         <div class="footer">
-            <p> 2024/2025</p>
+            <p>2024/2025</p>
         </div>
     </div>
+
+    <script>
+        document.getElementById('customRequestForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const route = document.getElementById('route').value;
+            const somiodHeader = document.getElementById('somiod-header').value;
+
+            // Enviando a requisição com o cabeçalho somiod-locate como "application"
+            fetch('https://localhost:44322' + route, {
+                method: 'GET',  // Modifique conforme necessário (GET, POST, etc)
+                headers: {
+                    'somiod-locate': somiodHeader,
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(response => response.text())  // Obtém a resposta como texto (XML)
+                .then(data => {
+                    // Verifica se a resposta contém erro
+                    if (data.includes('<Error>')) {
+                        displayError(data);
+                    } else {
+                        // Exibe os nomes extraídos do XML na página
+                        displayNames(data);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                });
+        });
+
+        // Função para exibir os nomes extraídos do XML
+        function displayNames(xmlData) {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlData, "text/xml");
+            const applications = xmlDoc.getElementsByTagName('Application');
+            const nameList = document.getElementById('nameList');
+            nameList.innerHTML = '';  // Limpa a lista existente
+
+            for (let i = 0; i < applications.length; i++) {
+                const name = applications[i].getElementsByTagName('Name')[0].textContent;
+                const li = document.createElement('li');
+                li.textContent = name;
+                nameList.appendChild(li);
+            }
+
+            document.getElementById('responseContainer').style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none'; // Oculta a mensagem de erro, se houver
+        }
+
+        // Função para exibir a mensagem de erro
+        function displayError(xmlData) {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlData, "text/xml");
+            const errorMessage = xmlDoc.getElementsByTagName('Message')[0].textContent;
+
+            document.getElementById('errorText').textContent = errorMessage;
+            document.getElementById('errorMessage').style.display = 'block';
+            document.getElementById('responseContainer').style.display = 'none'; // Oculta a lista de nomes, se houver erro
+        }
+    </script>
 </body>
 </html>

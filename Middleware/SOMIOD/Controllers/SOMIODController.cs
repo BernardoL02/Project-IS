@@ -27,9 +27,7 @@ using System.Text;
 using System.Web.UI.WebControls;
 using System.Resources;
 using System.Threading.Tasks;
-
-
-
+using Swashbuckle.Swagger.Annotations;
 
 namespace SOMIOD.Controllers
 {
@@ -63,6 +61,7 @@ namespace SOMIOD.Controllers
         //--------------------------------------- Locate --------------------------------------
         //------------------------------------------------------------------------------------- 
         [HttpGet]
+        [System.Web.Http.Description.ApiExplorerSettings(IgnoreApi = true)] //Remover do swagger
         [Route("api/somiod")]
         public IHttpActionResult LocateApplications()
         {
@@ -203,6 +202,7 @@ namespace SOMIOD.Controllers
 
         //Função Extra
         [HttpGet]
+        [System.Web.Http.Description.ApiExplorerSettings(IgnoreApi = true)] //Remover do swagger
         [Route("api/somiod/{resourceName}/parent")]
         public IHttpActionResult getParent(string resourceName)
         {
